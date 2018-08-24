@@ -1,0 +1,20 @@
+{
+  "name": "devextreme-schematics",
+  "version": "0.0.0",
+  "description": "DevExtreme schematics",
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  },
+  "author": "",
+  "license": "MIT",
+  "schematics": "./src/collection.json",
+  "dependencies": {
+    "@angular-devkit/core": "^0.7.5",
+    "@angular-devkit/schematics": "^0.7.5",
+    "@angular-devkit/schematics-cli": "^0.7.5",
+    "@angular/cli": "^6.1.5",
+    "@types/jasmine": "^2.6.0",
+    "@types/node": "^8.10.27",
+    "typescript": "^2.5.2"
+  }
+}

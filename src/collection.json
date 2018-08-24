@@ -1,0 +1,12 @@
+{
+  "$schema": "../node_modules/@angular-devkit/schematics/collection-schema.json",
+  "extends": [
+    "@schematics/angular"
+  ],
+  "schematics": {
+    "new-angular-app": {
+      "description": "A new Angular application with DevExtreme",
+      "factory": "./new-angular-app/index"
+    }
+  }
+}
