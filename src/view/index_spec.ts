@@ -48,7 +48,7 @@ describe('view', () => {
       const runner = new SchematicTestRunner('schematics', collectionPath);
       const tree = runner.runSchematic('view', defaultOptions, appTree);
 
-      expect(tree.files.sort()).toContain("/src/app/pages/test/test.component.ts");
-      expect(tree.files.sort()).toContain("/src/app/pages/test/test.component.html");
+      expect(tree.files).toContain("/src/app/pages/test/test.component.ts");
+      expect(tree.files).toContain("/src/app/pages/test/test.component.html");
     });
 });
