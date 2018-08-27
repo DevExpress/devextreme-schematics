@@ -19,5 +19,11 @@ jobs: # a collection of steps
           paths:
             - ./node_modules
       - run: # run tests
+          name: buld
+          command: npm run build
+      - run: # run tests
           name: test
           command: npm run test
+      - store_artifacts:
+          path: test-results.xml
+          prefix: tests
