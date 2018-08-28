@@ -19,11 +19,11 @@ function getProjectName(host: Tree, options: any) {
 
 export default function (options: any): Rule {
   return (host: Tree) => {
-      const projectName = getProjectName(host, options);
-      const pathToView = "src/app/pages";
-  
-      return chain([
-          schematic('component', { project: projectName, path: pathToView })
-      ]);
+    options.project = getProjectName(host, options);
+    options.path = "src/app/pages";
+    
+    return chain([
+      schematic('component', { ...options })
+    ]);
   }
 }

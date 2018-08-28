@@ -9,8 +9,9 @@ const collectionPath = path.join(__dirname, '../collection.json');
 describe('devextreme-template', () => {
   it('works', () => {
     const runner = new SchematicTestRunner('schematics', collectionPath);
-    const tree = runner.runSchematic('new-angular-app', {}, Tree.empty());
+    const tree = runner.runSchematic('new-angular-app', { name: "testApp"}, Tree.empty());
 
-    expect(tree.files).toEqual([]);
+    expect(tree.files).toContain("/testApp/angular.json");
+    expect(tree.files).toContain("/testApp/src/app/app.module.ts");
   });
 });
