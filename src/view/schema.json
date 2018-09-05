@@ -16,11 +16,6 @@
       "type": "boolean",
       "description": "Specifies if the component will be in the navigation.",
       "default": false
-    },
-    "icon": {
-      "type": "string",
-      "description": "The name of icon.",
-      "default": ""
     }
   }
 }
