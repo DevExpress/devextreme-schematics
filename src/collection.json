@@ -10,7 +10,8 @@
     },
     "view": {
       "description": "Add a view to app-template.",
-      "factory": "./view/index"
+      "factory": "./view/index",
+      "schema": "./view/schema.json"
     }
   }
 }
