@@ -11,28 +11,27 @@ describe('view', () => {
       name: 'testApp',
       inlineStyle: false,
       inlineTemplate: false,
-      routing: false,
+      routing: true,
       style: 'css',
       skipTests: false,
       skipPackageJson: false
   };
 
     const workspaceOptions: WorkspaceOptions = {
-        name: 'workspace',
-        newProjectRoot: 'projects',
-        version: '6.0.0'
+      name: 'workspace',
+      version: '6.0.0'
     };
 
     const defaultOptions: ComponentOptions = {
-        name: 'test',
-        inlineStyle: false,
-        inlineTemplate: false,
-        changeDetection: 'Default',
-        styleext: 'css',
-        skipImport: true,
-        module: undefined,
-        export: false,
-        project: 'testApp'
+      name: 'test',
+      inlineStyle: false,
+      inlineTemplate: false,
+      changeDetection: 'Default',
+      styleext: 'css',
+      skipImport: true,
+      module: undefined,
+      export: false,
+      project: 'testApp'
     };
 
     const schematicRunner = new SchematicTestRunner('@schematics/angular', require.resolve('../../node_modules/@schematics/angular/collection.json'));
@@ -48,7 +47,20 @@ describe('view', () => {
       const runner = new SchematicTestRunner('schematics', collectionPath);
       const tree = runner.runSchematic('view', defaultOptions, appTree);
 
-      expect(tree.files).toContain("/src/app/pages/test/test.component.ts");
-      expect(tree.files).toContain("/src/app/pages/test/test.component.html");
+      expect(tree.files).toContain("/testApp/src/app/pages/test/test.component.ts");
+      expect(tree.files).toContain("/testApp/src/app/pages/test/test.component.html");
+    });
+
+    it('should add view to routes', () => {
+      const options = { ...defaultOptions, addToRoutes: true };
+
+      const runner = new SchematicTestRunner('schematics', collectionPath);
+      const tree = runner.runSchematic('view', options, appTree);
+
+      const moduleContent = tree.readContent('/testApp/src/app/app-routing.module.ts');
+
+      expect(moduleContent).toMatch(/component: TestComponent/);
+      expect(moduleContent).toMatch(/path: "test"/);
+      expect(moduleContent).toMatch(/title: "Test"/);
     });
 });

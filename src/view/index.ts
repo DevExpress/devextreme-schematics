@@ -13,14 +13,19 @@ import * as ts from 'typescript';
 
 import { strings } from '@angular-devkit/core';
 
-const routingModulePath = 'src/app/app-routing.module.ts';
-
 function getProjectName(host: Tree, options: any) {
   const projectName = options.project;
   const workspace = getWorkspace(host);
   const projects = Object.keys(workspace.projects);
 
   return projectName && projects.indexOf(projectName) ? projectName : projects[0];
+}
+
+function getPathToRoutingModule(host: Tree, projectName: string) {
+  const workspace = getWorkspace(host);
+  const root = workspace.projects[projectName].root || '';
+
+  return root + 'src/app/app-routing.module.ts';
 }
 
 function updateRoutes(options: any, routes: Array<any>) {
@@ -95,6 +100,7 @@ function addViewToRouting(options: any) {
     if(options.addToRoutes) {
       let routesText = '';
       let updatedRoutes: Array<any> = [];
+      const routingModulePath = getPathToRoutingModule(host, options.project);
       let serializedRouting = host.read(routingModulePath)!.toString('utf8');
       const source = ts.createSourceFile(routingModulePath, serializedRouting, ts.ScriptTarget.Latest, true);
 
