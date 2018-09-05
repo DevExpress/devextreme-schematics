@@ -69,7 +69,6 @@ function getRoutesArray(routesText: string) {
 
 function parseName(name: string) {
   return {
-    classified: strings.classify(name),
     camelized: strings.camelize(name),
     capitalized: strings.capitalize(name)
   };
