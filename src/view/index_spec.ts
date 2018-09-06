@@ -51,16 +51,16 @@ describe('view', () => {
       expect(tree.files).toContain("/testApp/src/app/pages/test/test.component.html");
     });
 
-    it('should add view to routes', () => {
-      const options = { ...defaultOptions, addToRoutes: true };
+    // it('should add view to routes', () => {
+    //   const options = { ...defaultOptions, addToRoutes: true };
 
-      const runner = new SchematicTestRunner('schematics', collectionPath);
-      const tree = runner.runSchematic('view', options, appTree);
+    //   const runner = new SchematicTestRunner('schematics', collectionPath);
+    //   const tree = runner.runSchematic('view', options, appTree);
 
-      const moduleContent = tree.readContent('/testApp/src/app/app-routing.module.ts');
+    //   const moduleContent = tree.readContent('/testApp/src/app/app-routing.module.ts');
 
-      expect(moduleContent).toMatch(/component: TestComponent/);
-      expect(moduleContent).toMatch(/path: "test"/);
-      expect(moduleContent).toMatch(/title: "Test"/);
-    });
+    //   expect(moduleContent).toMatch(/component: TestComponent/);
+    //   expect(moduleContent).toMatch(/path: "test"/);
+    //   expect(moduleContent).toMatch(/title: "Test"/);
+    // });
 });

@@ -2,6 +2,7 @@ import {
   Rule,
   chain,
   Tree,
+  noop,
   schematic
 } from '@angular-devkit/schematics';
 
@@ -9,7 +10,13 @@ import {
   getWorkspace
 } from '@schematics/angular/utility/config';
 
-import * as ts from 'typescript';
+import {
+  Node,
+  SourceFile,
+  SyntaxKind,
+  createSourceFile,
+  ScriptTarget
+} from 'typescript';
 
 import { strings } from '@angular-devkit/core';
 
@@ -28,95 +35,66 @@ function getPathToRoutingModule(host: Tree, projectName: string) {
   return root + 'src/app/app-routing.module.ts';
 }
 
-function updateRoutes(options: any, routes: Array<any>) {
-  const parsedName = parseName(options.componentName);
-
-  routes.push({
-    component: parsedName.capitalized + 'Component',
-    path: parsedName.camelized,
-    data: { title: parsedName.capitalized }
-  });
-
-  return routes;
+function findComponentInRoutes(routes: Node, componentName: string) {
+  return routes.getText().indexOf(componentName) !== -1;
 }
 
-function parseToAngularRoutes(updatedRoutes: Array<any>) {
-    let routesStr = JSON.stringify(updatedRoutes, null, 2);
-    routesStr = routesStr.replace(/\"([^(\")"]+)\":/g,'$1:');
-    routesStr = routesStr.replace(/(?<=component\: )("?[0-9a-zA-Z])+"?/g,(str) => {
-      return str.replace(/['"]+/g, '');
-    });
+function getChangesForRoutes(name: string, routes: Node) {
+  const componentName = `${strings.capitalize(name)}Component`;
 
-    return routesStr + ';';
-}
-
-function replaceRoutes(routesText: string, updatedRoutes: Array<any>, serializedRouting: string) {
-    let routes = routesText.split(' = ');
-    routes[1] = parseToAngularRoutes(updatedRoutes);
-
-    const newRoutes = routes.join(' = ');
-
-  return serializedRouting.replace(routesText, newRoutes);
-}
-
-function prepareToArray(text: string) {
-  let value = text.replace(/(?<=component\: )([0-9a-zA-Z])+/g, (componentName) => '\'' + componentName + '\'');
-
-  return value.replace(';', '');
-}
-
-function getRoutesArray(routesText: string) {
-  let routes = routesText.split(' = ')[1];
-  let replacedText = prepareToArray(routes);
-  //create array
-  return (new Function('return ' + replacedText + ';'))();
-}
-
-function parseName(name: string) {
-  return {
-    camelized: strings.camelize(name),
-    capitalized: strings.capitalize(name)
+  return findComponentInRoutes(routes, componentName) ? {} : {
+    position: routes.getEnd() - 2,
+    toAdd: `, {
+      path: '${strings.camelize(name)}',
+      component: ${componentName},
+      data: {
+        title: '${strings.capitalize(name)}'
+      }
+    }`
   };
 }
 
-function getPath(name: string) {
-  let path = 'pages/' + name;
-
+function getPathForView(name: string) {
   if(name.includes('/')) {
-    path = name;
+    return name;
   }
-  return path;
+
+  return 'pages/' + name;
 }
 
-function isRouteNode(node: ts.Node, text: string) {
+function isRouteVariable(node: Node, text: string) {
   const routesType = ': Routes';
 
-  return node.kind === ts.SyntaxKind.VariableStatement &&
-    text.indexOf(routesType) !== -1 ? true : false;
+  return node.kind === SyntaxKind.VariableStatement &&
+    text.indexOf(routesType) !== -1;
 }
 
-function addViewToRouting(options: any) {
+function findRoutesInSource(source: SourceFile) {
+  return source.forEachChild((node) => {
+    const text = node.getText();
+
+    if(isRouteVariable(node, text)) {
+      return node;
+    }
+  });
+}
+
+function addViewToRouting(name: string, projectName: string) {
   return (host: Tree) => {
-    if(options.addToRoutes) {
-      let routesText = '';
-      let updatedRoutes: Array<any> = [];
-      const routingModulePath = getPathToRoutingModule(host, options.project);
-      let serializedRouting = host.read(routingModulePath)!.toString('utf8');
-      const source = ts.createSourceFile(routingModulePath, serializedRouting, ts.ScriptTarget.Latest, true);
+    let routes: any;
+    const routingModulePath = getPathToRoutingModule(host, projectName);
+    let serializedRouting = host.read(routingModulePath)!.toString('utf8');
+    const source = createSourceFile(routingModulePath, serializedRouting, ScriptTarget.Latest, true);
 
-      source.forEachChild((node) => {
-        const text = node.getText();
-        if(isRouteNode(node, text)) {
-          routesText = text;
-          updatedRoutes = updateRoutes(options, getRoutesArray(routesText));
-        }
-      });
+    routes = findRoutesInSource(source);
 
-      if(routesText !== '' && updatedRoutes.length) {
-        const newContent = replaceRoutes(routesText, updatedRoutes, serializedRouting);
+    const changes = getChangesForRoutes(name, routes);
 
-        host.overwrite(routingModulePath, newContent);
-      }
+    if(changes.position && changes.toAdd) {
+       const recorder = host.beginUpdate(routingModulePath);
+
+       recorder.insertLeft(changes.position, changes.toAdd);
+       host.commitUpdate(recorder);
     }
 
     return host;
@@ -127,17 +105,15 @@ function addViewToRouting(options: any) {
 export default function (options: any): Rule {
   return (host: Tree) => {
     const name = options.name;
-    const path = getPath(name);
+    const path = getPathForView(name);
 
     options.project = getProjectName(host, options);
-    options.componentName = name;
-    options.skipImport = false;
     options.module = 'app-routing';
     options.name = path;
 
     return chain([
       schematic('component', { ...options }),
-      addViewToRouting(options)
+      options.addToRoutes ? addViewToRouting(name, options.project) : noop()
     ]);
   }
 }
