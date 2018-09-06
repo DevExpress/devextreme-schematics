@@ -49,10 +49,9 @@ function getPosition(fullText: string, routes: Node) {
 
 function getChangesForRoutes(name: string, routes: Node, source: SourceFile) {
   const componentName = `${strings.capitalize(name)}Component`;
-  const fullText = source.getText();
   const routesText = routes.getText();
   const separator = isEmptyRoutes(routesText) ? ', ' : '';
-  const position = getPosition(fullText, routes);
+  const position = getPosition(source.getText(), routes);
 
   return findComponentInRoutes(routesText, componentName) ? {} : {
     position: position,
@@ -116,11 +115,11 @@ function getProjectName(host: Tree, options: any) {
   return projectName && projects.indexOf(projectName) ? projectName : projects[0];
 }
 
-function getModuleName(addToRoute: boolean, moduleName: string) {
-  if(moduleName && !addToRoute) {
+function getModuleName(addRoute: boolean, moduleName: string) {
+  if(moduleName && !addRoute) {
     return moduleName;
   }
-  if(addToRoute) {
+  if(addRoute) {
     return 'app-routing';
   }
 }
@@ -129,14 +128,14 @@ export default function (options: any): Rule {
   return (host: Tree) => {
     const name = options.name;
     const path = getPathForView(name);
-    const addToRoute = options.addToRoutes;
+    const addRoute = options.addRoute;
 
     options.project = getProjectName(host, options);
-    options.module = getModuleName(addToRoute, options.module);
+    options.module = getModuleName(addRoute, options.module);
     options.name = path;
 
     let rules = [schematic('component', { ...options })];
-    if(options.addToRoutes) {
+    if(addRoute) {
       rules.push(addViewToRouting(name, options.project));
     }
     return chain(rules);

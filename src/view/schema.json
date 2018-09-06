@@ -12,7 +12,7 @@
         "index": 0
       }
     },
-    "addToRoutes": {
+    "addRoute": {
       "type": "boolean",
       "description": "Specifies if the component will be in the navigation.",
       "default": false

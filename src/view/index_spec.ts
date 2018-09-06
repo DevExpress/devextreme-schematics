@@ -52,7 +52,7 @@ describe('view', () => {
     });
 
     it('should add view to routes', () => {
-      const options = { ...defaultOptions, addToRoutes: true };
+      const options = { ...defaultOptions, addRoute: true };
 
       const runner = new SchematicTestRunner('schematics', collectionPath);
       const tree = runner.runSchematic('view', options, appTree);
