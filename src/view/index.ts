@@ -20,14 +20,6 @@ import {
 
 import { strings } from '@angular-devkit/core';
 
-function getProjectName(host: Tree, options: any) {
-  const projectName = options.project;
-  const workspace = getWorkspace(host);
-  const projects = Object.keys(workspace.projects);
-
-  return projectName && projects.indexOf(projectName) ? projectName : projects[0];
-}
-
 function getPathToRoutingModule(host: Tree, projectName: string) {
   const workspace = getWorkspace(host);
   const root = workspace.projects[projectName].root || '';
@@ -35,16 +27,37 @@ function getPathToRoutingModule(host: Tree, projectName: string) {
   return root + 'src/app/app-routing.module.ts';
 }
 
-function findComponentInRoutes(routes: Node, componentName: string) {
-  return routes.getText().indexOf(componentName) !== -1;
+function findComponentInRoutes(text: string, componentName: string) {
+  return text.indexOf(componentName) !== -1;
 }
 
-function getChangesForRoutes(name: string, routes: Node) {
-  const componentName = `${strings.capitalize(name)}Component`;
+function isEmptyRoutes(text: string) {
+  return text.search(/}\s*,?\s*]/g) !== -1;
+}
 
-  return findComponentInRoutes(routes, componentName) ? {} : {
-    position: routes.getEnd() - 2,
-    toAdd: `, {
+function getPosition(fullText: string, routes: Node) {
+  let indexOfRoutesEnd = routes.getEnd();
+  let positionIndex;
+  while (!positionIndex) {
+    if(fullText[indexOfRoutesEnd] === ']') {
+      positionIndex = indexOfRoutesEnd;
+    }
+    indexOfRoutesEnd--;
+  }
+
+  return positionIndex;
+}
+
+function getChangesForRoutes(name: string, routes: Node, source: SourceFile) {
+  const componentName = `${strings.capitalize(name)}Component`;
+  const fullText = source.getText();
+  const routesText = routes.getText();
+  const separator = isEmptyRoutes(routesText) ? ', ' : '';
+  const position = getPosition(fullText, routes);
+
+  return findComponentInRoutes(routesText, componentName) ? {} : {
+    position: position,
+    toAdd: `${separator}{
       path: '${strings.camelize(name)}',
       component: ${componentName},
       data: {
@@ -52,13 +65,6 @@ function getChangesForRoutes(name: string, routes: Node) {
       }
     }`
   };
-}
-
-function getPathForView(name: string) {
-  if(name.includes('/')) {
-    return name;
-  }
-  return 'pages/' + name;
 }
 
 function isRouteVariable(node: Node, text: string) {
@@ -86,7 +92,7 @@ function addViewToRouting(name: string, projectName: string) {
 
     routes = findRoutesInSource(source);
 
-    const changes = getChangesForRoutes(name, routes);
+    const changes = getChangesForRoutes(name, routes, source);
 
     if(changes.position && changes.toAdd) {
        const recorder = host.beginUpdate(routingModulePath);
@@ -98,13 +104,38 @@ function addViewToRouting(name: string, projectName: string) {
   }
 }
 
+function getPathForView(name: string) {
+  if(name.includes('/')) {
+    return name;
+  }
+  return 'pages/' + name;
+}
+
+function getProjectName(host: Tree, options: any) {
+  const projectName = options.project;
+  const workspace = getWorkspace(host);
+  const projects = Object.keys(workspace.projects);
+
+  return projectName && projects.indexOf(projectName) ? projectName : projects[0];
+}
+
+function getModuleName(addToRoute: boolean, moduleName: string) {
+  if(moduleName) {
+    return moduleName;
+  }
+  if(addToRoute) {
+    return 'app-routing';
+  }
+}
+
 export default function (options: any): Rule {
   return (host: Tree) => {
     const name = options.name;
     const path = getPathForView(name);
+    const addToRoute = options.addToRoutes;
 
     options.project = getProjectName(host, options);
-    options.module = 'app-routing';
+    options.module = getModuleName(addToRoute, options.module);
     options.name = path;
 
     return chain([

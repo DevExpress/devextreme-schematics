@@ -56,7 +56,6 @@ describe('view', () => {
 
       const runner = new SchematicTestRunner('schematics', collectionPath);
       const tree = runner.runSchematic('view', options, appTree);
-
       const moduleContent = tree.readContent('/testApp/src/app/app-routing.module.ts');
 
       expect(moduleContent).toMatch(/component: TestComponent/);
