@@ -2,7 +2,6 @@ import {
   Rule,
   chain,
   Tree,
-  noop,
   schematic
 } from '@angular-devkit/schematics';
 
@@ -138,9 +137,10 @@ export default function (options: any): Rule {
     options.module = getModuleName(addToRoute, options.module);
     options.name = path;
 
-    return chain([
-      schematic('component', { ...options }),
-      options.addToRoutes ? addViewToRouting(name, options.project) : noop()
-    ]);
+    let rules = [schematic('component', { ...options })];
+    if(options.addToRoutes) {
+      rules.push(addViewToRouting(name, options.project));
+    }
+    return chain(rules);
   }
 }
