@@ -119,7 +119,7 @@ function getProjectName(host: Tree, options: any) {
 }
 
 function getModuleName(addToRoute: boolean, moduleName: string) {
-  if(moduleName) {
+  if(moduleName && !addToRoute) {
     return moduleName;
   }
   if(addToRoute) {
