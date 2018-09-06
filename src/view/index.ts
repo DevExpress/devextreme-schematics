@@ -58,7 +58,6 @@ function getPathForView(name: string) {
   if(name.includes('/')) {
     return name;
   }
-
   return 'pages/' + name;
 }
 
@@ -72,7 +71,6 @@ function isRouteVariable(node: Node, text: string) {
 function findRoutesInSource(source: SourceFile) {
   return source.forEachChild((node) => {
     const text = node.getText();
-
     if(isRouteVariable(node, text)) {
       return node;
     }
@@ -96,10 +94,8 @@ function addViewToRouting(name: string, projectName: string) {
        recorder.insertLeft(changes.position, changes.toAdd);
        host.commitUpdate(recorder);
     }
-
     return host;
   }
-
 }
 
 export default function (options: any): Rule {
