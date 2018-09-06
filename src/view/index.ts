@@ -67,10 +67,8 @@ function getChangesForRoutes(name: string, routes: Node, source: SourceFile) {
 }
 
 function isRouteVariable(node: Node, text: string) {
-  const routesType = ': Routes';
-
   return node.kind === SyntaxKind.VariableStatement &&
-    text.indexOf(routesType) !== -1;
+    text.search(/\:\s*Routes/) !== -1;
 }
 
 function findRoutesInSource(source: SourceFile) {
