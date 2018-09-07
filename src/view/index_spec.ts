@@ -58,6 +58,7 @@ describe('view', () => {
       const tree = runner.runSchematic('view', options, appTree);
       const moduleContent = tree.readContent('/testApp/src/app/app-routing.module.ts');
 
+      expect(moduleContent).toMatch(/Routes = \[{/);
       expect(moduleContent).toMatch(/component: TestComponent/);
       expect(moduleContent).toMatch(/path: 'test'/);
       expect(moduleContent).toMatch(/title: 'Test'/);
