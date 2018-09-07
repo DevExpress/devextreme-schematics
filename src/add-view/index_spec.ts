@@ -43,12 +43,12 @@ describe('view', () => {
       appTree = schematicRunner.runSchematic('application', appOptions, appTree);
     });
 
-    it('should create view in pages folder', () => {
+    it('should create new view', () => {
       const runner = new SchematicTestRunner('schematics', collectionPath);
       const tree = runner.runSchematic('add-view', componentOptions, appTree);
 
-      expect(tree.files).toContain('/testApp/src/app/pages/test/test.component.ts');
-      expect(tree.files).toContain('/testApp/src/app/pages/test/test.component.html');
+      expect(tree.files).toContain('/testApp/src/app/test/test.component.ts');
+      expect(tree.files).toContain('/testApp/src/app/test/test.component.html');
     });
 
     it('should add view to default routing module', () => {

@@ -81,7 +81,7 @@ function addViewToRouting(name: string, projectName: string, moduleName: string)
       throw new SchematicsException('Specified module does not exist.');
     }
 
-    const serializedRouting = host.read(routingModulePath)!.toString('utf8');
+    const serializedRouting = host.read(routingModulePath)!.toString();
     const source = createSourceFile(routingModulePath, serializedRouting, ScriptTarget.Latest, true);
 
     const routes = findRoutesInSource(source);
@@ -102,13 +102,6 @@ function addViewToRouting(name: string, projectName: string, moduleName: string)
   }
 }
 
-function getPathForView(name: string) {
-  if(name.includes('/')) {
-    return name;
-  }
-  return 'pages/' + name;
-}
-
 function getProjectName(host: Tree, options: any) {
   const projectName = options.project;
   const workspace = getWorkspace(host);
@@ -126,17 +119,14 @@ function getModuleName(addRoute: boolean, moduleName: string) {
 
 export default function (options: any): Rule {
   return (host: Tree) => {
-    const name = options.name;
-    const path = getPathForView(name);
     const addRoute = options.addRoute;
 
     options.project = getProjectName(host, options);
     options.module = getModuleName(addRoute, options.module);
-    options.name = path;
 
     let rules = [schematic('component', { ...options })];
     if(addRoute) {
-      rules.push(addViewToRouting(name, options.project, options.module));
+      rules.push(addViewToRouting(options.name, options.project, options.module));
     }
     return chain(rules);
   }
