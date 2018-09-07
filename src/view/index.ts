@@ -2,12 +2,17 @@ import {
   Rule,
   chain,
   Tree,
+  SchematicsException,
   schematic
 } from '@angular-devkit/schematics';
 
 import {
   getWorkspace
 } from '@schematics/angular/utility/config';
+
+import {
+  findModuleFromOptions
+} from '@schematics/angular/utility/find-module';
 
 import {
   Node,
@@ -18,13 +23,6 @@ import {
 } from 'typescript';
 
 import { strings } from '@angular-devkit/core';
-
-function getPathToRoutingModule(host: Tree, projectName: string) {
-  const workspace = getWorkspace(host);
-  const root = workspace.projects[projectName].root || '';
-
-  return root + 'src/app/app-routing.module.ts';
-}
 
 function findComponentInRoutes(text: string, componentName: string) {
   return text.indexOf(componentName) !== -1;
@@ -43,7 +41,6 @@ function getPosition(fullText: string, routes: Node) {
     }
     indexOfRoutesEnd--;
   }
-
   return positionIndex;
 }
 
@@ -65,6 +62,15 @@ function getChangesForRoutes(name: string, routes: Node, source: SourceFile) {
   };
 }
 
+function getPathToRoutingModule(host: Tree, projectName: string, moduleName: string) {
+  const project = getWorkspace(host).projects[projectName];
+  let rootPath = project.sourceRoot ? project.sourceRoot : project.root;
+
+  rootPath =  rootPath ? `${rootPath}/app/` : 'src/app';
+
+  return findModuleFromOptions(host, { name: moduleName, path: rootPath, module: moduleName });
+}
+
 function isRouteVariable(node: Node, text: string) {
   return node.kind === SyntaxKind.VariableStatement &&
     text.search(/\:\s*Routes/) !== -1;
@@ -79,14 +85,23 @@ function findRoutesInSource(source: SourceFile) {
   });
 }
 
-function addViewToRouting(name: string, projectName: string) {
+function addViewToRouting(name: string, projectName: string, moduleName: string) {
   return (host: Tree) => {
     let routes: any;
-    const routingModulePath = getPathToRoutingModule(host, projectName);
+    const routingModulePath = getPathToRoutingModule(host, projectName, moduleName);
+
+    if (!routingModulePath) {
+      throw new SchematicsException('Specified module does not exist.');
+    }
+
     let serializedRouting = host.read(routingModulePath)!.toString('utf8');
     const source = createSourceFile(routingModulePath, serializedRouting, ScriptTarget.Latest, true);
 
     routes = findRoutesInSource(source);
+
+    if (!routes) {
+      throw new SchematicsException('No routes found.');
+    }
 
     const changes = getChangesForRoutes(name, routes, source);
 
@@ -116,12 +131,10 @@ function getProjectName(host: Tree, options: any) {
 }
 
 function getModuleName(addRoute: boolean, moduleName: string) {
-  if(moduleName && !addRoute) {
-    return moduleName;
-  }
-  if(addRoute) {
+  if(!moduleName && addRoute) {
     return 'app-routing';
   }
+  return moduleName;
 }
 
 export default function (options: any): Rule {
@@ -136,7 +149,7 @@ export default function (options: any): Rule {
 
     let rules = [schematic('component', { ...options })];
     if(addRoute) {
-      rules.push(addViewToRouting(name, options.project));
+      rules.push(addViewToRouting(name, options.project, options.module));
     }
     return chain(rules);
   }
