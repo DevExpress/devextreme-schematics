@@ -24,6 +24,10 @@ import {
 
 import { strings } from '@angular-devkit/core';
 
+import {
+  getProjectName
+} from '../utility/get-project';
+
 function findComponentInRoutes(text: string, componentName: string) {
   return text.indexOf(componentName) !== -1;
 }
@@ -100,14 +104,6 @@ function addViewToRouting(name: string, projectName: string, moduleName: string)
     }
     return host;
   }
-}
-
-function getProjectName(host: Tree, options: any) {
-  const projectName = options.project;
-  const workspace = getWorkspace(host);
-  const projects = Object.keys(workspace.projects);
-
-  return projectName && projects.indexOf(projectName) ? projectName : projects[0];
 }
 
 function getModuleName(addRoute: boolean, moduleName: string) {
