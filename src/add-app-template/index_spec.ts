@@ -1,17 +1,38 @@
-import { Tree } from '@angular-devkit/schematics';
-import { SchematicTestRunner } from '@angular-devkit/schematics/testing';
+import { SchematicTestRunner, UnitTestTree } from '@angular-devkit/schematics/testing';
+import { Schema as WorkspaceOptions } from '@schematics/angular/workspace/schema';
 import * as path from 'path';
-
 
 const collectionPath = path.join(__dirname, '../collection.json');
 
+const appOptions: any = {
+  name: 'testApp',
+  inlineStyle: false,
+  inlineTemplate: false,
+  routing: true,
+  style: 'css',
+  skipTests: false,
+  skipPackageJson: false
+};
 
-describe('devextreme-template', () => {
-  it('works', () => {
+const workspaceOptions: WorkspaceOptions = {
+  name: 'workspace',
+  version: '6.0.0'
+};
+
+const schematicRunner = new SchematicTestRunner('@schematics/angular', require.resolve('../../node_modules/@schematics/angular/collection.json'));
+let appTree: UnitTestTree;
+
+beforeEach(() => {
+  appTree = schematicRunner.runSchematic('workspace', workspaceOptions);
+  appTree = schematicRunner.runSchematic('application', appOptions, appTree);
+});
+
+describe('add-app-template', () => {
+  it('should add DevExtreme', () => {
     const runner = new SchematicTestRunner('schematics', collectionPath);
-    const tree = runner.runSchematic('new-angular-app', { name: "testApp"}, Tree.empty());
+    const tree = runner.runSchematic('add-app-template', { }, appTree);
+    const packageConfig = JSON.parse(tree.readContent('package.json'));
 
-    expect(tree.files).toContain("/testApp/angular.json");
-    expect(tree.files).toContain("/testApp/src/app/app.module.ts");
+    expect('devextreme' in packageConfig.dependencies).toBe(true);
   });
 });

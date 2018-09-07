@@ -1,6 +1,6 @@
 import { Rule, SchematicContext, Tree } from '@angular-devkit/schematics';
 
-export function addSampleViews(): Rule {
+export default function(): Rule {
   return (tree: Tree, _context: SchematicContext) => {
     return tree;
   };
