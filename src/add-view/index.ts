@@ -32,15 +32,11 @@ function isEmptyRoutes(text: string) {
   return text.search(/}\s*,?\s*]/g) !== -1;
 }
 
-function getPosition(fullText: string, routes: Node) {
-  return fullText.lastIndexOf(']', routes.getEnd());
-}
-
 function getChangesForRoutes(name: string, routes: Node, source: SourceFile) {
   const componentName = `${strings.capitalize(name)}Component`;
   const routesText = routes.getText();
   const separator = isEmptyRoutes(routesText) ? ', ' : '';
-  const position = getPosition(source.getText(), routes);
+  const position = source.getText().lastIndexOf(']', routes.getEnd());
 
   return findComponentInRoutes(routesText, componentName) ? {} : {
     position: position,
