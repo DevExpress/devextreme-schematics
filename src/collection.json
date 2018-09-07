@@ -20,9 +20,10 @@
       "description": "Include a DevExtreme Layout Template in the Anular application.",
       "factory": "./add-app-template/index"
     },
-    "view": {
-      "description": "Add a view to app-template.",
-      "factory": "./view/index"
+    "add-view": {
+      "description": "Add a new view to app-template.",
+      "factory": "./add-view/index",
+      "schema": "./add-view/schema.json"
     }
   }
 }
