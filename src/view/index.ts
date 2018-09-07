@@ -87,17 +87,16 @@ function findRoutesInSource(source: SourceFile) {
 
 function addViewToRouting(name: string, projectName: string, moduleName: string) {
   return (host: Tree) => {
-    let routes: any;
     const routingModulePath = getPathToRoutingModule(host, projectName, moduleName);
 
     if (!routingModulePath) {
       throw new SchematicsException('Specified module does not exist.');
     }
 
-    let serializedRouting = host.read(routingModulePath)!.toString('utf8');
+    const serializedRouting = host.read(routingModulePath)!.toString('utf8');
     const source = createSourceFile(routingModulePath, serializedRouting, ScriptTarget.Latest, true);
 
-    routes = findRoutesInSource(source);
+    const routes = findRoutesInSource(source);
 
     if (!routes) {
       throw new SchematicsException('No routes found.');
