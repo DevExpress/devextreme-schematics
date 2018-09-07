@@ -8,9 +8,10 @@
       "description": "A new Angular application with DevExtreme",
       "factory": "./new-angular-app/index"
     },
-    "view": {
-      "description": "Add a view to app-template.",
-      "factory": "./view/index"
+    "add-view": {
+      "description": "Add a new view to app-template.",
+      "factory": "./add-view/index",
+      "schema": "./add-view/schema.json"
     }
   }
 }

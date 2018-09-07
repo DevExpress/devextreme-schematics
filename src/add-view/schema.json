@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "id": "SchematicsDevextremeAddView",
+  "title": "Devextreme Add View Options Schema",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "The name of the view.",
+      "$default": {
+        "$source": "argv",
+        "index": 0
+      }
+    },
+    "addRoute": {
+      "type": "boolean",
+      "description": "Specifies if the new view will be in routes.",
+      "default": false
+    }
+  }
+}
