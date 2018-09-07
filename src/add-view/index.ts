@@ -33,8 +33,7 @@ function isEmptyRoutes(text: string) {
 }
 
 function getPosition(fullText: string, routes: Node) {
-  let indexOfRoutesEnd = routes.getEnd();
-  return fullText.lastIndexOf(']', indexOfRoutesEnd);
+  return fullText.lastIndexOf(']', routes.getEnd());
 }
 
 function getChangesForRoutes(name: string, routes: Node, source: SourceFile) {
