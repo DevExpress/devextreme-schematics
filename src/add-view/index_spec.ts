@@ -22,7 +22,7 @@ describe('view', () => {
       version: '6.0.0'
     };
 
-    const defaultOptions: ComponentOptions = {
+    const componentOptions: ComponentOptions = {
       name: 'test',
       inlineStyle: false,
       inlineTemplate: false,
@@ -45,17 +45,17 @@ describe('view', () => {
 
     it('should create view in pages folder', () => {
       const runner = new SchematicTestRunner('schematics', collectionPath);
-      const tree = runner.runSchematic('view', defaultOptions, appTree);
+      const tree = runner.runSchematic('add-view', componentOptions, appTree);
 
       expect(tree.files).toContain('/testApp/src/app/pages/test/test.component.ts');
       expect(tree.files).toContain('/testApp/src/app/pages/test/test.component.html');
     });
 
     it('should add view to default routing module', () => {
-      const options = { ...defaultOptions, addRoute: true };
+      const options = { ...componentOptions, addRoute: true };
 
       const runner = new SchematicTestRunner('schematics', collectionPath);
-      const tree = runner.runSchematic('view', options, appTree);
+      const tree = runner.runSchematic('add-view', options, appTree);
       const moduleContent = tree.readContent('/testApp/src/app/app-routing.module.ts');
 
       expect(moduleContent).toMatch(/Routes = \[{/);
@@ -65,11 +65,11 @@ describe('view', () => {
     });
 
     it('should add view to other routing module', () => {
-      const options = { ...defaultOptions, addRoute: true, module: 'test/test-routing' };
+      const options = { ...componentOptions, addRoute: true, module: 'test/test-routing' };
 
       const runner = new SchematicTestRunner('schematics', collectionPath);
       let tree = runner.runSchematic('module', { name: 'test', routing: true, project: 'testApp' }, appTree);
-      tree = runner.runSchematic('view', options, tree);
+      tree = runner.runSchematic('add-view', options, tree);
 
       const moduleContent = tree.readContent('/testApp/src/app/test/test-routing.module.ts');
 

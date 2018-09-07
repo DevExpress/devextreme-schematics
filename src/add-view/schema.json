@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/schema",
-  "id": "SchematicsDevextremeView",
-  "title": "Devextreme View Options Schema",
+  "id": "SchematicsDevextremeAddView",
+  "title": "Devextreme Add View Options Schema",
   "type": "object",
   "properties": {
     "name": {
@@ -14,7 +14,7 @@
     },
     "addRoute": {
       "type": "boolean",
-      "description": "Specifies if the component will be in the navigation.",
+      "description": "Specifies if the new view will be in routes.",
       "default": false
     }
   }
