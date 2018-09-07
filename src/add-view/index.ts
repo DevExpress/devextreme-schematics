@@ -34,14 +34,7 @@ function isEmptyRoutes(text: string) {
 
 function getPosition(fullText: string, routes: Node) {
   let indexOfRoutesEnd = routes.getEnd();
-  let positionIndex;
-  while (!positionIndex) {
-    if(fullText[indexOfRoutesEnd] === ']') {
-      positionIndex = indexOfRoutesEnd;
-    }
-    indexOfRoutesEnd--;
-  }
-  return positionIndex;
+  return fullText.lastIndexOf(']', indexOfRoutesEnd);
 }
 
 function getChangesForRoutes(name: string, routes: Node, source: SourceFile) {
@@ -64,7 +57,7 @@ function getChangesForRoutes(name: string, routes: Node, source: SourceFile) {
 
 function getPathToRoutingModule(host: Tree, projectName: string, moduleName: string) {
   const project = getWorkspace(host).projects[projectName];
-  let rootPath = project.sourceRoot ? project.sourceRoot : project.root;
+  let rootPath = project.sourceRoot || project.root;
 
   rootPath =  rootPath ? `${rootPath}/app/` : 'src/app';
 
