@@ -17,6 +17,11 @@
     "project": {
       "type": "string",
       "description": "The name of project to modify"
+    },
+    "empty": {
+      "type": "boolean",
+      "description": "Skip sample views generation",
+      "default": false
     }
   }
 }
