@@ -6,12 +6,11 @@ import * as path from 'path';
 const collectionPath = path.join(__dirname, '../collection.json');
 
 
-describe('devextreme-template', () => {
+describe('add-sample-views', () => {
   it('works', () => {
     const runner = new SchematicTestRunner('schematics', collectionPath);
-    const tree = runner.runSchematic('new-angular-app', { name: "testApp"}, Tree.empty());
+    const tree = runner.runSchematic('add-sample-views', {}, Tree.empty());
 
-    expect(tree.files).toContain("/testApp/angular.json");
-    expect(tree.files).toContain("/testApp/src/app/app.module.ts");
+    expect(tree.files).toEqual([]);
   });
 });

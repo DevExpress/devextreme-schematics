@@ -4,9 +4,22 @@
     "@schematics/angular"
   ],
   "schematics": {
-    "new-angular-app": {
-      "description": "A new Angular application with DevExtreme",
-      "factory": "./new-angular-app/index"
+    "add-app-template": {
+      "description": "Include a DevExtreme Layout Template in the Anular application.",
+      "factory": "./add-app-template/index",
+      "schema": "./add-app-template/schema.json"
+    },
+    "add-devextreme": {
+      "description": "Add DevExtreme to the Angular application.",
+      "factory": "./add-devextreme/index"
+    },
+    "add-layout": {
+      "description": "Add DevExtreme Layout to the Angular application.",
+      "factory": "./add-layout/index"
+    },
+    "add-sample-views": {
+      "description": "Add Sample views to the Angular application.",
+      "factory": "./add-sample-views/index"
     },
     "add-view": {
       "description": "Add a new view to app-template.",
