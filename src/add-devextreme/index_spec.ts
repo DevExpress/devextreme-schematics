@@ -37,7 +37,8 @@ describe('add-devextreme', () => {
     const tree = runner.runSchematic('add-devextreme', {}, appTree);
     const packageConfig = JSON.parse(tree.readContent('package.json'));
 
-    expect(packageConfig.dependencies.devextreme).toBe(latestVersions.DevExtreme);
+    expect(packageConfig.dependencies['devextreme']).toBe(latestVersions['devextreme']);
+    expect(packageConfig.dependencies['devextreme-angular']).toBe(latestVersions['devextreme-angular']);
   });
 
   it('should add devextreme dependency (custom)', () => {

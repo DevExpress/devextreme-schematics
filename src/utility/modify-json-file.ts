@@ -1,7 +1,7 @@
 import { Tree } from '@angular-devkit/schematics';
 
 export function modifyJSONFile (host: Tree, path: string, callback: (obj: any) => any) {
-  const serializedConfig = host.read(path)!.toString('utf-8');
+  const serializedConfig = host.read(path)!.toString();
   let obj = JSON.parse(serializedConfig);
 
   obj = callback(obj);
@@ -10,4 +10,3 @@ export function modifyJSONFile (host: Tree, path: string, callback: (obj: any) =
 
   return host;
 };
-  

@@ -1,4 +1,5 @@
 // TODO: implement
 export const latestVersions = {
-  DevExtreme: '18.2-unstable'
+  devextreme: '18.2-unstable',
+  "devextreme-angular": '18.2-unstable'
 };

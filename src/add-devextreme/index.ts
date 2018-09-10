@@ -34,7 +34,12 @@ function addDevExtremeDependency(host: Tree, options: any) {
   addPackageJsonDependency(host, {
     type: NodeDependencyType.Default,
     name: 'devextreme',
-    version: options.dxversion || latestVersions.DevExtreme
+    version: options.dxversion || latestVersions['devextreme']
+  })
+  addPackageJsonDependency(host, {
+    type: NodeDependencyType.Default,
+    name: 'devextreme-angular',
+    version: options.dxversion || latestVersions['devextreme-angular']
   })
   return host;
 }

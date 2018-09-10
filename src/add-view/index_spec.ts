@@ -7,13 +7,13 @@ const collectionPath = path.join(__dirname, '../collection.json');
 
 describe('view', () => {
   const appOptions: any = {
-      name: 'testApp',
-      inlineStyle: false,
-      inlineTemplate: false,
-      routing: true,
-      style: 'css',
-      skipTests: false,
-      skipPackageJson: false
+    name: 'testApp',
+    inlineStyle: false,
+    inlineTemplate: false,
+    routing: true,
+    style: 'css',
+    skipTests: false,
+    skipPackageJson: false
   };
 
   const workspaceOptions: WorkspaceOptions = {
