@@ -32,29 +32,54 @@ function findComponentInRoutes(text: string, componentName: string) {
   return text.indexOf(componentName) !== -1;
 }
 
-function isEmptyRoutes(text: string) {
-  return text.search(/}\s*,?\s*]/g) !== -1;
+function getSeparator(text: string) {
+  const isEmpty = text.search(/}\s*,?\s*]/g) !== -1;
+  return isEmpty ? ', ' : '';
+}
+
+function getPosition(source: SourceFile, endIndex: number) {
+  return source.getText().lastIndexOf(']', endIndex);
+}
+
+function getChangesForNavigation(name: string, icon: string, source: SourceFile) {
+  const separator = getSeparator(source.getText());
+
+  return {
+    position: getPosition(source, source.getEnd()),
+    toAdd: `${separator}{
+        text: '${strings.capitalize(name)}',
+        path: '${strings.camelize(name)}',
+        icon: '${icon}'
+    }`
+  };
 }
 
 function getChangesForRoutes(name: string, routes: Node, source: SourceFile) {
   const componentName = `${strings.capitalize(name)}Component`;
   const routesText = routes.getText();
-  const separator = isEmptyRoutes(routesText) ? ', ' : '';
-  const position = source.getText().lastIndexOf(']', routes.getEnd());
+  const separator = getSeparator(routesText);
 
   return findComponentInRoutes(routesText, componentName) ? {} : {
-    position: position,
+    position: getPosition(source, routes.getEnd()),
     toAdd: `${separator}{
-      path: '${strings.camelize(name)}',
-      component: ${componentName},
-      data: {
-        title: '${strings.capitalize(name)}'
-      }
+        path: '${strings.camelize(name)}',
+        component: ${componentName}
     }`
   };
 }
 
-function getPathToRoutingModule(host: Tree, projectName: string, moduleName: string) {
+function applyChanges(host: Tree, changes: any, filePath: string) {
+  if(changes.position && changes.toAdd) {
+    const recorder = host.beginUpdate(filePath);
+
+    recorder.insertLeft(changes.position, changes.toAdd);
+    host.commitUpdate(recorder);
+  }
+
+  return host;
+}
+
+function getPathToFile(host: Tree, projectName: string, moduleName: string) {
   const project = getWorkspace(host).projects[projectName];
   let rootPath = project.sourceRoot || project.root;
 
@@ -77,32 +102,46 @@ function findRoutesInSource(source: SourceFile) {
   });
 }
 
-function addViewToRouting(name: string, projectName: string, moduleName: string) {
+function getSourceFile(host: Tree, filePath: string) {
+  const serializedRouting = host.read(filePath)!.toString();
+  return createSourceFile(filePath, serializedRouting, ScriptTarget.Latest, true);
+}
+
+function addViewToNavigation(options: any) {
   return (host: Tree) => {
-    const routingModulePath = getPathToRoutingModule(host, projectName, moduleName);
+    const navigationName = 'app-navigation'
+    const navigationFilePath = getPathToFile(host, options.project, navigationName);
+
+    if (!navigationFilePath) {
+      throw new SchematicsException('Specified module does not exist.');
+    }
+
+    const source = getSourceFile(host, navigationFilePath);
+    const changes = getChangesForNavigation(options.name, options.icon, source);
+
+
+    return applyChanges(host, changes, navigationFilePath);;
+  }
+}
+
+function addViewToRouting(options: any) {
+  return (host: Tree) => {
+    const routingModulePath = getPathToFile(host, options.project, options.module);
 
     if (!routingModulePath) {
       throw new SchematicsException('Specified module does not exist.');
     }
 
-    const serializedRouting = host.read(routingModulePath)!.toString();
-    const source = createSourceFile(routingModulePath, serializedRouting, ScriptTarget.Latest, true);
-
+    const source = getSourceFile(host, routingModulePath);
     const routes = findRoutesInSource(source);
 
     if (!routes) {
       throw new SchematicsException('No routes found.');
     }
 
-    const changes = getChangesForRoutes(name, routes, source);
+    const changes = getChangesForRoutes(options.name, routes, source);
 
-    if(changes.position && changes.toAdd) {
-       const recorder = host.beginUpdate(routingModulePath);
-
-       recorder.insertLeft(changes.position, changes.toAdd);
-       host.commitUpdate(recorder);
-    }
-    return host;
+    return applyChanges(host, changes, routingModulePath);
   }
 }
 
@@ -117,12 +156,13 @@ export default function (options: any): Rule {
   return (host: Tree) => {
     const addRoute = options.addRoute;
 
-    options.project = getProjectName(host, options);
-    options.module = getModuleName(addRoute, options.module);
+    const project = getProjectName(host, options);
+    const module = getModuleName(addRoute, options.module);
 
-    let rules = [schematic('component', { ...options })];
+    let rules = [schematic('component', { name: options.name, project: project, module: module })];
     if(addRoute) {
-      rules.push(addViewToRouting(options.name, options.project, options.module));
+      rules.push(addViewToRouting({ name: options.name, project: project, module: module }));
+      rules.push(addViewToNavigation({ name: options.name, icon: options.icon, project: project }));
     }
     return chain(rules);
   }
