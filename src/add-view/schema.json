@@ -16,6 +16,32 @@
       "type": "boolean",
       "description": "Specifies if the new view will be in routes.",
       "default": false
+    },
+    "icon": {
+      "type": "string",
+      "description": "The name of icon."
+    },
+    "module": {
+      "type": "string",
+      "description": "Allows specification of the declaring module."
+    },
+    "project": {
+      "type": "string",
+      "description": "The name of the project."
+    },
+    "spec": {
+      "type": "boolean",
+      "description": "Specifies if a spec file is generated.",
+      "default": true
+    },
+    "inlineStyle": {
+      "description": "Specifies if the style will be in the ts file.",
+      "type": "boolean",
+      "default": false
+    },
+    "prefix": {
+      "type": "string",
+      "description": "The prefix to apply to generated selectors."
     }
   }
 }
