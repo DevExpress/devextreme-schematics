@@ -113,7 +113,7 @@ function getSourceFile(host: Tree, filePath: string) {
 
 function addViewToNavigation(options: any) {
   return (host: Tree) => {
-    const navigationName = 'app-navigation'
+    const navigationName = 'app-navigation';
     const navigationFilePath = getPathToFile(host, options.project, navigationName);
 
     if (navigationFilePath) {
