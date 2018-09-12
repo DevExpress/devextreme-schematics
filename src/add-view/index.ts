@@ -37,7 +37,7 @@ function getSeparator(text: string) {
   return isEmpty ? ', ' : '';
 }
 
-function getPosition(source: SourceFile, endIndex: number) {
+function getPositionInFile(source: SourceFile, endIndex: number) {
   return source.getText().lastIndexOf(']', endIndex);
 }
 
@@ -45,7 +45,7 @@ function getChangesForNavigation(name: string, icon: string, source: SourceFile)
   const separator = getSeparator(source.getText());
 
   return {
-    position: getPosition(source, source.getEnd()),
+    position: getPositionInFile(source, source.getEnd()),
     toAdd: `${separator}{
         text: '${strings.capitalize(name)}',
         path: '${strings.camelize(name)}',
@@ -60,7 +60,7 @@ function getChangesForRoutes(name: string, routes: Node, source: SourceFile) {
   const separator = getSeparator(routesText);
 
   return findComponentInRoutes(routesText, componentName) ? {} : {
-    position: getPosition(source, routes.getEnd()),
+    position: getPositionInFile(source, routes.getEnd()),
     toAdd: `${separator}{
         path: '${strings.camelize(name)}',
         component: ${componentName}
@@ -158,18 +158,19 @@ export default function (options: any): Rule {
     const addRoute = options.addRoute;
     const project = getProjectName(host, options);
     const module = getModuleName(addRoute, options.module);
+    const name = options.name;
 
     let rules = [schematic('component', {
-      name: options.name,
-      project: project,
-      module: module,
+      name,
+      project,
+      module,
       spec: options.spec,
       inlineStyle: options.inlineStyle,
       prefix: options.prefix
     })];
     if(addRoute) {
-      rules.push(addViewToRouting({ name: options.name, project: project, module: module }));
-      rules.push(addViewToNavigation({ name: options.name, icon: options.icon, project: project }));
+      rules.push(addViewToRouting({ name, project, module }));
+      rules.push(addViewToNavigation({ name, icon: options.icon, project }));
     }
     return chain(rules);
   }
