@@ -60,7 +60,6 @@ describe('view', () => {
     expect(moduleContent).toMatch(/Routes = \[{/);
     expect(moduleContent).toMatch(/component: TestComponent/);
     expect(moduleContent).toMatch(/path: 'test'/);
-    expect(moduleContent).toMatch(/title: 'Test'/);
   });
 
   it('should add view to other routing module', () => {
@@ -74,6 +73,5 @@ describe('view', () => {
 
     expect(moduleContent).toMatch(/component: TestComponent/);
     expect(moduleContent).toMatch(/path: 'test'/);
-    expect(moduleContent).toMatch(/title: 'Test'/);
   });
 });

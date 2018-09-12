@@ -49,7 +49,7 @@ function getChangesForNavigation(name: string, icon: string, source: SourceFile)
     toAdd: `${separator}{
         text: '${strings.capitalize(name)}',
         path: '${strings.camelize(name)}',
-        icon: '${icon}'
+        icon: '${icon ? icon : ''}'
     }`
   };
 }
@@ -85,7 +85,11 @@ function getPathToFile(host: Tree, projectName: string, moduleName: string) {
 
   rootPath =  rootPath ? `${rootPath}/app/` : 'src/app';
 
-  return findModuleFromOptions(host, { name: moduleName, path: rootPath, module: moduleName });
+  try {
+    return findModuleFromOptions(host, { name: moduleName, path: rootPath, module: moduleName });
+  } catch (error) {
+    return;
+  }
 }
 
 function isRouteVariable(node: Node, text: string) {
@@ -112,15 +116,12 @@ function addViewToNavigation(options: any) {
     const navigationName = 'app-navigation'
     const navigationFilePath = getPathToFile(host, options.project, navigationName);
 
-    if (!navigationFilePath) {
-      throw new SchematicsException('Specified module does not exist.');
+    if (navigationFilePath) {
+      const source = getSourceFile(host, navigationFilePath);
+      const changes = getChangesForNavigation(options.name, options.icon, source);
+
+      return applyChanges(host, changes, navigationFilePath);
     }
-
-    const source = getSourceFile(host, navigationFilePath);
-    const changes = getChangesForNavigation(options.name, options.icon, source);
-
-
-    return applyChanges(host, changes, navigationFilePath);;
   }
 }
 
@@ -155,11 +156,17 @@ function getModuleName(addRoute: boolean, moduleName: string) {
 export default function (options: any): Rule {
   return (host: Tree) => {
     const addRoute = options.addRoute;
-
     const project = getProjectName(host, options);
     const module = getModuleName(addRoute, options.module);
 
-    let rules = [schematic('component', { name: options.name, project: project, module: module })];
+    let rules = [schematic('component', {
+      name: options.name,
+      project: project,
+      module: module,
+      spec: options.spec,
+      inlineStyle: options.inlineStyle,
+      prefix: options.prefix
+    })];
     if(addRoute) {
       rules.push(addViewToRouting({ name: options.name, project: project, module: module }));
       rules.push(addViewToNavigation({ name: options.name, icon: options.icon, project: project }));
