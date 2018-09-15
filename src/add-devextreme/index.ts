@@ -46,7 +46,7 @@ function addDevExtremeDependency(host: Tree, options: any) {
 
 function addDevExtremeCSS(host: Tree, options: any) {
   modifyJSONFile(host, './angular.json', config => {
-    const projectName = getProjectName(host, options);
+    const projectName = getProjectName(host, options.project);
     const projectBuildOptopns = config['projects'][projectName]['architect']['build']['options'];
     const projectSytles = projectBuildOptopns['styles'];
 

@@ -55,7 +55,7 @@ function getChangesForNavigation(name: string, icon: string, source: SourceFile)
 }
 
 function getChangesForRoutes(name: string, routes: Node, source: SourceFile) {
-  const componentName = `${strings.capitalize(name)}Component`;
+  const componentName = `${strings.classify(name)}Component`;
   const routesText = routes.getText();
   const separator = getSeparator(routesText);
 
@@ -125,7 +125,7 @@ function addViewToNavigation(options: any) {
   }
 }
 
-function addViewToRouting(options: any) {
+export function addViewToRouting(options: any) {
   return (host: Tree) => {
     const routingModulePath = getPathToFile(host, options.project, options.module);
 
