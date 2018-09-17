@@ -15,6 +15,12 @@ import {
 } from '@schematics/angular/utility/find-module';
 
 import {
+  getPositionInFile,
+  getSeparator,
+  applyChanges
+} from '../utility/change';
+
+import {
   Node,
   SourceFile,
   SyntaxKind,
@@ -26,26 +32,17 @@ import { strings } from '@angular-devkit/core';
 
 import {
   getProjectName
-} from '../utility/get-project';
+} from '../utility/project';
 
 function findComponentInRoutes(text: string, componentName: string) {
   return text.indexOf(componentName) !== -1;
-}
-
-function getSeparator(text: string) {
-  const isEmpty = text.search(/}\s*,?\s*]/g) !== -1;
-  return isEmpty ? ', ' : '';
-}
-
-function getPositionInFile(source: SourceFile, endIndex: number) {
-  return source.getText().lastIndexOf(']', endIndex);
 }
 
 function getChangesForNavigation(name: string, icon: string, source: SourceFile) {
   const separator = getSeparator(source.getText());
 
   return {
-    position: getPositionInFile(source, source.getEnd()),
+    pos: getPositionInFile(source, source.getEnd()),
     toAdd: `${separator}{
         text: '${strings.capitalize(name)}',
         path: '${strings.camelize(name)}',
@@ -60,23 +57,12 @@ function getChangesForRoutes(name: string, routes: Node, source: SourceFile) {
   const separator = getSeparator(routesText);
 
   return findComponentInRoutes(routesText, componentName) ? {} : {
-    position: getPositionInFile(source, routes.getEnd()),
+    pos: getPositionInFile(source, routes.getEnd()),
     toAdd: `${separator}{
         path: '${strings.camelize(name)}',
         component: ${componentName}
     }`
   };
-}
-
-function applyChanges(host: Tree, changes: any, filePath: string) {
-  if(changes.position && changes.toAdd) {
-    const recorder = host.beginUpdate(filePath);
-
-    recorder.insertLeft(changes.position, changes.toAdd);
-    host.commitUpdate(recorder);
-  }
-
-  return host;
 }
 
 function getPathToFile(host: Tree, projectName: string, moduleName: string) {
@@ -100,7 +86,7 @@ function isRouteVariable(node: Node, text: string) {
 function findRoutesInSource(source: SourceFile) {
   return source.forEachChild((node) => {
     const text = node.getText();
-    if(isRouteVariable(node, text)) {
+    if (isRouteVariable(node, text)) {
       return node;
     }
   });
@@ -147,7 +133,7 @@ export function addViewToRouting(options: any) {
 }
 
 function getModuleName(addRoute: boolean, moduleName: string) {
-  if(!moduleName && addRoute) {
+  if (!moduleName && addRoute) {
     return 'app-routing';
   }
   return moduleName;
@@ -168,7 +154,7 @@ export default function (options: any): Rule {
       inlineStyle: options.inlineStyle,
       prefix: options.prefix
     })];
-    if(addRoute) {
+    if (addRoute) {
       rules.push(addViewToRouting({ name, project, module }));
       rules.push(addViewToNavigation({ name, icon: options.icon, project }));
     }
