@@ -73,6 +73,11 @@ const navigations = `
 function addImportsToRoutingModule(isView: boolean, routingPath: string, options: any) {
   return (host: Tree) => {
     const source = getSourceFile(host, routingPath);
+
+    if(!source) {
+      return host;
+    }
+
     let changes;
     if (isView) {
       changes = addDeclarationToModule(source, routingPath, options.componentName, options.relativePath);
@@ -86,8 +91,12 @@ function addImportsToRoutingModule(isView: boolean, routingPath: string, options
 
 function insertNavigation(rootPath: string) {
   return (host: Tree) => {
-    const navigationPath = rootPath + '/app-navigation.ts';
+    const navigationPath = rootPath + 'app-navigation.ts';
     const navigationSource = getSourceFile(host, navigationPath);
+
+    if(!navigationSource) {
+      return host;
+    }
 
     const changes = {
       pos: getPositionInFile(navigationSource, navigationSource.getEnd()),
@@ -102,7 +111,7 @@ export default function(options: any): Rule {
   return (host: Tree, _context: SchematicContext) => {
     const project = getProjectName(host, options.project);
     const rootPath = getApplicationPath(host, project);
-    const routingPath = rootPath + '/app-routing.module.ts';
+    const routingPath = rootPath + 'app-routing.module.ts';
     let rules: any[] = [];
 
     const templateSource = apply(url('./files'), [
@@ -111,13 +120,13 @@ export default function(options: any): Rule {
 
     rules.push(mergeWith(templateSource));
 
-    sampleViewOptions.forEach((options) => {
-      rules.push(addImportsToRoutingModule(true, routingPath, options));
-      rules.push(addViewToRouting({ name: options.name, project, module: 'app-routing' }));
+    sampleViewOptions.forEach((viewOptions) => {
+      rules.push(addViewToRouting({ name: viewOptions.name, project, module: 'app-routing' }));
+      rules.push(addImportsToRoutingModule(true, routingPath, viewOptions));
     });
 
-    devextremeOptions.forEach((options) => {
-      rules.push(addImportsToRoutingModule(false, routingPath, options));
+    devextremeOptions.forEach((moduleOptions) => {
+      rules.push(addImportsToRoutingModule(false, routingPath, moduleOptions));
     });
 
     rules.push(insertNavigation(rootPath));

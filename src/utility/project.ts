@@ -13,5 +13,5 @@ export function getApplicationPath(host: Tree, projectName: string) {
   const project = getWorkspace(host).projects[projectName];
   let rootPath = project.sourceRoot || project.root;
 
-  return rootPath ? `${rootPath}/app/` : 'src/app';
+  return rootPath ? `${rootPath}/app/` : 'src/app/';
 }

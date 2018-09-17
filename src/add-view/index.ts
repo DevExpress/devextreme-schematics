@@ -7,10 +7,6 @@ import {
 } from '@angular-devkit/schematics';
 
 import {
-  getWorkspace
-} from '@schematics/angular/utility/config';
-
-import {
   findModuleFromOptions
 } from '@schematics/angular/utility/find-module';
 
@@ -23,15 +19,16 @@ import {
 import {
   Node,
   SourceFile,
-  SyntaxKind,
-  createSourceFile,
-  ScriptTarget
+  SyntaxKind
 } from 'typescript';
+
+import { getSourceFile } from '../utility/source';
 
 import { strings } from '@angular-devkit/core';
 
 import {
-  getProjectName
+  getProjectName,
+  getApplicationPath
 } from '../utility/project';
 
 function findComponentInRoutes(text: string, componentName: string) {
@@ -66,10 +63,7 @@ function getChangesForRoutes(name: string, routes: Node, source: SourceFile) {
 }
 
 function getPathToFile(host: Tree, projectName: string, moduleName: string) {
-  const project = getWorkspace(host).projects[projectName];
-  let rootPath = project.sourceRoot || project.root;
-
-  rootPath =  rootPath ? `${rootPath}/app/` : 'src/app';
+  const rootPath = getApplicationPath(host, projectName);
 
   try {
     return findModuleFromOptions(host, { name: moduleName, path: rootPath, module: moduleName });
@@ -92,11 +86,6 @@ function findRoutesInSource(source: SourceFile) {
   });
 }
 
-function getSourceFile(host: Tree, filePath: string) {
-  const serializedRouting = host.read(filePath)!.toString();
-  return createSourceFile(filePath, serializedRouting, ScriptTarget.Latest, true);
-}
-
 function addViewToNavigation(options: any) {
   return (host: Tree) => {
     const navigationName = 'app-navigation';
@@ -104,6 +93,11 @@ function addViewToNavigation(options: any) {
 
     if (navigationFilePath) {
       const source = getSourceFile(host, navigationFilePath);
+
+      if(!source) {
+        return host;
+      }
+
       const changes = getChangesForNavigation(options.name, options.icon, source);
 
       return applyChanges(host, changes, navigationFilePath);
@@ -120,6 +114,11 @@ export function addViewToRouting(options: any) {
     }
 
     const source = getSourceFile(host, routingModulePath);
+
+    if(!source) {
+      return host;
+    }
+
     const routes = findRoutesInSource(source);
 
     if (!routes) {

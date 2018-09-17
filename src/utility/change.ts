@@ -1,24 +1,27 @@
-import { Tree } from '@angular-devkit/schematics';
+import { Tree, UpdateRecorder } from '@angular-devkit/schematics';
 import { SourceFile } from 'typescript';
 
-function updateHost(host: Tree, filePath: string, change: any) {
-  if(change.pos && change.toAdd) {
-    const recorder = host.beginUpdate(filePath);
-    recorder.insertLeft(change.pos, change.toAdd);
-    host.commitUpdate(recorder);
+function insertToRecorder(recorder: UpdateRecorder, changes: any) {
+  if (changes.pos && changes.pos !== -1 && changes.toAdd) {
+    recorder.insertLeft(changes.pos, changes.toAdd);
   }
-
-  return host;
+  return recorder;
 }
 
 export function applyChanges(host: Tree, changes: any, filePath: string) {
+  let recorder = host.beginUpdate(filePath);
+
   if (Array.isArray(changes)) {
     for (const change of changes) {
-      return updateHost(host, filePath, change);
+      recorder = insertToRecorder(recorder, change);
     }
   } else {
-    return updateHost(host, filePath, changes);
+    recorder = insertToRecorder(recorder, changes);
   }
+
+  host.commitUpdate(recorder);
+
+  return host;
 }
 
 export function getSeparator(text: string) {
