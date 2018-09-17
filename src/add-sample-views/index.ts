@@ -74,11 +74,12 @@ function addImportsToRoutingModule(isView: boolean, routingPath: string, options
   return (host: Tree) => {
     const source = getSourceFile(host, routingPath);
 
-    if(!source) {
+    if (!source) {
       return host;
     }
 
     let changes;
+
     if (isView) {
       changes = addDeclarationToModule(source, routingPath, options.componentName, options.relativePath);
     } else {
@@ -89,12 +90,12 @@ function addImportsToRoutingModule(isView: boolean, routingPath: string, options
   }
 }
 
-function insertNavigation(rootPath: string) {
+function addDefaultNavigation(rootPath: string) {
   return (host: Tree) => {
     const navigationPath = rootPath + 'app-navigation.ts';
     const navigationSource = getSourceFile(host, navigationPath);
 
-    if(!navigationSource) {
+    if (!navigationSource) {
       return host;
     }
 
@@ -129,7 +130,7 @@ export default function(options: any): Rule {
       rules.push(addImportsToRoutingModule(false, routingPath, moduleOptions));
     });
 
-    rules.push(insertNavigation(rootPath));
+    rules.push(addDefaultNavigation(rootPath));
 
     return chain(rules);
   };

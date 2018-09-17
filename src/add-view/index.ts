@@ -94,7 +94,7 @@ function addViewToNavigation(options: any) {
     if (navigationFilePath) {
       const source = getSourceFile(host, navigationFilePath);
 
-      if(!source) {
+      if (!source) {
         return host;
       }
 
@@ -115,7 +115,7 @@ export function addViewToRouting(options: any) {
 
     const source = getSourceFile(host, routingModulePath);
 
-    if(!source) {
+    if (!source) {
       return host;
     }
 

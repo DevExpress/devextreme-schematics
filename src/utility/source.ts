@@ -8,7 +8,7 @@ import {
 export function getSourceFile(host: Tree, filePath: string): SourceFile | undefined {
   const buffer = host.read(filePath);
 
-  if(!buffer) {
+  if (!buffer) {
     return;
   }
   const serializedRouting = host.read(filePath)!.toString();
