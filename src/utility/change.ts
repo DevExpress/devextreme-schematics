@@ -10,7 +10,7 @@ export function addValueToEndOfArray(host: Tree, changes: any, filePath: string,
 
   let recorder = host.beginUpdate(filePath);
 
-  if (changes) {
+  if (Array.isArray(changes)) {
     for (const change of changes) {
       recorder.insertLeft(change.pos, change.toAdd);
     }
