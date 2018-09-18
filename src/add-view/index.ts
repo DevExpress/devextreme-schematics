@@ -11,9 +11,7 @@ import {
 } from '@schematics/angular/utility/find-module';
 
 import {
-  getPositionInFile,
-  getSeparator,
-  applyChanges
+  addValueToEndOfArray
 } from '../utility/change';
 
 import {
@@ -35,31 +33,15 @@ function findComponentInRoutes(text: string, componentName: string) {
   return text.indexOf(componentName) !== -1;
 }
 
-function getChangesForNavigation(name: string, icon: string, source: SourceFile) {
-  const separator = getSeparator(source.getText());
-
-  return {
-    pos: getPositionInFile(source, source.getEnd()),
-    toAdd: `${separator}{
-        text: '${strings.capitalize(name)}',
-        path: '${strings.camelize(name)}',
-        icon: '${icon ? icon : ''}'
-    }`
-  };
-}
-
-function getChangesForRoutes(name: string, routes: Node, source: SourceFile) {
+function getChangesForRoutes(name: string, routes: Node) {
   const componentName = `${strings.classify(name)}Component`;
   const routesText = routes.getText();
-  const separator = getSeparator(routesText);
 
-  return findComponentInRoutes(routesText, componentName) ? {} : {
-    pos: getPositionInFile(source, routes.getEnd()),
-    toAdd: `${separator}{
+  return findComponentInRoutes(routesText, componentName) ? '' :
+    `{
         path: '${strings.camelize(name)}',
         component: ${componentName}
     }`
-  };
 }
 
 function getPathToFile(host: Tree, projectName: string, moduleName: string) {
@@ -98,9 +80,13 @@ function addViewToNavigation(options: any) {
         return host;
       }
 
-      const changes = getChangesForNavigation(options.name, options.icon, source);
+      const changes = `{
+            text: '${strings.capitalize(options.name)}',
+            path: '${strings.camelize(options.name)}',
+            icon: '${options.icon ? options.icon : ''}'
+        }`;
 
-      return applyChanges(host, changes, navigationFilePath);
+      return addValueToEndOfArray(host, changes, navigationFilePath, source.getText(), source.getEnd());
     }
   }
 }
@@ -125,9 +111,13 @@ export function addViewToRouting(options: any) {
       throw new SchematicsException('No routes found.');
     }
 
-    const changes = getChangesForRoutes(options.name, routes, source);
+    const changes = getChangesForRoutes(options.name, routes);
 
-    return applyChanges(host, changes, routingModulePath);
+    if(!changes) {
+      return host
+    }
+
+    return addValueToEndOfArray(host, changes, routingModulePath, source.getText(), routes.getEnd());
   }
 }
 

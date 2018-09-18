@@ -22,9 +22,7 @@ import {
  } from '../utility/project';
 
  import {
-  applyChanges,
-  getPositionInFile,
-  getSeparator
+   addValueToEndOfArray
  } from '../utility/change';
 
  import { getSourceFile } from '../utility/source';
@@ -86,7 +84,7 @@ function addImportsToRoutingModule(isView: boolean, routingPath: string, options
       changes = addImportToModule(source, routingPath, options.componentName, options.relativePath);
     }
 
-    return applyChanges(host, changes, routingPath);
+    return addValueToEndOfArray(host, changes, routingPath);
   }
 }
 
@@ -98,13 +96,7 @@ function addDefaultNavigation(rootPath: string) {
     if (!navigationSource) {
       return host;
     }
-
-    const changes = {
-      pos: getPositionInFile(navigationSource, navigationSource.getEnd()),
-      toAdd: getSeparator(navigationSource.getText()) + navigations
-    };
-
-    return applyChanges(host, changes, navigationPath);
+    return addValueToEndOfArray(host, navigations, navigationPath, navigationSource.getText(), navigationSource.getEnd());
   };
 }
 

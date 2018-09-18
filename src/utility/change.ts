@@ -1,34 +1,31 @@
-import { Tree, UpdateRecorder } from '@angular-devkit/schematics';
-import { SourceFile } from 'typescript';
+import { Tree } from '@angular-devkit/schematics';
+import { InsertChange } from '@schematics/angular/utility/change';
 
-function insertToRecorder(recorder: UpdateRecorder, changes: any) {
-  if (changes.pos && changes.pos !== -1 && changes.toAdd) {
-    recorder.insertLeft(changes.pos, changes.toAdd);
-  }
-  return recorder;
+function getSeparator(text: string) {
+  const isEmpty = text.search(/}\s*,?\s*]/g) !== -1;
+  return isEmpty ? ', ' : '';
 }
 
-export function applyChanges(host: Tree, changes: any, filePath: string) {
+export function addValueToEndOfArray(host: Tree, changes: any, filePath: string, content?: string, endIndex?: number) {
+
   let recorder = host.beginUpdate(filePath);
 
-  if (Array.isArray(changes)) {
+  if (changes) {
     for (const change of changes) {
-      recorder = insertToRecorder(recorder, change);
+      recorder.insertLeft(change.pos, change.toAdd);
     }
-  } else {
-    recorder = insertToRecorder(recorder, changes);
+  } else if (content) {
+    const position = content!.lastIndexOf(']', endIndex);
+
+    if (position > -1) {
+      changes = getSeparator(content) + changes;
+      let insertData = new InsertChange(filePath, position, changes);
+
+      recorder.insertLeft(insertData.pos, insertData.toAdd);
+    }
   }
 
   host.commitUpdate(recorder);
 
   return host;
-}
-
-export function getSeparator(text: string) {
-  const isEmpty = text.search(/}\s*,?\s*]/g) !== -1;
-  return isEmpty ? ', ' : '';
-}
-
-export function getPositionInFile(source: SourceFile, endIndex?: number) {
-  return source.getText().lastIndexOf(']', endIndex);
 }
