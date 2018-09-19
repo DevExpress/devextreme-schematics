@@ -14,7 +14,7 @@ function prepareChangesForArray(recorder: UpdateRecorder, filePath: string, chan
     recorder.insertLeft(insertData.pos, insertData.toAdd);
   }
 
-  return recorder
+  return recorder;
 }
 
 export function applyChanges(host: Tree, changes: any, filePath: string, content?: string, endIndex?: number) {
