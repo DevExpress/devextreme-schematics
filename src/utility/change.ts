@@ -1,4 +1,4 @@
-import { Tree } from '@angular-devkit/schematics';
+import { Tree, UpdateRecorder } from '@angular-devkit/schematics';
 import { InsertChange } from '@schematics/angular/utility/change';
 
 function getSeparator(text: string) {
@@ -6,7 +6,18 @@ function getSeparator(text: string) {
   return isEmpty ? ', ' : '';
 }
 
-export function addValueToEndOfArray(host: Tree, changes: any, filePath: string, content?: string, endIndex?: number) {
+function prepareChangesForArray(recorder: UpdateRecorder, filePath: string, changes: any, content: string, endIndex: number) {
+  const position = content!.lastIndexOf(']', endIndex);
+
+  if (position > -1) {
+    let insertData = new InsertChange(filePath, position, getSeparator(content) + changes);
+    recorder.insertLeft(insertData.pos, insertData.toAdd);
+  }
+
+  return recorder
+}
+
+export function applyChanges(host: Tree, changes: any, filePath: string, content?: string, endIndex?: number) {
 
   let recorder = host.beginUpdate(filePath);
 
@@ -14,15 +25,8 @@ export function addValueToEndOfArray(host: Tree, changes: any, filePath: string,
     for (const change of changes) {
       recorder.insertLeft(change.pos, change.toAdd);
     }
-  } else if (content) {
-    const position = content!.lastIndexOf(']', endIndex);
-
-    if (position > -1) {
-      changes = getSeparator(content) + changes;
-      let insertData = new InsertChange(filePath, position, changes);
-
-      recorder.insertLeft(insertData.pos, insertData.toAdd);
-    }
+  } else if (content && endIndex) {
+      recorder = prepareChangesForArray(recorder, filePath, changes, content, endIndex);
   }
 
   host.commitUpdate(recorder);

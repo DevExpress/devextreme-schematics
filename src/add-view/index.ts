@@ -11,7 +11,7 @@ import {
 } from '@schematics/angular/utility/find-module';
 
 import {
-  addValueToEndOfArray
+  applyChanges
 } from '../utility/change';
 
 import {
@@ -86,7 +86,7 @@ function addViewToNavigation(options: any) {
             icon: '${options.icon ? options.icon : ''}'
         }`;
 
-      return addValueToEndOfArray(host, changes, navigationFilePath, source.getText(), source.getEnd());
+      return applyChanges(host, changes, navigationFilePath, source.getText(), source.getEnd());
     }
   }
 }
@@ -117,7 +117,7 @@ export function addViewToRouting(options: any) {
       return host
     }
 
-    return addValueToEndOfArray(host, changes, routingModulePath, source.getText(), routes.getEnd());
+    return applyChanges(host, changes, routingModulePath, source.getText(), routes.getEnd());
   }
 }
 

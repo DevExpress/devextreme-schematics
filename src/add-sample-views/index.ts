@@ -22,7 +22,7 @@ import {
  } from '../utility/project';
 
  import {
-   addValueToEndOfArray
+   applyChanges
  } from '../utility/change';
 
  import { getSourceFile } from '../utility/source';
@@ -84,7 +84,7 @@ function addImportsToRoutingModule(isView: boolean, routingPath: string, options
       changes = addImportToModule(source, routingPath, options.componentName, options.relativePath);
     }
 
-    return addValueToEndOfArray(host, changes, routingPath);
+    return applyChanges(host, changes, routingPath);
   }
 }
 
@@ -96,7 +96,7 @@ function addDefaultNavigation(rootPath: string) {
     if (!navigationSource) {
       return host;
     }
-    return addValueToEndOfArray(host, navigations, navigationPath, navigationSource.getText(), navigationSource.getEnd());
+    return applyChanges(host, navigations, navigationPath, navigationSource.getText(), navigationSource.getEnd());
   };
 }
 
