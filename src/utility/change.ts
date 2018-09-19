@@ -6,7 +6,7 @@ function getSeparator(text: string) {
   return isEmpty ? ', ' : '';
 }
 
-function prepareChangesForArray(recorder: UpdateRecorder, filePath: string, changes: any, content: string, endIndex: number) {
+function prepareChangesForAdditionInArray(recorder: UpdateRecorder, filePath: string, changes: any, content: string, endIndex: number) {
   const position = content!.lastIndexOf(']', endIndex);
 
   if (position > -1) {
@@ -26,7 +26,7 @@ export function applyChanges(host: Tree, changes: any, filePath: string, content
       recorder.insertLeft(change.pos, change.toAdd);
     }
   } else if (content && endIndex) {
-      recorder = prepareChangesForArray(recorder, filePath, changes, content, endIndex);
+      recorder = prepareChangesForAdditionInArray(recorder, filePath, changes, content, endIndex);
   }
 
   host.commitUpdate(recorder);
