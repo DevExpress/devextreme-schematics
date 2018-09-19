@@ -37,8 +37,9 @@ function getChangesForRoutes(name: string, routes: Node) {
   const componentName = `${strings.classify(name)}Component`;
   const routesText = routes.getText();
 
-  return findComponentInRoutes(routesText, componentName) ? '' :
-    `{
+  return findComponentInRoutes(routesText, componentName)
+    ? ''
+    : `{
         path: '${strings.camelize(name)}',
         component: ${componentName}
     }`
@@ -83,7 +84,7 @@ function addViewToNavigation(options: any) {
       const changes = `{
             text: '${strings.capitalize(options.name)}',
             path: '${strings.camelize(options.name)}',
-            icon: '${options.icon ? options.icon : ''}'
+            icon: '${options.icon || ''}'
         }`;
 
       return applyChanges(host, changes, navigationFilePath, source.getText(), source.getEnd());

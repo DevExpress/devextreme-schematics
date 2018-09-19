@@ -11,6 +11,6 @@ export function getSourceFile(host: Tree, filePath: string): SourceFile | undefi
   if (!buffer) {
     return;
   }
-  const serializedRouting = host.read(filePath)!.toString();
-  return createSourceFile(filePath, serializedRouting, ScriptTarget.Latest, true);
+  const serializedFile = host.read(filePath)!.toString();
+  return createSourceFile(filePath, serializedFile, ScriptTarget.Latest, true);
 }
