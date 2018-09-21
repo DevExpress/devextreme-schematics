@@ -72,7 +72,7 @@ function addStyles(rootPath: string) {
     const changes = new InsertChange(stylesPath, source.getEnd(), styles);
 
     return applyChanges(host, [changes], stylesPath);
-  }
+  };
 }
 
 function addImportToAppModule(rootPath: string, importName: string, path: string) {
@@ -87,7 +87,7 @@ function addImportToAppModule(rootPath: string, importName: string, path: string
     const changes = addImportToModule(source, appModulePath, importName, path);
 
     return applyChanges(host, changes, appModulePath);
-  }
+  };
 }
 
 function addContentToAppComponent(rootPath: string, component: string) {
@@ -102,7 +102,7 @@ function addContentToAppComponent(rootPath: string, component: string) {
     host.overwrite(appModulePath, componentContent);
 
     return host;
-  }
+  };
 }
 
 function getComponentName(host: Tree, rootPath: string) {
@@ -142,7 +142,7 @@ function addAngularSDKToDependency() {
     });
 
     return host;
-  }
+  };
 }
 
 export default function(options: any): Rule {
