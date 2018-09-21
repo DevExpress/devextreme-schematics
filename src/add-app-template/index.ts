@@ -12,7 +12,7 @@ export default function(options: any): Rule {
     }),
     schematic('add-layout', {
       layout: options.layout,
-      overwriteAppComponent: options.overwriteAppComponent
+      overwriteComponent: options.overwriteComponent
     })
   ];
 
