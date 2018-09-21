@@ -14,7 +14,7 @@ import {
   NodePackageInstallTask
 } from '@angular-devkit/schematics/tasks';
 
-import { getProjectName} from '../utility/get-project';
+import { getProjectName} from '../utility/project';
 import { latestVersions } from '../utility/latest-versions';
 import { modifyJSONFile } from '../utility/modify-json-file';
 import { makeArrayUnique } from '../utility/array';
@@ -46,7 +46,7 @@ function addDevExtremeDependency(host: Tree, options: any) {
 
 function addDevExtremeCSS(host: Tree, options: any) {
   modifyJSONFile(host, './angular.json', config => {
-    const projectName = getProjectName(host, options);
+    const projectName = getProjectName(host, options.project);
     const projectBuildOptopns = config['projects'][projectName]['architect']['build']['options'];
     const projectSytles = projectBuildOptopns['styles'];
 
