@@ -50,8 +50,9 @@ function addDevExtremeCSS(host: Tree, options: any) {
     const projectBuildOptopns = config['projects'][projectName]['architect']['build']['options'];
     const projectSytles = projectBuildOptopns['styles'];
 
-    projectSytles.unshift('node_modules/devextreme/dist/css/dx.light.css');
     projectSytles.unshift('node_modules/devextreme/dist/css/dx.common.css');
+    projectSytles.unshift('./src/themes/theme.additional.css');
+    projectSytles.unshift('./src/themes/theme.base.css');
 
     projectBuildOptopns['styles'] = makeArrayUnique(projectSytles);
     return config;

@@ -31,12 +31,12 @@ describe('sample views', () => {
   beforeEach(() => {
     appTree = schematicRunner.runSchematic('workspace', workspaceOptions);
     appTree = schematicRunner.runSchematic('application', appOptions, appTree);
-    appTree = schematicRunner.runSchematic('class', { project: 'testApp', name: 'app-navigation' }, appTree);
   });
 
   it('should add sample views', () => {
     const runner = new SchematicTestRunner('schematics', collectionPath);
-    const tree = runner.runSchematic('add-sample-views', sampleViewsOptions, appTree);
+    let tree = runner.runSchematic('add-layout', { layout: 'side-nav-outer-toolbar' }, appTree);
+    tree = runner.runSchematic('add-sample-views', sampleViewsOptions, tree);
 
     const moduleContent = tree.readContent('/testApp/src/app/app-routing.module.ts');
 
@@ -45,6 +45,9 @@ describe('sample views', () => {
 
     expect(moduleContent).toMatch(/import { HomeComponent } from /);
     expect(moduleContent).toMatch(/declarations: \[HomeComponent/);
+
+    const navugationContent = tree.readContent('/testApp/src/app/app-navigation.ts');
+    expect(navugationContent).toMatch(/text: 'Home'/);
 
     expect(tree.files).toContain('/testApp/src/app/pages/home/home.component.ts');;
   });

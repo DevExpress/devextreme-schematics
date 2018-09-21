@@ -40,7 +40,7 @@ function getChangesForRoutes(name: string, routes: Node) {
   return findComponentInRoutes(routesText, componentName)
     ? ''
     : `{
-        path: '${strings.camelize(name)}',
+        path: '${strings.dasherize(name)}',
         component: ${componentName}
     }`
 }
@@ -83,7 +83,7 @@ function addViewToNavigation(options: any) {
 
       const changes = `{
             text: '${strings.capitalize(options.name)}',
-            path: '${strings.camelize(options.name)}',
+            path: '${strings.dasherize(options.name)}',
             icon: '${options.icon || ''}'
         }`;
 

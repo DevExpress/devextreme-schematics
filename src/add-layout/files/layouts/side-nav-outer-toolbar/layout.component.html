@@ -13,10 +13,13 @@
         [(opened)]="menuOpened">
 
         <app-navigation-menu
+            [items]="menuItems"
             [compactMode]="!menuOpened"
-            class="dx-additional-color-scheme-dark"
+            [selectedItem]="selectedRoute"
+            class="dx-swatch-additional"
             *dxTemplate="let dataMenu of 'panel'"
-            (selectedItemChanged)="navigationChanged($event)">
+            (selectedItemChanged)="navigationChanged($event)"
+            (click)="navigationClick()">
         </app-navigation-menu>
 
         <dx-scroll-view>

@@ -55,10 +55,11 @@ describe('add-devextreme', () => {
     const angularConfig = JSON.parse(tree.readContent('angular.json'));
     const styles = angularConfig['projects']['testApp']['architect']['build']['options']['styles'];
 
-    expect(styles[0]).toBe('node_modules/devextreme/dist/css/dx.common.css');
-    expect(styles[1]).toBe('node_modules/devextreme/dist/css/dx.light.css');
+    expect(styles[0]).toBe('./src/themes/theme.base.css');
+    expect(styles[1]).toBe('./src/themes/theme.additional.css');
+    expect(styles[2]).toBe('node_modules/devextreme/dist/css/dx.common.css');
   });
-  
+
   it('should add devextreme styles to the specified project', () => {
     const secondAppOptions: any = {
       name: 'testApp2',
@@ -77,8 +78,9 @@ describe('add-devextreme', () => {
     const angularConfig = JSON.parse(tree.readContent('angular.json'));
     const styles = angularConfig['projects']['testApp2']['architect']['build']['options']['styles'];
 
-    expect(styles[0]).toBe('node_modules/devextreme/dist/css/dx.common.css');
-    expect(styles[1]).toBe('node_modules/devextreme/dist/css/dx.light.css');
+    expect(styles[0]).toBe('./src/themes/theme.base.css');
+    expect(styles[1]).toBe('./src/themes/theme.additional.css');
+    expect(styles[2]).toBe('node_modules/devextreme/dist/css/dx.common.css');
 
     expect(angularConfig['projects']['testApp']['architect']['build']['options']['styles'].length).toBe(1);
   });

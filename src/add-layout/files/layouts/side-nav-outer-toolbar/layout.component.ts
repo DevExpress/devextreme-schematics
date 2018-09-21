@@ -5,21 +5,33 @@ import { NavigationMenuModule } from '../shared/components';
 import { DxDrawerModule } from 'devextreme-angular/ui/drawer';
 import { DxScrollViewModule } from 'devextreme-angular/ui/scroll-view';
 
+import { navigation } from '../app-navigation';
+import { Router, NavigationEnd } from '@angular/router';
+
 @Component({
     selector: 'app-layout',
     templateUrl: './layout.component.html',
     styleUrls: ['./layout.component.scss']
 })
 export class AppLayoutComponent implements OnInit {
+    menuItems = navigation;
+    selectedRoute = '';
+
     menuOpened = false;
     menuMode = 'shrink';
     menuRevealMode = 'expand';
     minMenuSize = 0;
     shaderEnabled = false;
 
-    constructor(private breakpointObserver: BreakpointObserver) { }
+    constructor(private breakpointObserver: BreakpointObserver, private router: Router) { }
 
     ngOnInit() {
+        this.router.events.subscribe(val => {
+            if (val instanceof NavigationEnd) {
+                this.selectedRoute = val.url;
+            }
+        });
+
         this.breakpointObserver
             .observe([Breakpoints.XSmall, Breakpoints.Small, Breakpoints.Medium, Breakpoints.Large])
             .subscribe(() => this.updateDrawer());
@@ -42,9 +54,24 @@ export class AppLayoutComponent implements OnInit {
         return this.menuMode === 'overlap';
     }
 
-    navigationChanged(e) {
+    get showMenuAfterClick() {
+        return !this.menuOpened;
+    }
+
+    navigationChanged(event) {
+        const path = event.itemData.path;
+        if (path && this.menuOpened) {
+            this.router.navigate([path]);
+        }
+
         if (this.hideMenuAfterNavigation) {
             this.menuOpened = false;
+        }
+    }
+
+    navigationClick() {
+        if (this.showMenuAfterClick) {
+            this.menuOpened = true;
         }
     }
 }

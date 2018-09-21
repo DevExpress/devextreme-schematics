@@ -1,14 +1,38 @@
-import { Rule, SchematicContext, Tree, apply, url, move, chain, mergeWith, SchematicsException, schematic } from '@angular-devkit/schematics';
+import {
+  Rule,
+  SchematicContext,
+  Tree,
+  apply,
+  url,
+  move,
+  chain,
+  mergeWith,
+  SchematicsException,
+  template } from '@angular-devkit/schematics';
+
 import {
   getApplicationPath,
   getProjectName
- } from '../utility/get-project';
+ } from '../utility/project';
+
+ import {
+  NodeDependencyType,
+  addPackageJsonDependency
+} from '@schematics/angular/utility/dependencies';
+
+import {
+  NodePackageInstallTask
+} from '@angular-devkit/schematics/tasks';
 
  import { getSourceFile } from '../utility/source';
 
  import {
   addImportToModule
 } from '@schematics/angular/utility/ast-utils';
+
+import {
+  InsertChange
+} from '@schematics/angular/utility/change';
 
 import {
   applyChanges
@@ -23,8 +47,33 @@ const componentContent = `
         <br/>
         All trademarks or registered trademarks are property of their respective owners.
     </div>
-</app-layout>
-`
+</app-layout>`;
+
+const styles = `
+html, body {
+  margin: 0px;
+  min-height: 100%;
+  height: 100%;
+}
+
+* {
+  box-sizing: border-box;
+}`;
+
+function addStyles(rootPath: string) {
+  return (host: Tree) => {
+    const stylesPath = rootPath.replace(/app\//, '') + 'styles.scss';
+    const source = getSourceFile(host, stylesPath);
+
+    if (!source) {
+      return host;
+    }
+
+    const changes = new InsertChange(stylesPath, source.getEnd(), styles);
+
+    return applyChanges(host, [changes], stylesPath);
+  }
+}
 
 function addImportToAppModule(rootPath: string, importName: string, path: string) {
   return (host: Tree) => {
@@ -41,7 +90,7 @@ function addImportToAppModule(rootPath: string, importName: string, path: string
   }
 }
 
-function addContentToAppModule(rootPath: string, component: string) {
+function addContentToAppComponent(rootPath: string, component: string) {
   return(host: Tree) => {
     const appModulePath = rootPath + component;
     const source = getSourceFile(host, appModulePath);
@@ -65,8 +114,8 @@ function getComponentName(host: Tree, rootPath: string) {
   }
 
   while (!name) {
-    const componentName = `app${index}.component.ts`;
-    if (!host.exists(rootPath + componentName)) {
+    const componentName = `app${index}`;
+    if (!host.exists(`${rootPath}${componentName}.component.ts`)) {
       name = componentName;
     }
   }
@@ -84,25 +133,37 @@ function hasRoutingModule(host: Tree, rootPath: string) {
   return host.exists(rootPath + 'app-routing.module.ts');
 }
 
+function addAngularSDKToDependency() {
+  return (host: Tree) => {
+    addPackageJsonDependency(host, {
+      type: NodeDependencyType.Default,
+      name: '@angular/cdk',
+      version: '^6.0.0'
+    });
+
+    return host;
+  }
+}
+
 export default function(options: any): Rule {
   return (host: Tree, _context: SchematicContext) => {
     const project = getProjectName(host, options.project);
     const rootPath = getApplicationPath(host, project);
     const layout = options.layout;
 
-    if(!findLayout(layout)) {
+    if (!findLayout(layout)) {
       throw new SchematicsException(`${layout} layout not found.`);
     }
 
     let rules = [
       mergeWith(
         apply(url('./files/shared'), [
-          move(rootPath + 'shared/')
+          move(rootPath + 'shared/components/')
         ])
       ),
       mergeWith(
         apply(url(`./files/menu/${options.layout}`), [
-          move(rootPath + 'shared/navigation-menu/')
+          move(rootPath + 'shared/components/navigation-menu/')
         ])
       ),
       mergeWith(
@@ -120,10 +181,30 @@ export default function(options: any): Rule {
           move(rootPath.replace(/app\//, '') + 'themes/')
         ])
       ),
-      addImportToAppModule(rootPath, 'AppLayoutModule', './layout/layout.component')
+      addImportToAppModule(rootPath, 'AppLayoutModule', './layout/layout.component'),
+      addStyles(rootPath),
+      addAngularSDKToDependency(),
+      (_host: Tree, context: SchematicContext) => {
+        context.addTask(new NodePackageInstallTask());
+      }
     ];
 
-    if(!hasRoutingModule(host, rootPath)) {
+    if (options.overwriteComponent) {
+      rules.push(addContentToAppComponent(rootPath, 'app.component.html'));
+    } else {
+      const name = getComponentName(host, rootPath);
+      rules.push(mergeWith(
+        apply(url('./files/component'), [
+          template({
+            'name': name,
+            'content': componentContent
+          }),
+          move(rootPath)
+        ])
+      ));
+    }
+
+    if (!hasRoutingModule(host, rootPath)) {
       rules.push(mergeWith(
         apply(url('./files/routing'), [
           move(rootPath)
@@ -131,15 +212,6 @@ export default function(options: any): Rule {
       ));
 
       rules.push(addImportToAppModule(rootPath, 'AppRoutingModule', './app-routing.module'));
-    }
-
-    if(options.overwriteComponent) {
-      rules.push(addContentToAppModule(rootPath, 'app.component.html'));
-    } else {
-      const name = getComponentName(host, rootPath);
-
-      rules.push(schematic('component', { name, project, spec: false, module: 'app' }));
-      rules.push(addContentToAppModule(rootPath, name));
     }
 
     return chain(rules);

@@ -15,7 +15,7 @@
     },
     "overwriteComponent": {
       "type": "boolean",
-      "description": "The name of project to modify"
+      "description": "Specifies if the app component will be overwrite"
     }
   }
 }
