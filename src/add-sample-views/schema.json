@@ -1,0 +1,12 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "id": "SchematicsDevextremeAddSamplesViews",
+  "title": "Add sample views to DevExtreme app template.",
+  "type": "object",
+  "properties": {
+    "project": {
+      "type": "string",
+      "description": "The name of project to modify"
+    }
+  }
+}

@@ -16,7 +16,7 @@ export default function(options: any): Rule {
     })
   ];
 
-  if(!options.empty) {
+  if (!options.empty) {
     rules.push(schematic('add-sample-views', {}));
   }
 
