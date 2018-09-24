@@ -23,10 +23,10 @@ export default function (options: any): Rule {
   return chain([
     (host: Tree) => addDevExtremeDependency(host, { dxversion: options.dxversion }),
     (host: Tree) => addDevExtremeCSS(host, { project: options.project }),
+    (host: Tree) => reqisterJSZip(host),
     (_host: Tree, context: SchematicContext) => {
       context.addTask(new NodePackageInstallTask());
     }
-    // TODO: Register JSZip https://github.com/DevExpress/devextreme-angular/blob/master/docs/setup-3rd-party-dependencies.md
   ]);
 }
 
@@ -54,6 +54,27 @@ function addDevExtremeCSS(host: Tree, options: any) {
     projectSytles.unshift('node_modules/devextreme/dist/css/dx.common.css');
 
     projectBuildOptopns['styles'] = makeArrayUnique(projectSytles);
+    return config;
+  });
+
+  return host;
+}
+
+function reqisterJSZip(host: Tree) {
+  modifyJSONFile(host, './tsconfig.json', config => {
+    const compilerOptions = config['compilerOptions'];
+    let paths = compilerOptions['paths'];
+
+    if(!paths) {
+      paths = {};
+    }
+
+    if(!paths['jszip']) {
+      paths['jszip'] = ['node_modules/jszip/dist/jszip.min.js'];
+    }
+
+    compilerOptions['paths'] = paths;
+
     return config;
   });
 
