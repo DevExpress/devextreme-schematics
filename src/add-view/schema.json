@@ -15,11 +15,12 @@
     "addRoute": {
       "type": "boolean",
       "description": "Specifies if the new view will be in routes.",
-      "default": false
+      "default": true
     },
     "icon": {
       "type": "string",
-      "description": "The name of icon."
+      "description": "The name of icon.",
+      "default": "folder"
     },
     "module": {
       "type": "string",
