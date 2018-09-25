@@ -45,8 +45,8 @@ describe('view', () => {
     const runner = new SchematicTestRunner('schematics', collectionPath);
     const tree = runner.runSchematic('add-view', componentOptions, appTree);
 
-    expect(tree.files).toContain('/testApp/src/app/test/test.component.ts');
-    expect(tree.files).toContain('/testApp/src/app/test/test.component.html');
+    expect(tree.files).toContain('/testApp/src/app/pages/test/test.component.ts');
+    expect(tree.files).toContain('/testApp/src/app/pages/test/test.component.html');
   });
 
   it('should add view to default routing module', () => {
@@ -58,7 +58,7 @@ describe('view', () => {
 
     expect(moduleContent).toMatch(/Routes = \[{/);
     expect(moduleContent).toMatch(/component: TestComponent/);
-    expect(moduleContent).toMatch(/path: 'test'/);
+    expect(moduleContent).toMatch(/path: 'pages\/test'/);
   });
 
   it('should add view to other routing module', () => {
@@ -71,7 +71,7 @@ describe('view', () => {
     const moduleContent = tree.readContent('/testApp/src/app/test/test-routing.module.ts');
 
     expect(moduleContent).toMatch(/component: TestComponent/);
-    expect(moduleContent).toMatch(/path: 'test'/);
+    expect(moduleContent).toMatch(/path: 'pages\/test'/);
   });
 
   it('should add view to navigation', () => {
@@ -79,15 +79,24 @@ describe('view', () => {
     let tree = runner.runSchematic('add-layout', { layout: 'side-nav-outer-toolbar' }, appTree);
     tree = runner.runSchematic('add-view', componentOptions, tree);
 
-    componentOptions.name = 'test1';
+    componentOptions.name = 'some test';
     componentOptions.icon = 'home';
     tree = runner.runSchematic('add-view', componentOptions, tree);
 
     const moduleContent = tree.readContent('/testApp/src/app/app-navigation.ts');
 
-    expect(moduleContent).toMatch(/text: 'Test1'/);
+    expect(moduleContent).toMatch(/text: 'Some test'/);
     expect(moduleContent).toMatch(/icon: 'home'/);
     expect(moduleContent).toMatch(/text: 'Test'/);
     expect(moduleContent).toMatch(/icon: 'folder'/);
+  });
+
+  it('should create new view with path', () => {
+    const runner = new SchematicTestRunner('schematics', collectionPath);
+    componentOptions.name = 'folder/test';
+    const tree = runner.runSchematic('add-view', componentOptions, appTree);
+
+    expect(tree.files).toContain('/testApp/src/app/folder/test/test.component.ts');
+    expect(tree.files).toContain('/testApp/src/app/folder/test/test.component.html');
   });
 });
