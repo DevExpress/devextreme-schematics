@@ -1,6 +1,5 @@
 import { SchematicTestRunner, UnitTestTree } from '@angular-devkit/schematics/testing';
 import { Schema as WorkspaceOptions } from '@schematics/angular/workspace/schema';
-import { Schema as ComponentOptions } from '@schematics/angular/component/schema';
 import * as path from 'path';
 
 const collectionPath = path.join(__dirname, '../collection.json');
@@ -21,7 +20,7 @@ describe('view', () => {
     version: '6.0.0'
   };
 
-  const componentOptions: ComponentOptions = {
+  const componentOptions: any = {
     name: 'test',
     inlineStyle: false,
     inlineTemplate: false,
@@ -73,5 +72,22 @@ describe('view', () => {
 
     expect(moduleContent).toMatch(/component: TestComponent/);
     expect(moduleContent).toMatch(/path: 'test'/);
+  });
+
+  it('should add view to navigation', () => {
+    const runner = new SchematicTestRunner('schematics', collectionPath);
+    let tree = runner.runSchematic('add-layout', { layout: 'side-nav-outer-toolbar' }, appTree);
+    tree = runner.runSchematic('add-view', componentOptions, tree);
+
+    componentOptions.name = 'test1';
+    componentOptions.icon = 'home';
+    tree = runner.runSchematic('add-view', componentOptions, tree);
+
+    const moduleContent = tree.readContent('/testApp/src/app/app-navigation.ts');
+
+    expect(moduleContent).toMatch(/text: 'Test1'/);
+    expect(moduleContent).toMatch(/icon: 'home'/);
+    expect(moduleContent).toMatch(/text: 'Test'/);
+    expect(moduleContent).toMatch(/icon: 'folder'/);
   });
 });

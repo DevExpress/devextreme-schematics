@@ -84,7 +84,7 @@ function addViewToNavigation(options: any) {
       const changes = `{
             text: '${strings.capitalize(options.name)}',
             path: '${strings.dasherize(options.name)}',
-            icon: '${options.icon || ''}'
+            icon: '${options.icon}'
         }`;
 
       return applyChanges(host, changes, navigationFilePath, source.getText(), source.getEnd());
