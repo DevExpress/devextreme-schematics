@@ -83,16 +83,13 @@ function addStyles(rootPath: string) {
   };
 }
 
-function addBuildTheme() {
+function addBuildThemeScript() {
   return (host: Tree) => {
     modifyJSONFile(host, './package.json', config => {
-      const buildTheme = 'devextreme build';
       const scripts = config['scripts'];
-      const start = `${buildTheme} && ${scripts['start']}`;
-      const build = `${buildTheme} && ${scripts['build']}`;
 
-      scripts['start'] = start;
-      scripts['build'] = build;
+      scripts['start'] = `devextreme build && ${scripts['start']}`;
+      scripts['build'] = `devextreme build && ${scripts['build']}`;
 
       return config;
     });
@@ -101,7 +98,7 @@ function addBuildTheme() {
   };
 }
 
-function addCustomTheme(options: any) {
+function addCustomThemeStyles(options: any) {
   return (host: Tree) => {
     modifyJSONFile(host, './angular.json', config => {
       const styles = [
@@ -192,7 +189,6 @@ export default function(options: any): Rule {
     const project = getProjectName(host, options.project);
     const rootPath = getApplicationPath(host, project);
     const layout = options.layout;
-    const engine = `"angular"`;
 
     if (!findLayout(layout)) {
       throw new SchematicsException(`${layout} layout not found.`);
@@ -222,7 +218,7 @@ export default function(options: any): Rule {
       mergeWith(
         apply(url('./files/devextreme-config'), [
           template({
-            'engine': engine
+            'engine': '"angular"'
           }),
           move('./')
         ])
@@ -234,8 +230,8 @@ export default function(options: any): Rule {
       ),
       addImportToAppModule(rootPath, 'AppLayoutModule', `./layouts/${layout}/layout.component`),
       addStyles(rootPath),
-      addBuildTheme(),
-      addCustomTheme(options),
+      addBuildThemeScript(),
+      addCustomThemeStyles(options),
       addAngularSDKToDependency(),
       (_host: Tree, context: SchematicContext) => {
         context.addTask(new NodePackageInstallTask());
