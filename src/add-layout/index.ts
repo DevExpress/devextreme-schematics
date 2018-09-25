@@ -242,7 +242,7 @@ export default function(options: any): Rule {
       }
     ];
 
-    if (options.overwriteComponent) {
+    if (options.overwriteAppComponent) {
       rules.push(addContentToAppComponent(rootPath, 'app.component.html'));
     } else {
       const name = getComponentName(host, rootPath);

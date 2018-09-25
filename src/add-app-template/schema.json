@@ -23,7 +23,7 @@
       "description": "Skip sample views generation",
       "default": false
     },
-    "overwriteComponent": {
+    "overwriteAppComponent": {
       "type": "boolean",
       "description": "Specifies if the app component will be overwrite"
     }

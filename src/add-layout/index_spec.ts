@@ -22,7 +22,7 @@ describe('layout', () => {
 
   const options: any = {
     layouts: 'side-nav-outer-toolbar',
-    overwriteComponent: true
+    overwriteAppComponent: true
   };
 
   const schematicRunner = new SchematicTestRunner('@schematics/angular', require.resolve('../../node_modules/@schematics/angular/collection.json'));
@@ -79,7 +79,7 @@ describe('layout', () => {
   it('should add layout without overwrite', () => {
     const runner = new SchematicTestRunner('schematics', collectionPath);
 
-    options.overwriteComponent = false;
+    options.overwriteAppComponent = false;
     const tree = runner.runSchematic('add-layout', options, appTree);
 
     expect(tree.files).toContain('/testApp/src/app/app1.component.ts');
