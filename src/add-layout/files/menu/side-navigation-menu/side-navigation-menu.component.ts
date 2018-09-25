@@ -3,8 +3,8 @@ import { DxTreeViewModule, DxTreeViewComponent } from 'devextreme-angular/ui/tre
 
 @Component({
     selector: 'app-navigation-menu',
-    templateUrl: './navigation-menu.component.html',
-    styleUrls: ['./navigation-menu.component.scss']
+    templateUrl: './side-navigation-menu.component.html',
+    styleUrls: ['./side-navigation-menu.component.scss']
 })
 export class SideNavigationMenuComponent {
     @ViewChild(DxTreeViewComponent)

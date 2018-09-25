@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 
 @Component({
-    templateUrl: 'profile.template.html',
+    templateUrl: 'profile.component.html',
     styleUrls: [ './profile.component.scss' ]
 })
 
@@ -9,7 +9,7 @@ export class ProfileComponent {
     employee: any;
     colCountByScreen: Object;
 
-    constructor() { 
+    constructor() {
         this.employee = {
             ID: 7,
             FirstName: 'Sandra',

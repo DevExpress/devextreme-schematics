@@ -93,7 +93,7 @@ export class AppLayoutComponent implements OnInit {
 }
 
 @NgModule({
-    imports: [ HeaderModule, NavigationMenuModule, DxDrawerModule, DxScrollViewModule ],
+    imports: [ HeaderModule, SideNavigationMenuModule, DxDrawerModule, DxScrollViewModule ],
     exports: [ AppLayoutComponent ],
     declarations: [ AppLayoutComponent ]
 })
