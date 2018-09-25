@@ -2,5 +2,5 @@
 export const latestVersions = {
   'devextreme': '18.2-unstable',
   'devextreme-angular': '18.2-unstable',
-  'devextreme-cli': '0.0.1'
+  'devextreme-cli': 'latest'
 };
