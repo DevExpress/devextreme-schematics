@@ -11,7 +11,8 @@ export default function(options: any): Rule {
       project: options.project
     }),
     schematic('add-layout', {
-      layout: options.layout
+      layout: options.layout,
+      overwriteAppComponent: options.overwriteAppComponent
     })
   ];
 

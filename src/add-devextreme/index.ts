@@ -5,6 +5,8 @@ import {
   chain
 } from '@angular-devkit/schematics';
 
+import { addStylesToApp } from '../utility/styles';
+
 import {
   NodeDependencyType,
   addPackageJsonDependency
@@ -14,10 +16,8 @@ import {
   NodePackageInstallTask
 } from '@angular-devkit/schematics/tasks';
 
-import { getProjectName} from '../utility/project';
 import { latestVersions } from '../utility/latest-versions';
 import { modifyJSONFile } from '../utility/modify-json-file';
-import { makeArrayUnique } from '../utility/array';
 
 export default function (options: any): Rule {
   return chain([
@@ -35,26 +35,25 @@ function addDevExtremeDependency(host: Tree, options: any) {
     type: NodeDependencyType.Default,
     name: 'devextreme',
     version: options.dxversion || latestVersions['devextreme']
-  })
+  });
   addPackageJsonDependency(host, {
     type: NodeDependencyType.Default,
     name: 'devextreme-angular',
     version: options.dxversion || latestVersions['devextreme-angular']
-  })
+  });
+  addPackageJsonDependency(host, {
+    type: NodeDependencyType.Dev,
+    name: 'devextreme-cli',
+    version: latestVersions['devextreme-cli']
+  });
+
   return host;
 }
 
 function addDevExtremeCSS(host: Tree, options: any) {
   modifyJSONFile(host, './angular.json', config => {
-    const projectName = getProjectName(host, options.project);
-    const projectBuildOptopns = config['projects'][projectName]['architect']['build']['options'];
-    const projectSytles = projectBuildOptopns['styles'];
 
-    projectSytles.unshift('node_modules/devextreme/dist/css/dx.light.css');
-    projectSytles.unshift('node_modules/devextreme/dist/css/dx.common.css');
-
-    projectBuildOptopns['styles'] = makeArrayUnique(projectSytles);
-    return config;
+    return addStylesToApp(host, options.project, config);
   });
 
   return host;

@@ -1,0 +1,11 @@
+<ng-content></ng-content>
+
+<dx-tree-view
+    expandEvent="click"
+    [ngClass]="{ 'treeview-compact': compactMode }"
+    [items]="items"
+    (onItemClick)="onItemSelectionChanged($event)"
+    [selectByClick]="true"
+    selectionMode="single"
+    keyExpr="path">
+</dx-tree-view>
