@@ -4,7 +4,7 @@ import * as path from 'path';
 
 const collectionPath = path.join(__dirname, '../collection.json');
 
-describe('sample views', () => {
+describe('layout', () => {
   const appOptions: any = {
     name: 'testApp',
     inlineStyle: false,
@@ -38,12 +38,17 @@ describe('sample views', () => {
     const runner = new SchematicTestRunner('schematics', collectionPath);
     const tree = runner.runSchematic('add-layout', options, appTree);
 
+    expect(tree.files).toContain('/devextreme.json');
     expect(tree.files).toContain('/testApp/src/app/app-navigation.ts');
     expect(tree.files).toContain('/testApp/src/app/shared/components/header/header.component.ts');
-    expect(tree.files).toContain('/testApp/src/app/shared/components/navigation-menu/navigation-menu.component.ts');
-    expect(tree.files).toContain('/testApp/src/app/layout/layout.component.ts');
-    expect(tree.files).toContain('/testApp/src/themes/theme.additional.css');
+    expect(tree.files).toContain('/testApp/src/app/shared/components/login/login.component.ts');
+    expect(tree.files).toContain('/testApp/src/app/shared/components/side-navigation-menu/side-navigation-menu.component.ts');
+    expect(tree.files).toContain('/testApp/src/app/layouts/side-nav-outer-toolbar/layout.component.ts');
+    expect(tree.files).toContain('/testApp/src/themes/metadata.base.json');
+    expect(tree.files).toContain('/testApp/src/themes/metadata.additional.json');
 
+    const devextremeConfigContent = tree.readContent('/devextreme.json');
+    expect(devextremeConfigContent).toMatch(/"applicationEngine": "angular"/);
 
     const componentContent = tree.readContent('/testApp/src/app/app.component.html');
     expect(componentContent).toMatch(/<app-layout>/);
@@ -51,9 +56,24 @@ describe('sample views', () => {
     const stylesContent = tree.readContent('/testApp/src/styles.scss');
     expect(stylesContent).toMatch(/html, body {/);
 
+    const angularContent = JSON.parse(tree.readContent('/angular.json'));
+    const styles = angularContent.projects.testApp.architect.build.options.styles;
+
+    expect(styles[0]).toBe('node_modules/devextreme/dist/css/dx.common.css');
+    expect(styles[1]).toBe('./src/themes/theme.additional.css');
+    expect(styles[2]).toBe('./src/themes/theme.base.css');
+
     const moduleContent = tree.readContent('/testApp/src/app/app.module.ts');
     expect(moduleContent).toMatch(/import { AppLayoutModule }/);
     expect(moduleContent).toMatch(/import { AppRoutingModule }/);
+  });
+
+  it('should add angular/cdk dependency', () => {
+    const runner = new SchematicTestRunner('schematics', collectionPath);
+    const tree = runner.runSchematic('add-layout', options, appTree);
+    const packageConfig = JSON.parse(tree.readContent('package.json'));
+
+    expect(packageConfig.dependencies['@angular/cdk']).toBeDefined();
   });
 
   it('should add layout without overwrite', () => {

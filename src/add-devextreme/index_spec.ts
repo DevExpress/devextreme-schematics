@@ -49,15 +49,22 @@ describe('add-devextreme', () => {
     expect(packageConfig.dependencies.devextreme).toBe('18.2.3');
   });
 
+  it('should add devextreme cli devDependency', () => {
+    const runner = new SchematicTestRunner('schematics', collectionPath);
+    const tree = runner.runSchematic('add-devextreme', { dxversion: '18.2.3' }, appTree);
+    const packageConfig = JSON.parse(tree.readContent('package.json'));
+
+    expect(packageConfig.devDependencies['devextreme-cli']).toBeDefined();
+  });
+
   it('should add devextreme styles', () => {
     const runner = new SchematicTestRunner('schematics', collectionPath);
     const tree = runner.runSchematic('add-devextreme', {}, appTree);
     const angularConfig = JSON.parse(tree.readContent('angular.json'));
     const styles = angularConfig['projects']['testApp']['architect']['build']['options']['styles'];
 
-    expect(styles[0]).toBe('./src/themes/theme.base.css');
-    expect(styles[1]).toBe('./src/themes/theme.additional.css');
-    expect(styles[2]).toBe('node_modules/devextreme/dist/css/dx.common.css');
+    expect(styles[0]).toBe('node_modules/devextreme/dist/css/dx.common.css');
+    expect(styles[1]).toBe('node_modules/devextreme/dist/css/dx.light.css');
   });
 
   it('should add devextreme styles to the specified project', () => {
@@ -78,9 +85,8 @@ describe('add-devextreme', () => {
     const angularConfig = JSON.parse(tree.readContent('angular.json'));
     const styles = angularConfig['projects']['testApp2']['architect']['build']['options']['styles'];
 
-    expect(styles[0]).toBe('./src/themes/theme.base.css');
-    expect(styles[1]).toBe('./src/themes/theme.additional.css');
-    expect(styles[2]).toBe('node_modules/devextreme/dist/css/dx.common.css');
+    expect(styles[0]).toBe('node_modules/devextreme/dist/css/dx.common.css');
+    expect(styles[1]).toBe('node_modules/devextreme/dist/css/dx.light.css');
 
     expect(angularConfig['projects']['testApp']['architect']['build']['options']['styles'].length).toBe(1);
   });

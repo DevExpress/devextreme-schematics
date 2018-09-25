@@ -16,6 +16,14 @@ import {
  } from '../utility/project';
 
  import {
+  addStylesToApp
+ } from '../utility/styles';
+
+ import {
+  modifyJSONFile
+ } from '../utility/modify-json-file';
+
+ import {
   NodeDependencyType,
   addPackageJsonDependency
 } from '@schematics/angular/utility/dependencies';
@@ -75,6 +83,40 @@ function addStyles(rootPath: string) {
   };
 }
 
+function addBuildTheme() {
+  return (host: Tree) => {
+    modifyJSONFile(host, './package.json', config => {
+      const buildTheme = 'devextreme build';
+      const scripts = config['scripts'];
+      const start = `${buildTheme} && ${scripts['start']}`;
+      const build = `${buildTheme} && ${scripts['build']}`;
+
+      scripts['start'] = start;
+      scripts['build'] = build;
+
+      return config;
+    });
+
+    return host;
+  };
+}
+
+function addCustomTheme(options: any) {
+  return (host: Tree) => {
+    modifyJSONFile(host, './angular.json', config => {
+      const styles = [
+        './src/themes/theme.base.css',
+        './src/themes/theme.additional.css',
+        'node_modules/devextreme/dist/css/dx.common.css'
+      ];
+
+      return addStylesToApp(host, options.project, config, styles);
+    });
+
+    return host;
+  };
+}
+
 function addImportToAppModule(rootPath: string, importName: string, path: string) {
   return (host: Tree) => {
     const appModulePath = rootPath + 'app.module.ts';
@@ -124,7 +166,7 @@ function getComponentName(host: Tree, rootPath: string) {
 }
 
 function findLayout(layout: string) {
-  const layouts = ["side-nav-outer-toolbar"];
+  const layouts = ['side-nav-outer-toolbar'];
 
   return layouts.some((item) => item === layout);
 }
@@ -150,6 +192,7 @@ export default function(options: any): Rule {
     const project = getProjectName(host, options.project);
     const rootPath = getApplicationPath(host, project);
     const layout = options.layout;
+    const engine = `"angular"`;
 
     if (!findLayout(layout)) {
       throw new SchematicsException(`${layout} layout not found.`);
@@ -162,8 +205,8 @@ export default function(options: any): Rule {
         ])
       ),
       mergeWith(
-        apply(url(`./files/menu/${options.layout}`), [
-          move(rootPath + 'shared/components/navigation-menu/')
+        apply(url('./files/menu'), [
+          move(rootPath + 'shared/components/')
         ])
       ),
       mergeWith(
@@ -172,8 +215,16 @@ export default function(options: any): Rule {
         ])
       ),
       mergeWith(
-        apply(url(`./files/layouts/${options.layout}`), [
-          move(rootPath + 'layout/')
+        apply(url('./files/layouts'), [
+          move(rootPath + 'layouts/')
+        ])
+      ),
+      mergeWith(
+        apply(url('./files/devextreme-config'), [
+          template({
+            'engine': engine
+          }),
+          move('./')
         ])
       ),
       mergeWith(
@@ -181,8 +232,10 @@ export default function(options: any): Rule {
           move(rootPath.replace(/app\//, '') + 'themes/')
         ])
       ),
-      addImportToAppModule(rootPath, 'AppLayoutModule', './layout/layout.component'),
+      addImportToAppModule(rootPath, 'AppLayoutModule', `./layouts/${layout}/layout.component`),
       addStyles(rootPath),
+      addBuildTheme(),
+      addCustomTheme(options),
       addAngularSDKToDependency(),
       (_host: Tree, context: SchematicContext) => {
         context.addTask(new NodePackageInstallTask());
