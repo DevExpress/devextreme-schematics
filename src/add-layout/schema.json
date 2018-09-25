@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "id": "SchematicsDevextremeAddLayout",
+  "title": "Add DevExtreme Layout to the Angular application.",
+  "type": "object",
+  "properties": {
+    "layout": {
+      "type": "string",
+      "description": "The type of DevExtreme layout to include",
+      "default": "side-nav-outer-toolbar"
+    }
+  }
+}

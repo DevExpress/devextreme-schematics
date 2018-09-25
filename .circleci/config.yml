@@ -1,0 +1,17 @@
+version: 2
+jobs:
+  build:
+    working_directory: ~/devextreme-schematics-test
+    docker:
+      - image: circleci/node:8.11.4
+    steps:
+      - checkout
+      - run:
+          name: install-npm
+          command: npm install
+      - run:
+          name: test
+          command: npm run test
+      - store_artifacts:
+          path: test-results.xml
+          prefix: tests

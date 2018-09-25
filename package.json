@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "description": "DevExtreme schematics",
   "scripts": {
-    "build": "tsc -p tsconfig.json"
+    "build": "tsc -p tsconfig.json",
+    "test": "npm run build && jasmine **/*_spec.js"
   },
   "author": "",
   "license": "MIT",
@@ -16,5 +17,8 @@
     "@types/jasmine": "^2.6.0",
     "@types/node": "^8.10.27",
     "typescript": "^2.5.2"
+  },
+  "devDependencies": {
+    "jasmine": "^2.8.0"
   }
 }
