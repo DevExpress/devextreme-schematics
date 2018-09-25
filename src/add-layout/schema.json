@@ -16,7 +16,7 @@
     "overwriteAppComponent": {
       "type": "boolean",
       "description": "Specifies if the app component will be overwrite",
-      "default": "false"
+      "default": false
     }
   }
 }
