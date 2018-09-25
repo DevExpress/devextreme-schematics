@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import 'devextreme/data/odata/store';
 
 @Component({
-    templateUrl: 'display-data.component.html'
+    templateUrl: 'display-data.template.html'
 })
 
 export class DisplayDataComponent {

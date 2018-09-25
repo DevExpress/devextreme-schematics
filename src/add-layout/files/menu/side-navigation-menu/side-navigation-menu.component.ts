@@ -1,11 +1,10 @@
 import { Component, NgModule, Output, Input, EventEmitter, ViewChild } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { DxTreeViewModule, DxTreeViewComponent } from 'devextreme-angular/ui/tree-view';
 
 @Component({
     selector: 'app-navigation-menu',
-    templateUrl: './side-navigation-menu.component.html',
-    styleUrls: ['./side-navigation-menu.component.scss']
+    templateUrl: './navigation-menu.component.html',
+    styleUrls: ['./navigation-menu.component.scss']
 })
 export class SideNavigationMenuComponent {
     @ViewChild(DxTreeViewComponent)
@@ -44,7 +43,7 @@ export class SideNavigationMenuComponent {
 }
 
 @NgModule({
-    imports: [ CommonModule, DxTreeViewModule ],
+    imports: [ DxTreeViewModule ],
     declarations: [ SideNavigationMenuComponent ],
     exports: [ SideNavigationMenuComponent ]
 })

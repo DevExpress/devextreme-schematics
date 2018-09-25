@@ -17,7 +17,7 @@ export class AppLayoutComponent implements OnInit {
     menuItems = navigation;
     selectedRoute = '';
 
-    menuOpened = false;
+    menuOpened;
     menuMode = 'shrink';
     menuRevealMode = 'expand';
     minMenuSize = 0;
@@ -26,9 +26,11 @@ export class AppLayoutComponent implements OnInit {
     constructor(private breakpointObserver: BreakpointObserver, private router: Router) { }
 
     ngOnInit() {
+        this.menuOpened = this.isLargeScreen;
+
         this.router.events.subscribe(val => {
             if (val instanceof NavigationEnd) {
-                this.selectedRoute = val.url;
+                this.selectedRoute = val.urlAfterRedirects;
             }
         });
 
@@ -41,13 +43,18 @@ export class AppLayoutComponent implements OnInit {
 
     updateDrawer() {
         const isXSmall = this.breakpointObserver.isMatched(Breakpoints.XSmall);
+
+        this.menuMode = this.isLargeScreen ? 'shrink' : 'overlap';
+        this.menuRevealMode = isXSmall ? 'slide' : 'expand';
+        this.minMenuSize = isXSmall ? 0 : 60;
+        this.shaderEnabled = !this.isLargeScreen;
+    }
+
+    get isLargeScreen() {
         const isLarge = this.breakpointObserver.isMatched(Breakpoints.Large);
         const isXLarge = this.breakpointObserver.isMatched(Breakpoints.XLarge);
 
-        this.menuMode = isLarge || isXLarge ? 'shrink' : 'overlap';
-        this.menuRevealMode = isXSmall ? 'slide' : 'expand';
-        this.minMenuSize = isXSmall ? 0 : 60;
-        this.shaderEnabled = !isLarge && !isXLarge;
+        return isLarge || isXLarge;
     }
 
     get hideMenuAfterNavigation() {
@@ -60,12 +67,21 @@ export class AppLayoutComponent implements OnInit {
 
     navigationChanged(event) {
         const path = event.itemData.path;
-        if (path && this.menuOpened) {
-            this.router.navigate([path]);
-        }
+        const pointerEvent = event.event;
 
-        if (this.hideMenuAfterNavigation) {
-            this.menuOpened = false;
+        if (path && this.menuOpened) {
+            if (event.node.selected) {
+                pointerEvent.preventDefault();
+            } else {
+                this.router.navigate([path]);
+            }
+
+            if (this.hideMenuAfterNavigation) {
+                this.menuOpened = false;
+                pointerEvent.stopPropagation();
+            }
+        } else {
+            pointerEvent.preventDefault();
         }
     }
 
@@ -77,7 +93,7 @@ export class AppLayoutComponent implements OnInit {
 }
 
 @NgModule({
-    imports: [ HeaderModule, SideNavigationMenuModule, DxDrawerModule, DxScrollViewModule ],
+    imports: [ HeaderModule, NavigationMenuModule, DxDrawerModule, DxScrollViewModule ],
     exports: [ AppLayoutComponent ],
     declarations: [ AppLayoutComponent ]
 })
