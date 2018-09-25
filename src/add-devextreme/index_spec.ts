@@ -67,6 +67,15 @@ describe('add-devextreme', () => {
     expect(styles[1]).toBe('node_modules/devextreme/dist/css/dx.light.css');
   });
 
+  it('should register jszip', () => {
+    const runner = new SchematicTestRunner('schematics', collectionPath);
+    const tree = runner.runSchematic('add-devextreme', {}, appTree);
+    const tsconfig = JSON.parse(tree.readContent('tsconfig.json'));
+    const jszip = tsconfig['compilerOptions']['paths']['jszip'];
+
+    expect(jszip[0]).toBe('node_modules/jszip/dist/jszip.min.js');
+  });
+  
   it('should add devextreme styles to the specified project', () => {
     const secondAppOptions: any = {
       name: 'testApp2',
