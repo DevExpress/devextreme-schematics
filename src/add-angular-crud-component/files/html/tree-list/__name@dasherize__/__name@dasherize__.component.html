@@ -1,0 +1,25 @@
+<h1><%= name %></h1>
+<%
+let editing = componentOptions.editing.allowAdding ||
+              componentOptions.editing.allowUpdating ||
+              componentOptions.editing.allowDeleting;
+%>
+<dx-tree-list
+    [dataSource]="dataSource"> <% if(editing) { %>
+    <dxo-editing <% if(componentOptions.editing.allowAdding) { %>
+        [allowAdding]="true" <% } if(componentOptions.editing.allowUpdating) { %>
+        [allowUpdating]="true" <% } if(componentOptions.editing.allowDeleting) { %>
+        [allowDeleting]="true" <% } %>
+    ></dxo-editing> <% } %>
+<% for(let i = 0; i < componentOptions.columns.length; i++) {
+  let name = componentOptions.columns[i];
+  let property = GetProperty(apiSpec, name);
+%>
+    <dxi-column
+        dataField="<%= property.name %>"
+        dataType="<%= property.type %>"<% if(property.format) { %>
+        format="<%= property.format %>"<% } %>><% if(isLookup(property)) { %>
+        <dxo-lookup [dataSource]="<%= camelize(getLookupName(property)) %>Data" valueExpr="Value" displayExpr="Text"></dxo-lookup> <% } %>
+    </dxi-column>
+<% } %>
+</dx-tree-list>
