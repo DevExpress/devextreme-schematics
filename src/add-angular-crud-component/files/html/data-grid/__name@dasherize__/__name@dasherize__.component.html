@@ -14,7 +14,7 @@ let editing = componentOptions.editing.allowAdding ||
     ></dxo-editing> <% } %>
 <% for(let i = 0; i < componentOptions.columns.length; i++) {
   let name = componentOptions.columns[i];
-  let property = GetProperty(apiSpec, name);
+  let property = getProperty(apiSpec, name);
 %>
     <dxi-column
         dataField="<%= property.name %>"

@@ -4,7 +4,7 @@ export function getDbName(model: ApiSpecModel) : string {
   return model.dbset;
 }
 
-export function GetProperty(model: ApiSpecModel, name: string) : PropertyModel {
+export function getProperty(model: ApiSpecModel, name: string) : PropertyModel {
   let index = model.properties.findIndex((item) => item.name === name);
   return model.properties[index];
 }
