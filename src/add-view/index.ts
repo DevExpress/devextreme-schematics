@@ -22,7 +22,7 @@ import {
 
 import { getSourceFile } from '../utility/source';
 
-import { strings } from '@angular-devkit/core';
+import { strings, basename, normalize } from '@angular-devkit/core';
 
 import {
   getProjectName,
@@ -34,13 +34,13 @@ function findComponentInRoutes(text: string, componentName: string) {
 }
 
 function getChangesForRoutes(name: string, routes: Node) {
-  const componentName = `${strings.classify(name)}Component`;
+  const componentName = `${strings.classify(basename(normalize(name)))}Component`;
   const routesText = routes.getText();
 
   return findComponentInRoutes(routesText, componentName)
     ? ''
     : `{
-        path: '${strings.camelize(name)}',
+        path: '${strings.dasherize(name)}',
         component: ${componentName}
     }`
 }
@@ -82,9 +82,9 @@ function addViewToNavigation(options: any) {
       }
 
       const changes = `{
-            text: '${strings.capitalize(options.name)}',
-            path: '${strings.camelize(options.name)}',
-            icon: '${options.icon || ''}'
+            text: '${strings.capitalize(basename(normalize(options.name)))}',
+            path: '${strings.dasherize(options.name)}',
+            icon: '${options.icon}'
         }`;
 
       return applyChanges(host, changes, navigationFilePath, source.getText(), source.getEnd());
@@ -122,6 +122,13 @@ export function addViewToRouting(options: any) {
   }
 }
 
+function getPathForView(name: string) {
+  if(name.includes('/')) {
+    return name;
+  }
+  return 'pages/' + name;
+}
+
 function getModuleName(addRoute: boolean, moduleName: string) {
   if (!moduleName && addRoute) {
     return 'app-routing';
@@ -134,7 +141,7 @@ export default function (options: any): Rule {
     const addRoute = options.addRoute;
     const project = getProjectName(host, options);
     const module = getModuleName(addRoute, options.module);
-    const name = options.name;
+    const name = getPathForView(options.name);
 
     let rules = [schematic('component', {
       name,

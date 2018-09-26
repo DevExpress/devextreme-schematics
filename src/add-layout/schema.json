@@ -8,6 +8,15 @@
       "type": "string",
       "description": "The type of DevExtreme layout to include",
       "default": "side-nav-outer-toolbar"
+    },
+    "project": {
+      "type": "string",
+      "description": "The name of project to modify"
+    },
+    "overwriteAppComponent": {
+      "type": "boolean",
+      "description": "Specifies if the app component will be overwrite",
+      "default": false
     }
   }
 }

@@ -49,6 +49,14 @@ describe('add-devextreme', () => {
     expect(packageConfig.dependencies.devextreme).toBe('18.2.3');
   });
 
+  it('should add devextreme cli devDependency', () => {
+    const runner = new SchematicTestRunner('schematics', collectionPath);
+    const tree = runner.runSchematic('add-devextreme', { dxversion: '18.2.3' }, appTree);
+    const packageConfig = JSON.parse(tree.readContent('package.json'));
+
+    expect(packageConfig.devDependencies['devextreme-cli']).toBeDefined();
+  });
+
   it('should add devextreme styles', () => {
     const runner = new SchematicTestRunner('schematics', collectionPath);
     const tree = runner.runSchematic('add-devextreme', {}, appTree);
@@ -67,7 +75,7 @@ describe('add-devextreme', () => {
 
     expect(jszip[0]).toBe('node_modules/jszip/dist/jszip.min.js');
   });
-
+  
   it('should add devextreme styles to the specified project', () => {
     const secondAppOptions: any = {
       name: 'testApp2',

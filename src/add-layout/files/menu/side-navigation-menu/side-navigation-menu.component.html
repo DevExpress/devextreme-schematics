@@ -1,0 +1,10 @@
+<ng-content></ng-content>
+
+<dx-tree-view
+    expandEvent="click"
+    [items]="items"
+    (onItemClick)="onItemSelectionChanged($event)"
+    [selectByClick]="true"
+    selectionMode="single"
+    keyExpr="path">
+</dx-tree-view>

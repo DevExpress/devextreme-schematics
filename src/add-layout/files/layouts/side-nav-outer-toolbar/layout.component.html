@@ -1,0 +1,31 @@
+<div class="container dx-theme-material-typography">
+    <app-header
+        class="header"
+        (menuToggle)="menuOpened = !menuOpened;"
+        title="DevExtreme Angular Template">
+    </app-header>
+    <dx-drawer
+        class="content"
+        [closeOnOutsideClick]="shaderEnabled"
+        [openedStateMode]="menuMode"
+        [revealMode]="menuRevealMode"
+        [minSize]="minMenuSize"
+        [shading]="shaderEnabled"
+        [(opened)]="menuOpened">
+
+        <app-navigation-menu
+            [items]="menuItems"
+            [compactMode]="!menuOpened"
+            [selectedItem]="selectedRoute"
+            class="dx-swatch-additional"
+            *dxTemplate="let dataMenu of 'panel'"
+            (selectedItemChanged)="navigationChanged($event)"
+            (click)="navigationClick()">
+        </app-navigation-menu>
+
+        <dx-scroll-view>
+            <ng-content></ng-content>
+            <ng-content select=".footer"></ng-content>
+        </dx-scroll-view>
+    </dx-drawer>
+</div>
