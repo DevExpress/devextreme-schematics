@@ -30,7 +30,7 @@ function getActionUrlByMethod(model: ApiSpecModel, method: string) : string {
     if(model.actions[name].method === method)
       return name;
   }
-  return "";
+  return '';
 }
 
 export function getKeyDataProperty(model: ApiSpecModel) : any {
@@ -39,7 +39,7 @@ export function getKeyDataProperty(model: ApiSpecModel) : any {
     return properties.map((item) => { return item.name; });
   if(properties.length === 1)
     return properties[0].name;
-  return "";
+  return '';
 }
 
 export function isLookup(item:PropertyModel) : boolean {
