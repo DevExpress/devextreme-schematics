@@ -29,7 +29,7 @@
     },
     "add-angular-crud-component": {
       "description": "Add a new Angular Component with a DevExtreme control that accesses data from an API controller.",
-      "factory": "./add-angular-crud-component/index#crudComponent",
+      "factory": "./add-angular-crud-component/index",
       "schema": "./add-angular-crud-component/schema.json"
     }
   }

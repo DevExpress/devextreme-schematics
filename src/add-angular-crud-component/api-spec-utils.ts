@@ -5,39 +5,39 @@ export function getDbName(model: ApiSpecModel) : string {
 }
 
 export function GetProperty(model: ApiSpecModel, name: string) : PropertyModel {
-  let index = model.properties.findIndex((item) => item.name == name);
+  let index = model.properties.findIndex((item) => item.name === name);
   return model.properties[index];
 }
 
 export function getLoadUrl(model: ApiSpecModel) : string {
-  return getActionUrlByMethod(model, "GET");
+  return getActionUrlByMethod(model, 'GET');
 }
 
 export function getInsertUrl(model: ApiSpecModel) : string {
-  return getActionUrlByMethod(model, "POST");
+  return getActionUrlByMethod(model, 'POST');
 }
 
 export function getUpdateUrl(model: ApiSpecModel) : string {
-  return getActionUrlByMethod(model, "PUT");
+  return getActionUrlByMethod(model, 'PUT');
 }
 
 export function getDeleteUrl(model: ApiSpecModel) : string {
-  return getActionUrlByMethod(model, "DELETE");
+  return getActionUrlByMethod(model, 'DELETE');
 }
 
 function getActionUrlByMethod(model: ApiSpecModel, method: string) : string {
   for(let name in model.actions) {
-    if(model.actions[name].method == method)
+    if(model.actions[name].method === method)
       return name;
   }
   return "";
 }
 
 export function getKeyDataProperty(model: ApiSpecModel) : any {
-  let properties:PropertyModel[] = model.properties.filter((item) => item.isKey == true);
+  let properties:PropertyModel[] = model.properties.filter((item) => item.isKey === true);
   if(properties.length > 1)
     return properties.map((item) => { return item.name; });
-  if(properties.length == 1)
+  if(properties.length === 1)
     return properties[0].name;
   return "";
 }
@@ -48,7 +48,7 @@ export function isLookup(item:PropertyModel) : boolean {
 
 export function getDataLookups(model: ApiSpecModel) : LookupModel[] {
   let properties:PropertyModel[] = model.properties.filter((item, pos) => {
-    return isLookup(item) && model.properties.indexOf(item) == pos;
+    return isLookup(item) && model.properties.indexOf(item) === pos;
   });
 
   return properties.map((item) => {

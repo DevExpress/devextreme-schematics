@@ -9,9 +9,9 @@ import * as apiSpecUtils from './api-spec-utils';
 import { ApiSpecModel } from './api-spec-model';
 import { ComponentOptionsModel } from './component-options-model';
 import { ComponentOptions } from './schema';
-import { addImportToParentModule } from './ng-module-utils';
+import { addImportToParentModule } from '../utility/ng-module-utils';
 
-export function crudComponent(options: ComponentOptions): Rule {
+export default function(options: ComponentOptions): Rule {
   return (tree: Tree, _context: SchematicContext) => {
     options.path = options.path || "src/app";
     options.path = options.path ? normalize(options.path) : options.path;
