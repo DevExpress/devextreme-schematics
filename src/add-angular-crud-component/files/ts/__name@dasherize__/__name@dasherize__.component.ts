@@ -1,8 +1,5 @@
-import { Component, Inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { Component } from '@angular/core';
 import { Service } from './<%= dasherize(name) %>.service';
-
-import { Dx<%= componentOptions.controlToScaffold %>Module } from 'devextreme-angular';
 
 @Component({
   selector: '<%= name %>',
