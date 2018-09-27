@@ -1,4 +1,4 @@
-# add-devextreme Schematic
+# add-sample-views
 
 A schematic that adds sample views to an Angular application.
 

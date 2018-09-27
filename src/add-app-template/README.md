@@ -1,4 +1,4 @@
-# add-devextreme Schematic
+# add-app-template
 
 A schematic that adds a DevExtreme layout template to an Angular application.
 

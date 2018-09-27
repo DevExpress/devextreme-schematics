@@ -1,4 +1,4 @@
-# add-devextreme Schematic
+# add-layout
 
 A schematic that adds a DevExtreme layout to an Angular application.
 

@@ -1,4 +1,4 @@
-# add-devextreme Schematic
+# add-devextreme
 
 A schematic that adds DevExtreme to an Angular application.
 

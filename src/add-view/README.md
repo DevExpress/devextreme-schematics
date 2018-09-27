@@ -1,4 +1,4 @@
-# add-devextreme Schematic
+# add-view
 
 A schematic that adds a view to an Angular application.
 
