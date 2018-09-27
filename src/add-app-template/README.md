@@ -7,10 +7,10 @@ A schematic that adds a DevExtreme layout template to an Angular application.
 - layout (string)  
  The type of a DevExtreme layout to add
 
-- dxversion (string)
+- dxversion (string)  
  The DevExtreme version
 
-- project (string)
+- project (string)  
  The name of a project to modify
 
 - empty (Boolean)  
