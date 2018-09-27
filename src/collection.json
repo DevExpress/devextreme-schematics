@@ -28,7 +28,7 @@
       "schema": "./add-view/schema.json"
     },
     "add-angular-crud-component": {
-      "description": "Add a new Angular Component with a DevExtreme control that accesses data from an API controller.",
+      "description": "Add an Angular component with a DevExtreme control bound to a service that accesses data from an API controller.",
       "factory": "./add-angular-crud-component/index",
       "schema": "./add-angular-crud-component/schema.json"
     }
