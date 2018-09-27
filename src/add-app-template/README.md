@@ -13,7 +13,7 @@ A schematic that adds a DevExtreme layout template to an Angular application.
 - project (string)
  The name of a project to modify
 
--empty (Boolean)  
+- empty (Boolean)  
  Specifies whether to skip sample views generation
 
 - overrideAppComponent (Boolean)  
