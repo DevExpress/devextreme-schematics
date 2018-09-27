@@ -13,9 +13,9 @@
       "type": "string",
       "description": "The name of project to modify"
     },
-    "overwriteAppComponent": {
+    "overrideAppComponent": {
       "type": "boolean",
-      "description": "Specifies if the app component will be overwrite",
+      "description": "Specifies if the app component will be override",
       "default": false
     }
   }
