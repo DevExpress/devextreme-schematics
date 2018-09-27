@@ -19,7 +19,6 @@
     "@types/json5": "0.0.30",
     "@types/node": "^8.10.27",
     "json5": "^2.0.1",
-    "rxjs": "6.2.2",
     "typescript": "^2.5.2"
   },
   "devDependencies": {
