@@ -10,6 +10,8 @@ import {
   SchematicsException,
   template } from '@angular-devkit/schematics';
 
+import { strings } from '@angular-devkit/core';
+
 import {
   getApplicationPath,
   getProjectName
@@ -45,23 +47,6 @@ import {
 import {
   applyChanges
 } from '../utility/change';
-
-const componentContent = `
-<app-layout #layout>
-    <app-header
-        (menuToggle)="layout.menuOpened = !layout.menuOpened;"
-        title="DevExtreme Angular Template">
-    </app-header>
-
-    <router-outlet></router-outlet>
-
-    <app-footer>
-        Copyright © 2011-2018 Developer Express Inc.
-        <br/>
-        All trademarks or registered trademarks are property of their respective owners.
-    </app-footer>
-</app-layout>
-`;
 
 const styles = `
 html, body {
@@ -136,10 +121,26 @@ function addImportToAppModule(rootPath: string, importName: string, path: string
   };
 }
 
-function addContentToAppComponent(rootPath: string, component: string) {
+function addContentToAppComponent(rootPath: string, component: string, project: string) {
   return(host: Tree) => {
     const appModulePath = rootPath + component;
     const source = getSourceFile(host, appModulePath);
+    const title = project.split('-').map(part => strings.capitalize(part)).join(' ');
+    const componentContent = `<app-layout #layout>
+          <app-header
+              (menuToggle)="layout.menuOpened = !layout.menuOpened;"
+              title="${title}">
+          </app-header>
+
+          <router-outlet></router-outlet>
+
+          <app-footer>
+              Copyright © 2011-2018 Developer Express Inc.
+              <br/>
+              All trademarks or registered trademarks are property of their respective owners.
+          </app-footer>
+      </app-layout>
+    `;
 
     if (!source) {
       return host;
@@ -254,14 +255,13 @@ export default function(options: any): Rule {
     ];
 
     if (options.overrideAppComponent) {
-      rules.push(addContentToAppComponent(rootPath, 'app.component.html'));
+      rules.push(addContentToAppComponent(rootPath, 'app.component.html', project));
     } else {
       const name = getComponentName(host, rootPath);
       rules.push(mergeWith(
         apply(url('./files/component'), [
           template({
-            'name': name,
-            'content': componentContent
+            'name': name
           }),
           move(rootPath)
         ])
