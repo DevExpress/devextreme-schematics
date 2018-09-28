@@ -1,5 +1,5 @@
 # DevExtreme Schematics
-DevExtreme Schematisc is a workflow tool that automates common tasks you can encounter with when developing an Angular application with DevExtreme CLI. Read [this article](https://blog.angular.io/schematics-an-introduction-dc1dfbc2a2b2) for more information on Angular Schematics.
+DevExtreme Schematics are a workflow tool that automates common tasks you can encounter with when developing an Angular application with DevExtreme CLI. Read [this article](https://blog.angular.io/schematics-an-introduction-dc1dfbc2a2b2) for more information on Angular Schematics.
 
 ## Included Schematics
 
