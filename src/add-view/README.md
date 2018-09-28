@@ -14,7 +14,7 @@ A schematic that adds a view to an Angular application.
  The view's icon name
 
 - module (string)  
- Allows specification of the declaring module - ???
+ Allows you to specify the declaring module
 
 - project (string)
  The name of a project to modify
