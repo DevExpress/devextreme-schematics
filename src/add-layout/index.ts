@@ -47,15 +47,21 @@ import {
 } from '../utility/change';
 
 const componentContent = `
-<app-layout>
+<app-layout #layout>
+    <app-header
+        (menuToggle)="layout.menuOpened = !layout.menuOpened;"
+        title="DevExtreme Angular Template">
+    </app-header>
+
     <router-outlet></router-outlet>
 
-    <div class="footer">
+    <app-footer>
         Copyright © 2011-2018 Developer Express Inc.
         <br/>
         All trademarks or registered trademarks are property of their respective owners.
-    </div>
-</app-layout>`;
+    </app-footer>
+</app-layout>
+`;
 
 const styles = `
 html, body {
@@ -88,8 +94,9 @@ function addBuildThemeScript() {
     modifyJSONFile(host, './package.json', config => {
       const scripts = config['scripts'];
 
-      scripts['start'] = `devextreme build && ${scripts['start']}`;
-      scripts['build'] = `devextreme build && ${scripts['build']}`;
+      scripts['build-themes'] = 'devextreme build && copyfiles -u 4 \"./node_modules/devextreme/dist/css/@(icons|fonts)/*.*\" \"./src/themes/generated/\"';
+      scripts['start'] = `npm run build-themes && ${scripts['start']}`;
+      scripts['build'] = `npm run build-themes && ${scripts['build']}`;
 
       return config;
     });
@@ -102,8 +109,8 @@ function addCustomThemeStyles(options: any) {
   return (host: Tree) => {
     modifyJSONFile(host, './angular.json', config => {
       const styles = [
-        './src/themes/theme.base.css',
-        './src/themes/theme.additional.css',
+        './src/themes/generated/theme.base.css',
+        './src/themes/generated/theme.additional.css',
         'node_modules/devextreme/dist/css/dx.common.css'
       ];
 
@@ -172,12 +179,18 @@ function hasRoutingModule(host: Tree, rootPath: string) {
   return host.exists(rootPath + 'app-routing.module.ts');
 }
 
-function addAngularSDKToDependency() {
+function addPackagesToDependency() {
   return (host: Tree) => {
     addPackageJsonDependency(host, {
       type: NodeDependencyType.Default,
       name: '@angular/cdk',
       version: '^6.0.0'
+    });
+
+    addPackageJsonDependency(host, {
+      type: NodeDependencyType.Default,
+      name: 'copyfiles',
+      version: '^2.1.0'
     });
 
     return host;
@@ -229,10 +242,12 @@ export default function(options: any): Rule {
         ])
       ),
       addImportToAppModule(rootPath, 'AppLayoutModule', `./layouts/${layout}/layout.component`),
+      addImportToAppModule(rootPath, 'HeaderModule', `./shared/components/header/header.component`),
+      addImportToAppModule(rootPath, 'FooterModule', `./shared/components/footer/footer.component`),
       addStyles(rootPath),
       addBuildThemeScript(),
       addCustomThemeStyles(options),
-      addAngularSDKToDependency(),
+      addPackagesToDependency(),
       (_host: Tree, context: SchematicContext) => {
         context.addTask(new NodePackageInstallTask());
       }
