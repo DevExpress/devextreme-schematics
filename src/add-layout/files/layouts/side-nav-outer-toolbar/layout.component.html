@@ -12,7 +12,7 @@
         [shading]="shaderEnabled"
         [(opened)]="menuOpened">
 
-        <app-side-navigation-menu
+        <app-navigation-menu
             [items]="menuItems"
             [compactMode]="!menuOpened"
             [selectedItem]="selectedRoute"
@@ -20,7 +20,7 @@
             *dxTemplate="let dataMenu of 'panel'"
             (selectedItemChanged)="navigationChanged($event)"
             (click)="navigationClick()">
-        </app-side-navigation-menu>
+        </app-navigation-menu>
 
         <dx-scroll-view>
             <ng-content></ng-content>
