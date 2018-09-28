@@ -11,11 +11,11 @@ This package includes the following schematics:
 - add-layout  
  Adds a DevExtreme layout to an Angular application
 
-- add-app-template
+- add-app-template  
  Adds a DevExtreme layout template to an Angular application
 
-- add-sample-views
+- add-sample-views  
  Adds sample views to an Angular application
 
-- add-view
+- add-view  
  Adds a view to an Angular application
