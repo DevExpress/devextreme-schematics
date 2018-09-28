@@ -124,18 +124,18 @@ function addImportToAppModule(rootPath: string, importName: string, path: string
 function getContentForAppComponent(project: string) {
   const title = project.split('-').map(part => strings.capitalize(part)).join(' ');
   return `<app-layout #layout>
-  <app-header
-      (menuToggle)="layout.menuOpened = !layout.menuOpened;"
-      title="${title}">
-  </app-header>
+    <app-header
+        (menuToggle)="layout.menuOpened = !layout.menuOpened;"
+        title="${title}">
+    </app-header>
 
-  <router-outlet></router-outlet>
+    <router-outlet></router-outlet>
 
-  <app-footer>
-      Copyright © 2011-2018 Developer Express Inc.
-      <br/>
-      All trademarks or registered trademarks are property of their respective owners.
-  </app-footer>
+    <app-footer>
+        Copyright © 2011-2018 Developer Express Inc.
+        <br/>
+        All trademarks or registered trademarks are property of their respective owners.
+    </app-footer>
 </app-layout>
 `;
 }

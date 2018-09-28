@@ -54,7 +54,6 @@ export class HeaderComponent {
         if (action === 'route') {
             this.router.navigate(['/profile']);
         }
-
     }
 }
 
