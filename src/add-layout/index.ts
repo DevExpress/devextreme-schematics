@@ -121,26 +121,30 @@ function addImportToAppModule(rootPath: string, importName: string, path: string
   };
 }
 
+function getContentForAppComponent(project: string) {
+  const title = project.split('-').map(part => strings.capitalize(part)).join(' ');
+  return `<app-layout #layout>
+  <app-header
+      (menuToggle)="layout.menuOpened = !layout.menuOpened;"
+      title="${title}">
+  </app-header>
+
+  <router-outlet></router-outlet>
+
+  <app-footer>
+      Copyright © 2011-2018 Developer Express Inc.
+      <br/>
+      All trademarks or registered trademarks are property of their respective owners.
+  </app-footer>
+</app-layout>
+`;
+}
+
 function addContentToAppComponent(rootPath: string, component: string, project: string) {
   return(host: Tree) => {
     const appModulePath = rootPath + component;
     const source = getSourceFile(host, appModulePath);
-    const title = project.split('-').map(part => strings.capitalize(part)).join(' ');
-    const componentContent = `<app-layout #layout>
-          <app-header
-              (menuToggle)="layout.menuOpened = !layout.menuOpened;"
-              title="${title}">
-          </app-header>
-
-          <router-outlet></router-outlet>
-
-          <app-footer>
-              Copyright © 2011-2018 Developer Express Inc.
-              <br/>
-              All trademarks or registered trademarks are property of their respective owners.
-          </app-footer>
-      </app-layout>
-    `;
+    const componentContent = getContentForAppComponent(project);
 
     if (!source) {
       return host;
@@ -261,7 +265,8 @@ export default function(options: any): Rule {
       rules.push(mergeWith(
         apply(url('./files/component'), [
           template({
-            'name': name
+            'name': name,
+            'content': getContentForAppComponent(project)
           }),
           move(rootPath)
         ])
