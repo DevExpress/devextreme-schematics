@@ -23,7 +23,7 @@ A schematic that adds a view to an Angular application.
  Specifies whether to generate a spec file
 
 - inlineStyle (Boolean)  
- Specifies whether to specify styles in the ts file
+ Specifies whether to define styles in the ts file
 
 - prefix (string)  
  The prefix to apply to generated selectors
