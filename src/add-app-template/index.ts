@@ -12,7 +12,6 @@ export default function(options: any): Rule {
     }),
     schematic('add-layout', {
       layout: options.layout,
-      empty: options.empty,
       overrideAppComponent: options.overrideAppComponent
     })
   ];
