@@ -53,11 +53,6 @@ describe('layout', () => {
     const componentContent = tree.readContent('/testApp/src/app/app.component.html');
     expect(componentContent).toMatch(/<app-layout #layout>/);
 
-    const headerContent = tree.readContent('/testApp/src/app/shared/components/header/header.component.ts');
-    expect(headerContent).toMatch(/text: 'Profile'/);
-    expect(headerContent).toMatch(/this.router.navigate\(\['\/profile'\]\)/);
-    expect(headerContent).toMatch(/item === this.userMenuItems\[1\]/);
-
     const stylesContent = tree.readContent('/testApp/src/styles.scss');
     expect(stylesContent).toMatch(/html, body {/);
 
@@ -91,18 +86,6 @@ describe('layout', () => {
 
     const componentContent = tree.readContent('/testApp/src/app/app1.component.html');
     expect(componentContent).toMatch(/<app-layout #layout>/);
-  });
-
-  it('should add login-form without "Profile"', () => {
-    const runner = new SchematicTestRunner('schematics', collectionPath);
-
-    options.empty = true;
-    const tree = runner.runSchematic('add-layout', options, appTree);
-
-    const componentContent = tree.readContent('/testApp/src/app/shared/components/header/header.component.ts');
-    expect(componentContent).not.toMatch(/text: 'Profile'/);
-    expect(componentContent).not.toMatch(/this.router.navigate\(\['\/profile'\]\)/);
-    expect(componentContent).toMatch(/item === this.userMenuItems\[0\]/);
   });
 
   it('should add routing to layout', () => {

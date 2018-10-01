@@ -22,10 +22,10 @@ export class HeaderComponent {
 
     showLoginPopup = false;
     isUserAuthorized = true;
-    userMenuItems = [<% if(!empty) { %>{
+    userMenuItems = [{
         text: 'Profile',
         icon: 'user'
-    }, <% } %>{
+    }, {
         text: 'Logout',
         icon: 'runner'
     }];
@@ -46,11 +46,9 @@ export class HeaderComponent {
     }
 
     onUserMenuItemClick(item) {
-        if (item === <% if(empty) { %>this.userMenuItems[0]<% } else {%>this.userMenuItems[1]<% } %>) {
+        if (item === this.userMenuItems[1]) {
             this.isUserAuthorized = false;
-        }<% if(!empty) { %> else if (item === this.userMenuItems[0]) {
-            this.router.navigate(['/profile']);
-        }<% } %>
+        }
     }
 }
 
