@@ -10,6 +10,8 @@ import {
   SchematicsException,
   template } from '@angular-devkit/schematics';
 
+import { strings } from '@angular-devkit/core';
+
 import {
   getApplicationPath,
   getProjectName
@@ -46,17 +48,6 @@ import {
   applyChanges
 } from '../utility/change';
 
-const componentContent = `
-<app-layout>
-    <router-outlet></router-outlet>
-
-    <div class="footer">
-        Copyright © 2011-2018 Developer Express Inc.
-        <br/>
-        All trademarks or registered trademarks are property of their respective owners.
-    </div>
-</app-layout>`;
-
 const styles = `
 html, body {
   margin: 0px;
@@ -88,8 +79,9 @@ function addBuildThemeScript() {
     modifyJSONFile(host, './package.json', config => {
       const scripts = config['scripts'];
 
-      scripts['start'] = `devextreme build && ${scripts['start']}`;
-      scripts['build'] = `devextreme build && ${scripts['build']}`;
+      scripts['build-themes'] = 'devextreme build && copyfiles -u 4 \"./node_modules/devextreme/dist/css/@(icons|fonts)/*.*\" \"./src/themes/generated/\"';
+      scripts['start'] = `npm run build-themes && ${scripts['start']}`;
+      scripts['build'] = `npm run build-themes && ${scripts['build']}`;
 
       return config;
     });
@@ -102,8 +94,8 @@ function addCustomThemeStyles(options: any) {
   return (host: Tree) => {
     modifyJSONFile(host, './angular.json', config => {
       const styles = [
-        './src/themes/theme.base.css',
-        './src/themes/theme.additional.css',
+        './src/themes/generated/theme.base.css',
+        './src/themes/generated/theme.additional.css',
         'node_modules/devextreme/dist/css/dx.common.css'
       ];
 
@@ -129,10 +121,30 @@ function addImportToAppModule(rootPath: string, importName: string, path: string
   };
 }
 
-function addContentToAppComponent(rootPath: string, component: string) {
+function getContentForAppComponent(project: string) {
+  const title = project.split('-').map(part => strings.capitalize(part)).join(' ');
+  return `<app-layout #layout>
+    <app-header
+        (menuToggle)="layout.menuOpened = !layout.menuOpened;"
+        title="${title}">
+    </app-header>
+
+    <router-outlet></router-outlet>
+
+    <app-footer>
+        Copyright © 2011-2018 Developer Express Inc.
+        <br/>
+        All trademarks or registered trademarks are property of their respective owners.
+    </app-footer>
+</app-layout>
+`;
+}
+
+function addContentToAppComponent(rootPath: string, component: string, project: string) {
   return(host: Tree) => {
     const appModulePath = rootPath + component;
     const source = getSourceFile(host, appModulePath);
+    const componentContent = getContentForAppComponent(project);
 
     if (!source) {
       return host;
@@ -172,12 +184,18 @@ function hasRoutingModule(host: Tree, rootPath: string) {
   return host.exists(rootPath + 'app-routing.module.ts');
 }
 
-function addAngularSDKToDependency() {
+function addPackagesToDependency() {
   return (host: Tree) => {
     addPackageJsonDependency(host, {
       type: NodeDependencyType.Default,
       name: '@angular/cdk',
       version: '^6.0.0'
+    });
+
+    addPackageJsonDependency(host, {
+      type: NodeDependencyType.Default,
+      name: 'copyfiles',
+      version: '^2.1.0'
     });
 
     return host;
@@ -229,24 +247,26 @@ export default function(options: any): Rule {
         ])
       ),
       addImportToAppModule(rootPath, 'AppLayoutModule', `./layouts/${layout}/layout.component`),
+      addImportToAppModule(rootPath, 'HeaderModule', `./shared/components/header/header.component`),
+      addImportToAppModule(rootPath, 'FooterModule', `./shared/components/footer/footer.component`),
       addStyles(rootPath),
       addBuildThemeScript(),
       addCustomThemeStyles(options),
-      addAngularSDKToDependency(),
+      addPackagesToDependency(),
       (_host: Tree, context: SchematicContext) => {
         context.addTask(new NodePackageInstallTask());
       }
     ];
 
     if (options.overrideAppComponent) {
-      rules.push(addContentToAppComponent(rootPath, 'app.component.html'));
+      rules.push(addContentToAppComponent(rootPath, 'app.component.html', project));
     } else {
       const name = getComponentName(host, rootPath);
       rules.push(mergeWith(
         apply(url('./files/component'), [
           template({
             'name': name,
-            'content': componentContent
+            'content': getContentForAppComponent(project)
           }),
           move(rootPath)
         ])
