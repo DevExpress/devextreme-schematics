@@ -215,6 +215,9 @@ export default function(options: any): Rule {
     let rules = [
       mergeWith(
         apply(url('./files/shared'), [
+          template({
+            empty: options.empty
+          }),
           move(rootPath + 'shared/components/')
         ])
       ),
