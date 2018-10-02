@@ -1,12 +1,12 @@
 {
   "$schema": "http://json-schema.org/schema",
   "id": "SchematicsDevextremeAddView",
-  "title": "Devextreme Add View Options Schema",
+  "title": "Add a view to a DevExtreme app template.",
   "type": "object",
   "properties": {
     "name": {
       "type": "string",
-      "description": "The name of the view.",
+      "description": "The view name",
       "$default": {
         "$source": "argv",
         "index": 0
@@ -14,35 +14,35 @@
     },
     "addRoute": {
       "type": "boolean",
-      "description": "Specifies if the new view will be in routes.",
+      "description": "Specifies whether to register a route for the view",
       "default": true
     },
     "icon": {
       "type": "string",
-      "description": "The name of icon.",
+      "description": "The view's icon name",
       "default": "folder"
     },
     "module": {
       "type": "string",
-      "description": "Allows specification of the declaring module."
+      "description": "Allows you to specify the declaring module"
     },
     "project": {
       "type": "string",
-      "description": "The name of the project."
+      "description": "The name of a project to modify"
     },
     "spec": {
       "type": "boolean",
-      "description": "Specifies if a spec file is generated.",
+      "description": "Specifies whether to generate a spec file",
       "default": true
     },
     "inlineStyle": {
-      "description": "Specifies if the style will be in the ts file.",
+      "description": "Specifies whether to define styles in the ts file",
       "type": "boolean",
       "default": false
     },
     "prefix": {
       "type": "string",
-      "description": "The prefix to apply to generated selectors."
+      "description": "The prefix to apply to generated selectors"
     }
   }
 }

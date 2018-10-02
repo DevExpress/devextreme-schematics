@@ -1,17 +1,17 @@
 {
   "$schema": "http://json-schema.org/schema",
   "id": "SchematicsDevextremeAddDevExtreme",
-  "title": "Add DevExtreme to the Angular application.",
+  "title": "Add DevExtreme to an Angular application.",
   "type": "object",
   "properties": {
     "dxversion": {
       "type": "string",
-      "description": "The version of DevExtreme",
+      "description": "The DevExtreme version",
       "default": "18.2-unstable"
     },
     "project": {
       "type": "string",
-      "description": "The name of project to modify"
+      "description": "The name of a project to modify"
     }
   }
 }
