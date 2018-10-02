@@ -1,8 +1,5 @@
 {
   "$schema": "../node_modules/@angular-devkit/schematics/collection-schema.json",
-  "extends": [
-    "@schematics/angular"
-  ],
   "schematics": {
     "add-app-template": {
       "description": "Include a DevExtreme Layout Template in the Anular application.",
