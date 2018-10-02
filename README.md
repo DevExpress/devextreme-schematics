@@ -5,7 +5,7 @@ DevExtreme schematics are workflow tools you can use in an Angular application c
 
 This package includes the following schematics:
 
-- [add-devextreme](src/add-devextreme)  
+- [install](src/install)  
  Adds DevExtreme to an Angular application
 
 - [add-layout](src/add-layout)  
