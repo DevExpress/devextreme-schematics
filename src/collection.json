@@ -1,14 +1,10 @@
 {
   "$schema": "../node_modules/@angular-devkit/schematics/collection-schema.json",
   "schematics": {
-    "add-app-template": {
-      "description": "Include a DevExtreme Layout Template in the Anular application.",
-      "factory": "./add-app-template/index",
-      "schema": "./add-app-template/schema.json"
-    },
-    "add-devextreme": {
+    "ng-add": {
       "description": "Add DevExtreme to the Angular application.",
-      "factory": "./add-devextreme/index"
+      "factory": "./install/index",
+      "aliases": [ "install" ]
     },
     "add-layout": {
       "description": "Add DevExtreme Layout to the Angular application.",
@@ -18,6 +14,11 @@
     "add-sample-views": {
       "description": "Add Sample views to the Angular application.",
       "factory": "./add-sample-views/index"
+    },
+    "add-app-template": {
+      "description": "Include a DevExtreme Layout Template in the Anular application.",
+      "factory": "./add-app-template/index",
+      "schema": "./add-app-template/schema.json"
     },
     "add-view": {
       "description": "Add a new view to app-template.",
