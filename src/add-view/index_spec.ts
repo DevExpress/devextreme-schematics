@@ -65,7 +65,7 @@ describe('view', () => {
     const options = { ...componentOptions, addRoute: true, module: 'test/test-routing' };
 
     const runner = new SchematicTestRunner('schematics', collectionPath);
-    let tree = runner.runSchematic('module', { name: 'test', routing: true, project: 'testApp' }, appTree);
+    let tree = runner.runExternalSchematic('@schematics/angular', 'module', { name: 'test', routing: true, project: 'testApp' }, appTree);
     tree = runner.runSchematic('add-view', options, tree);
 
     const moduleContent = tree.readContent('/testApp/src/app/test/test-routing.module.ts');

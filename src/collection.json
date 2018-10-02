@@ -1,8 +1,5 @@
 {
   "$schema": "../node_modules/@angular-devkit/schematics/collection-schema.json",
-  "extends": [
-    "@schematics/angular"
-  ],
   "schematics": {
     "ng-add": {
       "description": "Add DevExtreme to the Angular application.",
