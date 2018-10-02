@@ -1,45 +1,60 @@
-
-<dx-toolbar>
-    <dxi-item
-        location="before"
-        widget="dxButton"
-        [options]="{
-            icon: 'menu',
-            onClick: toggleMenu,
-            elementAttr: { class: 'dx-menu-button' }
-        }">
-    </dxi-item>
-    <dxi-item
-        location="before"
-        *ngIf="title"
-        [text]="title">
-    </dxi-item>
-    <dxi-item
-        location="after"
-        locateInMenu="auto"
-        widget="dxButton"
-        [visible]="!isUserAuthorized"
-        [options]="{
-            icon: 'user',
-            text:'Login',
-            onClick: onShowLoginPopup
-        }">
-    </dxi-item>
-    <dxi-item 
-        location="after"
-        locateInMenu="auto"
-        [visible]="isUserAuthorized">
-        <div *dxTemplate>
-            <div class="image-container">
-                <img class="user-image" src="https://js.devexpress.com/Demos/WidgetsGallery/JSDemos/images/employees/06.png">
+<header>
+    <dx-toolbar>
+        <dxi-item
+            location="before"
+            widget="dxButton"
+            [options]="{
+                icon: 'menu',
+                onClick: toggleMenu,
+                elementAttr: { class: 'dx-menu-button' }
+            }">
+        </dxi-item>
+        <dxi-item
+            location="before"
+            *ngIf="title"
+            [text]="title">
+        </dxi-item>
+        <dxi-item
+            location="after"
+            locateInMenu="auto"
+            widget="dxButton"
+            [visible]="!isUserAuthorized"
+            [options]="{
+                icon: 'user',
+                text:'Login',
+                onClick: onShowLoginPopup,
+                elementAttr: { class: 'authorization' }
+            }">
+        </dxi-item>
+        <dxi-item
+            location="after"
+            locateInMenu="auto"
+            (onClick)="contextMenu()"
+            [visible]="isUserAuthorized"
+            menuItemTemplate="menuItem">
+            <div *dxTemplate="let data of 'item'">
+                <dx-button
+                    class="user-button authorization dx-button-flat"
+                    width="170px"
+                    height="100%">
+                    <div *dxTemplate="let data of 'content'">
+                        <app-user-panel [menuItems]="userMenuItems" menuMode="context" (itemClick)="onUserMenuItemClick($event)"></app-user-panel>
+                    </div>
+                </dx-button>
             </div>
-            {{userLogin}}
+        </dxi-item>
+        <div *dxTemplate="let data of 'menuItem'">
+            <app-user-panel [menuItems]="userMenuItems" menuMode="list" (itemClick)="onUserMenuItemClick($event)"></app-user-panel>
         </div>
-    </dxi-item>
-</dx-toolbar>
+    </dx-toolbar>
 
-<dx-popup [(visible)]="showLoginPopup" title="Authorization" height="auto" [width]="300">
-    <div *dxTemplate="let data of 'content'">
-        <app-login (onLoginClick)="loginClick($event)"></app-login>
-    </div>
-</dx-popup>
+    <dx-popup
+        [(visible)]="showLoginPopup"
+        title="Authorization"
+        height="auto"
+        [width]="300">
+        <div *dxTemplate="let data of 'content'">
+            <app-login-form (userAuthorized)="onLoginClick($event)"></app-login-form>
+        </div>
+    </dx-popup>
+</header>

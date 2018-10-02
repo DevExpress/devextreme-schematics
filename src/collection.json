@@ -26,6 +26,11 @@
       "description": "Add a new view to app-template.",
       "factory": "./add-view/index",
       "schema": "./add-view/schema.json"
+    },
+    "add-angular-crud-component": {
+      "description": "Add an Angular component with a DevExtreme control bound to a service that accesses data from an API controller.",
+      "factory": "./add-angular-crud-component/index",
+      "schema": "./add-angular-crud-component/schema.json"
     }
   }
 }
