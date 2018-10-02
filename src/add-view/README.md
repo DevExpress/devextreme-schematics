@@ -1,6 +1,6 @@
 # add-view
 
-A schematic that adds a view to an Angular application.
+Add a view to a DevExtreme app template.
 
 ## Properties
 

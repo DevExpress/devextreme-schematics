@@ -15,7 +15,7 @@ This package includes the following schematics:
  Adds a DevExtreme layout template to an Angular application
 
 - [add-sample-views](src/add-sample-views)  
- Adds sample views to an Angular application
+ Adds sample views to a DevExtreme app template
 
 - [add-view](src/add-view)  
- Adds a view to an Angular application
+ Adds a view to a DevExtreme app template

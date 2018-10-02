@@ -1,31 +1,31 @@
 {
   "$schema": "http://json-schema.org/schema",
   "id": "SchematicsDevextremeAddAppTemplate",
-  "title": "Include a DevExtreme Layout Template in the Anular application.",
+  "title": "Add a DevExtreme Layout Template to an Anular application.",
   "type": "object",
   "properties": {
     "layout": {
       "type": "string",
-      "description": "The type of DevExtreme layout to include",
+      "description": "The type of a DevExtreme layout to add",
       "default": "side-nav-outer-toolbar"
     },
     "dxversion": {
       "type": "string",
-      "description": "The version of DevExtreme",
+      "description": "The DevExtreme version",
       "default": "18.2-unstable"
     },
     "project": {
       "type": "string",
-      "description": "The name of project to modify"
+      "description": "The name of a project to modify"
     },
     "empty": {
       "type": "boolean",
-      "description": "Skip sample views generation",
+      "description": "Specifies whether to skip sample views generation",
       "default": false
     },
     "overrideAppComponent": {
       "type": "boolean",
-      "description": "Specifies if the app component will be override",
+      "description": "Specifies whether to override the existing app component",
       "default": false
     }
   }

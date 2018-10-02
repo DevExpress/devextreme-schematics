@@ -1,6 +1,6 @@
 # add-sample-views
 
-A schematic that adds sample views to an Angular application.
+A schematic that adds sample views to the DevExtreme app template.
 
 ## Properties
 
