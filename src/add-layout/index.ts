@@ -6,6 +6,8 @@ import {
   url,
   move,
   chain,
+  noop,
+  filter,
   mergeWith,
   SchematicsException,
   template } from '@angular-devkit/schematics';
@@ -79,9 +81,7 @@ function addBuildThemeScript() {
     modifyJSONFile(host, './package.json', config => {
       const scripts = config['scripts'];
 
-      scripts['build-themes'] = 'devextreme build && copyfiles -u 4 \"./node_modules/devextreme/dist/css/@(icons|fonts)/*.*\" \"./src/themes/generated/\"';
-      scripts['start'] = `npm run build-themes && ${scripts['start']}`;
-      scripts['build'] = `npm run build-themes && ${scripts['build']}`;
+      scripts['build-themes'] = 'devextreme build';
 
       return config;
     });
@@ -214,36 +214,15 @@ export default function(options: any): Rule {
 
     let rules = [
       mergeWith(
-        apply(url('./files/shared'), [
-          move(rootPath + 'shared/components/')
-        ])
-      ),
-      mergeWith(
-        apply(url('./files/menu'), [
-          move(rootPath + 'shared/components/')
-        ])
-      ),
-      mergeWith(
-        apply(url('./files/navigations'), [
-          move(rootPath)
-        ])
-      ),
-      mergeWith(
-        apply(url('./files/layouts'), [
-          move(rootPath + 'layouts/')
-        ])
-      ),
-      mergeWith(
-        apply(url('./files/devextreme-config'), [
+        apply(url('./files/'), [
+          options.overrideAppComponent ? filter(path => !path.includes('__name__')) : noop(),
+          hasRoutingModule(host, rootPath) ? filter(path => !path.includes('app-routing.module')) : noop(),
           template({
-            'engine': '"angular"'
+            engine: '"angular"',
+            name: getComponentName(host, rootPath),
+            content: getContentForAppComponent(project)
           }),
           move('./')
-        ])
-      ),
-      mergeWith(
-        apply(url('./files/themes'), [
-          move(rootPath.replace(/app\//, '') + 'themes/')
         ])
       ),
       addImportToAppModule(rootPath, 'AppLayoutModule', `./layouts/${layout}/layout.component`),
@@ -260,26 +239,9 @@ export default function(options: any): Rule {
 
     if (options.overrideAppComponent) {
       rules.push(addContentToAppComponent(rootPath, 'app.component.html', project));
-    } else {
-      const name = getComponentName(host, rootPath);
-      rules.push(mergeWith(
-        apply(url('./files/component'), [
-          template({
-            'name': name,
-            'content': getContentForAppComponent(project)
-          }),
-          move(rootPath)
-        ])
-      ));
     }
 
     if (!hasRoutingModule(host, rootPath)) {
-      rules.push(mergeWith(
-        apply(url('./files/routing'), [
-          move(rootPath)
-        ])
-      ));
-
       rules.push(addImportToAppModule(rootPath, 'AppRoutingModule', './app-routing.module'));
     }
 
