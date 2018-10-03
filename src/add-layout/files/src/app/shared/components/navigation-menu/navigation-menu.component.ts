@@ -3,10 +3,10 @@ import { DxTreeViewModule, DxTreeViewComponent } from 'devextreme-angular/ui/tre
 
 @Component({
     selector: 'app-navigation-menu',
-    templateUrl: './side-navigation-menu.component.html',
-    styleUrls: ['./side-navigation-menu.component.scss']
+    templateUrl: './navigation-menu.component.html',
+    styleUrls: ['./navigation-menu.component.scss']
 })
-export class SideNavigationMenuComponent {
+export class NavigationMenuComponent {
     @ViewChild(DxTreeViewComponent)
     menu: DxTreeViewComponent;
 
@@ -65,7 +65,7 @@ export class SideNavigationMenuComponent {
 
 @NgModule({
     imports: [ DxTreeViewModule ],
-    declarations: [ SideNavigationMenuComponent ],
-    exports: [ SideNavigationMenuComponent ]
+    declarations: [ NavigationMenuComponent ],
+    exports: [ NavigationMenuComponent ]
 })
-export class SideNavigationMenuModule { }
+export class NavigationMenuModule { }
