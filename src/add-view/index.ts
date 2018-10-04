@@ -136,6 +136,18 @@ function getModuleName(addRoute: boolean, moduleName: string) {
   return moduleName;
 }
 
+function addContentToView(options: any) {
+  return (host: Tree) => {
+    const {dirName, name, project} = options;
+    const componentPath = `/${getApplicationPath(host, project)}${dirName}/${name}.component.html`;
+    if (host.exists(componentPath)) {
+      host.overwrite(componentPath, `<h2>${name}</h2>\n<div class="dx-card">Put your content here</div>
+      `);
+    }
+    return host;
+  };
+}
+
 export default function (options: any): Rule {
   return (host: Tree) => {
     const addRoute = options.addRoute;
@@ -144,13 +156,17 @@ export default function (options: any): Rule {
     const name = getPathForView(options.name);
 
     let rules = [externalSchematic('@schematics/angular', 'component', {
-      name,
-      project,
-      module,
-      spec: options.spec,
-      inlineStyle: options.inlineStyle,
-      prefix: options.prefix
-    })];
+        name,
+        project,
+        module,
+        spec: options.spec,
+        inlineStyle: options.inlineStyle,
+        prefix: options.prefix
+      }),
+      addContentToView({dirName: name, name: options.name, project})
+    ];
+
+      rules.push();
     if (addRoute) {
       rules.push(addViewToRouting({ name, project, module }));
       rules.push(addViewToNavigation({ name, icon: options.icon, project }));
