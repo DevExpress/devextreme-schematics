@@ -43,7 +43,7 @@ describe('layout', () => {
     expect(tree.files).toContain('/testApp/src/app/shared/components/header/header.component.ts');
     expect(tree.files).toContain('/testApp/src/app/shared/components/login-form/login-form.component.ts');
     expect(tree.files).toContain('/testApp/src/app/shared/components/side-navigation-menu/side-navigation-menu.component.ts');
-    expect(tree.files).toContain('/testApp/src/app/layouts/side-nav-outer-toolbar/layout.component.ts');
+    expect(tree.files).toContain('/testApp/src/app/layouts/side-nav-outer-toolbar/side-nav-outer-toolbar.component.ts');
     expect(tree.files).toContain('/testApp/src/themes/metadata.base.json');
     expect(tree.files).toContain('/testApp/src/themes/metadata.additional.json');
 
@@ -51,7 +51,7 @@ describe('layout', () => {
     expect(devextremeConfigContent).toMatch(/"applicationEngine": "angular"/);
 
     const componentContent = tree.readContent('/testApp/src/app/app.component.html');
-    expect(componentContent).toMatch(/<app-layout #layout>/);
+    expect(componentContent).toMatch(/<app-side-nav-outer-toolbar #layout>/);
 
     const stylesContent = tree.readContent('/testApp/src/styles.scss');
     expect(stylesContent).toMatch(/html, body {/);
@@ -64,7 +64,7 @@ describe('layout', () => {
     expect(styles[2]).toBe('./src/themes/generated/theme.base.css');
 
     const moduleContent = tree.readContent('/testApp/src/app/app.module.ts');
-    expect(moduleContent).toMatch(/import { AppLayoutModule }/);
+    expect(moduleContent).toMatch(/import { AppSideNavOuterToolbarModule }/);
     expect(moduleContent).toMatch(/import { AppRoutingModule }/);
   });
 
@@ -85,7 +85,7 @@ describe('layout', () => {
     expect(tree.files).toContain('/testApp/src/app/app1.component.ts');
 
     const componentContent = tree.readContent('/testApp/src/app/app1.component.html');
-    expect(componentContent).toMatch(/<app-layout #layout>/);
+    expect(componentContent).toMatch(/<app-side-nav-outer-toolbar #layout>/);
   });
 
   it('should add routing to layout', () => {

@@ -12,7 +12,7 @@ import {
   SchematicsException,
   template } from '@angular-devkit/schematics';
 
-import { strings } from '@angular-devkit/core';
+import { strings, basename, normalize } from '@angular-devkit/core';
 
 const runNpxCommand = require('devextreme-cli/utility/run-npx-command');
 
@@ -126,7 +126,7 @@ function addImportToAppModule(rootPath: string, importName: string, path: string
 
 function getContentForAppComponent(project: string) {
   const title = project.split('-').map(part => strings.capitalize(part)).join(' ');
-  return `<app-layout #layout>
+  return `<app-side-nav-outer-toolbar #layout>
     <app-header
         (menuToggle)="layout.menuOpened = !layout.menuOpened;"
         title="${title}">
@@ -139,7 +139,7 @@ function getContentForAppComponent(project: string) {
         <br/>
         All trademarks or registered trademarks are property of their respective owners.
     </app-footer>
-</app-layout>
+</app-side-nav-outer-toolbar>
 `;
 }
 
@@ -236,7 +236,7 @@ export default function(options: any): Rule {
           move('./')
         ])
       ),
-      addImportToAppModule(appPath, 'AppLayoutModule', `./layouts/${layout}/layout.component`),
+      addImportToAppModule(appPath, `App${strings.classify(basename(normalize(layout)))}Module`, `./layouts/${layout}/${layout}.component`),
       addImportToAppModule(appPath, 'HeaderModule', `./shared/components/header/header.component`),
       addImportToAppModule(appPath, 'FooterModule', `./shared/components/footer/footer.component`),
       addStyles(appPath),
