@@ -10,8 +10,11 @@ export function getProjectName(host: Tree, project: any) {
 };
 
 export function getApplicationPath(host: Tree, projectName: string) {
-  const project = getWorkspace(host).projects[projectName];
-  let rootPath = project.sourceRoot || project.root;
-
+  let rootPath = getRootPath(host, projectName);
   return rootPath ? `${rootPath}/app/` : 'src/app/';
+}
+
+export function getRootPath(host: Tree, projectName: string) {
+  const project = getWorkspace(host).projects[projectName];
+  return project.sourceRoot || project.root;
 }

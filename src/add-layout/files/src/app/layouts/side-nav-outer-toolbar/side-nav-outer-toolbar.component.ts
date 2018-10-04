@@ -9,11 +9,11 @@ import { navigation } from '../../app-navigation';
 import { Router, NavigationEnd } from '@angular/router';
 
 @Component({
-    selector: 'app-layout',
-    templateUrl: './layout.component.html',
-    styleUrls: ['./layout.component.scss']
+    selector: 'app-side-nav-outer-toolbar',
+    templateUrl: './side-nav-outer-toolbar.component.html',
+    styleUrls: ['./side-nav-outer-toolbar.component.scss']
 })
-export class AppLayoutComponent implements OnInit {
+export class AppSideNavOuterToolbarComponent implements OnInit {
     menuItems = navigation;
     selectedRoute = '';
 
@@ -105,7 +105,7 @@ export class AppLayoutComponent implements OnInit {
 
 @NgModule({
     imports: [ SideNavigationMenuModule, DxDrawerModule, DxScrollViewModule, CommonModule ],
-    exports: [ AppLayoutComponent ],
-    declarations: [ AppLayoutComponent ]
+    exports: [ AppSideNavOuterToolbarComponent ],
+    declarations: [ AppSideNavOuterToolbarComponent ]
 })
-export class AppLayoutModule { }
+export class AppSideNavOuterToolbarModule { }

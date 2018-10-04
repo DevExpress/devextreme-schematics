@@ -6,14 +6,19 @@ import {
   url,
   move,
   chain,
+  noop,
+  filter,
   mergeWith,
   SchematicsException,
   template } from '@angular-devkit/schematics';
 
-import { strings } from '@angular-devkit/core';
+import { strings, basename, normalize } from '@angular-devkit/core';
+
+const runNpxCommand = require('devextreme-cli/utility/run-npx-command');
 
 import {
   getApplicationPath,
+  getRootPath,
   getProjectName
  } from '../utility/project';
 
@@ -79,9 +84,7 @@ function addBuildThemeScript() {
     modifyJSONFile(host, './package.json', config => {
       const scripts = config['scripts'];
 
-      scripts['build-themes'] = 'devextreme build && copyfiles -u 4 \"./node_modules/devextreme/dist/css/@(icons|fonts)/*.*\" \"./src/themes/generated/\"';
-      scripts['start'] = `npm run build-themes && ${scripts['start']}`;
-      scripts['build'] = `npm run build-themes && ${scripts['build']}`;
+      scripts['build-themes'] = 'devextreme build';
 
       return config;
     });
@@ -123,7 +126,7 @@ function addImportToAppModule(rootPath: string, importName: string, path: string
 
 function getContentForAppComponent(project: string) {
   const title = project.split('-').map(part => strings.capitalize(part)).join(' ');
-  return `<app-layout #layout>
+  return `<app-side-nav-outer-toolbar #layout>
     <app-header
         (menuToggle)="layout.menuOpened = !layout.menuOpened;"
         title="${title}">
@@ -136,7 +139,7 @@ function getContentForAppComponent(project: string) {
         <br/>
         All trademarks or registered trademarks are property of their respective owners.
     </app-footer>
-</app-layout>
+</app-side-nav-outer-toolbar>
 `;
 }
 
@@ -205,7 +208,8 @@ function addPackagesToDependency() {
 export default function(options: any): Rule {
   return (host: Tree, _context: SchematicContext) => {
     const project = getProjectName(host, options.project);
-    const rootPath = getApplicationPath(host, project);
+    const appPath = getApplicationPath(host, project);
+    const rootPath = getRootPath(host, project);
     const layout = options.layout;
 
     if (!findLayout(layout)) {
@@ -214,42 +218,28 @@ export default function(options: any): Rule {
 
     let rules = [
       mergeWith(
-        apply(url('./files/shared'), [
-          move(rootPath + 'shared/components/')
-        ])
-      ),
-      mergeWith(
-        apply(url('./files/menu'), [
-          move(rootPath + 'shared/components/')
-        ])
-      ),
-      mergeWith(
-        apply(url('./files/navigations'), [
+        apply(url('./files/src'), [
+          options.overrideAppComponent ? filter(path => !path.includes('__name__')) : noop(),
+          hasRoutingModule(host, appPath) ? filter(path => !path.includes('app-routing.module')) : noop(),
+          template({
+            name: getComponentName(host, appPath),
+            content: getContentForAppComponent(project)
+          }),
           move(rootPath)
         ])
       ),
       mergeWith(
-        apply(url('./files/layouts'), [
-          move(rootPath + 'layouts/')
-        ])
-      ),
-      mergeWith(
-        apply(url('./files/devextreme-config'), [
+        apply(url('./files/root'), [
           template({
-            'engine': '"angular"'
+            engine: '"angular"'
           }),
           move('./')
         ])
       ),
-      mergeWith(
-        apply(url('./files/themes'), [
-          move(rootPath.replace(/app\//, '') + 'themes/')
-        ])
-      ),
-      addImportToAppModule(rootPath, 'AppLayoutModule', `./layouts/${layout}/layout.component`),
-      addImportToAppModule(rootPath, 'HeaderModule', `./shared/components/header/header.component`),
-      addImportToAppModule(rootPath, 'FooterModule', `./shared/components/footer/footer.component`),
-      addStyles(rootPath),
+      addImportToAppModule(appPath, `App${strings.classify(basename(normalize(layout)))}Module`, `./layouts/${layout}/${layout}.component`),
+      addImportToAppModule(appPath, 'HeaderModule', `./shared/components/header/header.component`),
+      addImportToAppModule(appPath, 'FooterModule', `./shared/components/footer/footer.component`),
+      addStyles(appPath),
       addBuildThemeScript(),
       addCustomThemeStyles(options),
       addPackagesToDependency(),
@@ -259,29 +249,14 @@ export default function(options: any): Rule {
     ];
 
     if (options.overrideAppComponent) {
-      rules.push(addContentToAppComponent(rootPath, 'app.component.html', project));
-    } else {
-      const name = getComponentName(host, rootPath);
-      rules.push(mergeWith(
-        apply(url('./files/component'), [
-          template({
-            'name': name,
-            'content': getContentForAppComponent(project)
-          }),
-          move(rootPath)
-        ])
-      ));
+      rules.push(addContentToAppComponent(appPath, 'app.component.html', project));
     }
 
-    if (!hasRoutingModule(host, rootPath)) {
-      rules.push(mergeWith(
-        apply(url('./files/routing'), [
-          move(rootPath)
-        ])
-      ));
-
-      rules.push(addImportToAppModule(rootPath, 'AppRoutingModule', './app-routing.module'));
+    if (!hasRoutingModule(host, appPath)) {
+      rules.push(addImportToAppModule(appPath, 'AppRoutingModule', './app-routing.module'));
     }
+
+    runNpxCommand(['devextreme build'], { cwd: process.cwd() });
 
     return chain(rules);
   };
