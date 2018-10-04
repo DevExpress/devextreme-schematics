@@ -9,7 +9,6 @@ import {
   noop,
   filter,
   mergeWith,
-  SchematicsException,
   template } from '@angular-devkit/schematics';
 
 import { strings } from '@angular-devkit/core';
@@ -172,12 +171,6 @@ function getComponentName(host: Tree, rootPath: string) {
   return name;
 }
 
-function findLayout(layout: string) {
-  const layouts = ['side-nav-outer-toolbar', 'side-nav-inner-toolbar'];
-
-  return layouts.some((item) => item === layout);
-}
-
 function hasRoutingModule(host: Tree, rootPath: string) {
   return host.exists(rootPath + 'app-routing.module.ts');
 }
@@ -206,10 +199,6 @@ export default function(options: any): Rule {
     const appPath = getApplicationPath(host, project);
     const rootPath = getRootPath(host, project);
     const layout = options.layout;
-
-    if (!findLayout(layout)) {
-      throw new SchematicsException(`${layout} layout not found.`);
-    }
 
     let rules = [
       mergeWith(
