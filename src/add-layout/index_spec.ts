@@ -42,7 +42,7 @@ describe('layout', () => {
     expect(tree.files).toContain('/testApp/src/app/app-navigation.ts');
     expect(tree.files).toContain('/testApp/src/app/shared/components/header/header.component.ts');
     expect(tree.files).toContain('/testApp/src/app/shared/components/login-form/login-form.component.ts');
-    expect(tree.files).toContain('/testApp/src/app/shared/components/side-navigation-menu/side-navigation-menu.component.ts');
+    expect(tree.files).toContain('/testApp/src/app/shared/components/navigation-menu/navigation-menu.component.ts');
     expect(tree.files).toContain('/testApp/src/app/layouts/side-nav-outer-toolbar/layout.component.ts');
     expect(tree.files).toContain('/testApp/src/themes/metadata.base.json');
     expect(tree.files).toContain('/testApp/src/themes/metadata.additional.json');

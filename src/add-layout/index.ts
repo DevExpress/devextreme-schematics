@@ -16,6 +16,7 @@ import { strings } from '@angular-devkit/core';
 
 import {
   getApplicationPath,
+  getRootPath,
   getProjectName
  } from '../utility/project';
 
@@ -205,7 +206,8 @@ function addPackagesToDependency() {
 export default function(options: any): Rule {
   return (host: Tree, _context: SchematicContext) => {
     const project = getProjectName(host, options.project);
-    const rootPath = getApplicationPath(host, project);
+    const appPath = getApplicationPath(host, project);
+    const rootPath = getRootPath(host, project);
     const layout = options.layout;
 
     if (!findLayout(layout)) {
@@ -214,21 +216,28 @@ export default function(options: any): Rule {
 
     let rules = [
       mergeWith(
-        apply(url('./files/'), [
+        apply(url('./files/src'), [
           options.overrideAppComponent ? filter(path => !path.includes('__name__')) : noop(),
-          hasRoutingModule(host, rootPath) ? filter(path => !path.includes('app-routing.module')) : noop(),
+          hasRoutingModule(host, appPath) ? filter(path => !path.includes('app-routing.module')) : noop(),
           template({
-            engine: '"angular"',
-            name: getComponentName(host, rootPath),
+            name: getComponentName(host, appPath),
             content: getContentForAppComponent(project)
+          }),
+          move(rootPath)
+        ])
+      ),
+      mergeWith(
+        apply(url('./files/root'), [
+          template({
+            engine: '"angular"'
           }),
           move('./')
         ])
       ),
-      addImportToAppModule(rootPath, 'AppLayoutModule', `./layouts/${layout}/layout.component`),
-      addImportToAppModule(rootPath, 'HeaderModule', `./shared/components/header/header.component`),
-      addImportToAppModule(rootPath, 'FooterModule', `./shared/components/footer/footer.component`),
-      addStyles(rootPath),
+      addImportToAppModule(appPath, 'AppLayoutModule', `./layouts/${layout}/layout.component`),
+      addImportToAppModule(appPath, 'HeaderModule', `./shared/components/header/header.component`),
+      addImportToAppModule(appPath, 'FooterModule', `./shared/components/footer/footer.component`),
+      addStyles(appPath),
       addBuildThemeScript(),
       addCustomThemeStyles(options),
       addPackagesToDependency(),
@@ -238,11 +247,11 @@ export default function(options: any): Rule {
     ];
 
     if (options.overrideAppComponent) {
-      rules.push(addContentToAppComponent(rootPath, 'app.component.html', project));
+      rules.push(addContentToAppComponent(appPath, 'app.component.html', project));
     }
 
-    if (!hasRoutingModule(host, rootPath)) {
-      rules.push(addImportToAppModule(rootPath, 'AppRoutingModule', './app-routing.module'));
+    if (!hasRoutingModule(host, appPath)) {
+      rules.push(addImportToAppModule(appPath, 'AppRoutingModule', './app-routing.module'));
     }
 
     return chain(rules);
