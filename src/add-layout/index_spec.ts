@@ -56,6 +56,9 @@ describe('layout', () => {
     const stylesContent = tree.readContent('/testApp/src/styles.scss');
     expect(stylesContent).toMatch(/html, body {/);
 
+    const indexContent = tree.readContent('/testApp/src/index.html');
+    expect(indexContent).toMatch(/<app-root class="dx-viewport">/);
+
     const angularContent = JSON.parse(tree.readContent('/angular.json'));
     const styles = angularContent.projects.testApp.architect.build.options.styles;
 
