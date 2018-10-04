@@ -14,6 +14,8 @@ import {
 
 import { strings } from '@angular-devkit/core';
 
+const runNpxCommand = require('devextreme-cli/utility/run-npx-command');
+
 import {
   getApplicationPath,
   getRootPath,
@@ -253,6 +255,8 @@ export default function(options: any): Rule {
     if (!hasRoutingModule(host, appPath)) {
       rules.push(addImportToAppModule(appPath, 'AppRoutingModule', './app-routing.module'));
     }
+
+    runNpxCommand(['devextreme build'], { cwd: process.cwd() });
 
     return chain(rules);
   };
