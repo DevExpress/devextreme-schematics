@@ -47,6 +47,10 @@ describe('view', () => {
 
     expect(tree.files).toContain('/testApp/src/app/pages/test/test.component.ts');
     expect(tree.files).toContain('/testApp/src/app/pages/test/test.component.html');
+
+    const content = tree.readContent('/testApp/src/app/pages/test/test.component.html');
+
+    expect(content).toMatch(/<h2>test<\/h2>/);
   });
 
   it('should add view to default routing module', () => {
