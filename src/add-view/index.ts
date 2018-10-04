@@ -166,7 +166,6 @@ export default function (options: any): Rule {
       addContentToView({dirName: name, name: options.name, project})
     ];
 
-      rules.push();
     if (addRoute) {
       rules.push(addViewToRouting({ name, project, module }));
       rules.push(addViewToNavigation({ name, icon: options.icon, project }));
