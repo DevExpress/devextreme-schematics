@@ -6,7 +6,7 @@ import {
 
 export default function(options: any): Rule {
   let rules = [
-    schematic('add-devextreme', {
+    schematic('install', {
       dxversion: options.dxversion,
       project: options.project
     }),

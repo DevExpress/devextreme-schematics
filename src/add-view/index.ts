@@ -3,7 +3,7 @@ import {
   chain,
   Tree,
   SchematicsException,
-  schematic
+  externalSchematic
 } from '@angular-devkit/schematics';
 
 import {
@@ -143,7 +143,7 @@ export default function (options: any): Rule {
     const module = getModuleName(addRoute, options.module);
     const name = getPathForView(options.name);
 
-    let rules = [schematic('component', {
+    let rules = [externalSchematic('@schematics/angular', 'component', {
       name,
       project,
       module,

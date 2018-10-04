@@ -12,10 +12,13 @@ import {
   SchematicsException,
   template } from '@angular-devkit/schematics';
 
-import { strings } from '@angular-devkit/core';
+import { strings, basename, normalize } from '@angular-devkit/core';
+
+const runNpxCommand = require('devextreme-cli/utility/run-npx-command');
 
 import {
   getApplicationPath,
+  getRootPath,
   getProjectName
  } from '../utility/project';
 
@@ -123,7 +126,7 @@ function addImportToAppModule(rootPath: string, importName: string, path: string
 
 function getContentForAppComponent(project: string) {
   const title = project.split('-').map(part => strings.capitalize(part)).join(' ');
-  return `<app-layout #layout>
+  return `<app-side-nav-outer-toolbar #layout>
     <app-header
         (menuToggle)="layout.menuOpened = !layout.menuOpened;"
         title="${title}">
@@ -136,7 +139,7 @@ function getContentForAppComponent(project: string) {
         <br/>
         All trademarks or registered trademarks are property of their respective owners.
     </app-footer>
-</app-layout>
+</app-side-nav-outer-toolbar>
 `;
 }
 
@@ -205,7 +208,8 @@ function addPackagesToDependency() {
 export default function(options: any): Rule {
   return (host: Tree, _context: SchematicContext) => {
     const project = getProjectName(host, options.project);
-    const rootPath = getApplicationPath(host, project);
+    const appPath = getApplicationPath(host, project);
+    const rootPath = getRootPath(host, project);
     const layout = options.layout;
 
     if (!findLayout(layout)) {
@@ -214,21 +218,28 @@ export default function(options: any): Rule {
 
     let rules = [
       mergeWith(
-        apply(url('./files/'), [
+        apply(url('./files/src'), [
           options.overrideAppComponent ? filter(path => !path.includes('__name__')) : noop(),
-          hasRoutingModule(host, rootPath) ? filter(path => !path.includes('app-routing.module')) : noop(),
+          hasRoutingModule(host, appPath) ? filter(path => !path.includes('app-routing.module')) : noop(),
           template({
-            engine: '"angular"',
-            name: getComponentName(host, rootPath),
+            name: getComponentName(host, appPath),
             content: getContentForAppComponent(project)
+          }),
+          move(rootPath)
+        ])
+      ),
+      mergeWith(
+        apply(url('./files/root'), [
+          template({
+            engine: '"angular"'
           }),
           move('./')
         ])
       ),
-      addImportToAppModule(rootPath, 'AppLayoutModule', `./layouts/${layout}/layout.component`),
-      addImportToAppModule(rootPath, 'HeaderModule', `./shared/components/header/header.component`),
-      addImportToAppModule(rootPath, 'FooterModule', `./shared/components/footer/footer.component`),
-      addStyles(rootPath),
+      addImportToAppModule(appPath, `App${strings.classify(basename(normalize(layout)))}Module`, `./layouts/${layout}/${layout}.component`),
+      addImportToAppModule(appPath, 'HeaderModule', `./shared/components/header/header.component`),
+      addImportToAppModule(appPath, 'FooterModule', `./shared/components/footer/footer.component`),
+      addStyles(appPath),
       addBuildThemeScript(),
       addCustomThemeStyles(options),
       addPackagesToDependency(),
@@ -238,12 +249,14 @@ export default function(options: any): Rule {
     ];
 
     if (options.overrideAppComponent) {
-      rules.push(addContentToAppComponent(rootPath, 'app.component.html', project));
+      rules.push(addContentToAppComponent(appPath, 'app.component.html', project));
     }
 
-    if (!hasRoutingModule(host, rootPath)) {
-      rules.push(addImportToAppModule(rootPath, 'AppRoutingModule', './app-routing.module'));
+    if (!hasRoutingModule(host, appPath)) {
+      rules.push(addImportToAppModule(appPath, 'AppRoutingModule', './app-routing.module'));
     }
+
+    runNpxCommand(['devextreme build'], { cwd: process.cwd() });
 
     return chain(rules);
   };

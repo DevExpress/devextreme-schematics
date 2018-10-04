@@ -5,7 +5,7 @@ import { latestVersions } from '../utility/latest-versions';
 
 const collectionPath = path.join(__dirname, '../collection.json');
 
-describe('add-devextreme', () => {
+describe('install', () => {
   // TODO: Extract workspase preparing somewhere
   const appOptions: any = {
     name: 'testApp',
@@ -34,7 +34,7 @@ describe('add-devextreme', () => {
 
   it('should add devextreme dependency (default)', () => {
     const runner = new SchematicTestRunner('schematics', collectionPath);
-    const tree = runner.runSchematic('add-devextreme', {}, appTree);
+    const tree = runner.runSchematic('install', {}, appTree);
     const packageConfig = JSON.parse(tree.readContent('package.json'));
 
     expect(packageConfig.dependencies['devextreme']).toBe(latestVersions['devextreme']);
@@ -43,7 +43,7 @@ describe('add-devextreme', () => {
 
   it('should add devextreme dependency (custom)', () => {
     const runner = new SchematicTestRunner('schematics', collectionPath);
-    const tree = runner.runSchematic('add-devextreme', { dxversion: '18.2.3' }, appTree);
+    const tree = runner.runSchematic('install', { dxversion: '18.2.3' }, appTree);
     const packageConfig = JSON.parse(tree.readContent('package.json'));
 
     expect(packageConfig.dependencies.devextreme).toBe('18.2.3');
@@ -51,7 +51,7 @@ describe('add-devextreme', () => {
 
   it('should add devextreme cli devDependency', () => {
     const runner = new SchematicTestRunner('schematics', collectionPath);
-    const tree = runner.runSchematic('add-devextreme', { dxversion: '18.2.3' }, appTree);
+    const tree = runner.runSchematic('install', { dxversion: '18.2.3' }, appTree);
     const packageConfig = JSON.parse(tree.readContent('package.json'));
 
     expect(packageConfig.devDependencies['devextreme-cli']).toBeDefined();
@@ -59,7 +59,7 @@ describe('add-devextreme', () => {
 
   it('should add devextreme styles', () => {
     const runner = new SchematicTestRunner('schematics', collectionPath);
-    const tree = runner.runSchematic('add-devextreme', {}, appTree);
+    const tree = runner.runSchematic('install', {}, appTree);
     const angularConfig = JSON.parse(tree.readContent('angular.json'));
     const styles = angularConfig['projects']['testApp']['architect']['build']['options']['styles'];
 
@@ -69,7 +69,7 @@ describe('add-devextreme', () => {
 
   it('should register jszip', () => {
     const runner = new SchematicTestRunner('schematics', collectionPath);
-    const tree = runner.runSchematic('add-devextreme', {}, appTree);
+    const tree = runner.runSchematic('install', {}, appTree);
     const tsconfig = JSON.parse(tree.readContent('tsconfig.json'));
     const jszip = tsconfig['compilerOptions']['paths']['jszip'];
 
@@ -90,7 +90,7 @@ describe('add-devextreme', () => {
     appTree = schematicRunner.runSchematic('application', secondAppOptions, appTree);
 
     const runner = new SchematicTestRunner('schematics', collectionPath);
-    const tree = runner.runSchematic('add-devextreme', { project: 'testApp2' }, appTree);
+    const tree = runner.runSchematic('install', { project: 'testApp2' }, appTree);
     const angularConfig = JSON.parse(tree.readContent('angular.json'));
     const styles = angularConfig['projects']['testApp2']['architect']['build']['options']['styles'];
 
