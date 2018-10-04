@@ -108,6 +108,17 @@ function addCustomThemeStyles(options: any) {
   };
 }
 
+function addViewportToRoot() {
+  return (host: Tree) => {
+    let indexContent = host.read('/src/index.html')!.toString();
+    indexContent = indexContent.replace(/<app-root>/, '<app-root class="dx-viewport">');
+
+    host.overwrite('/src/index.html', indexContent);
+
+    return host;
+  }
+}
+
 function addImportToAppModule(rootPath: string, importName: string, path: string) {
   return (host: Tree) => {
     const appModulePath = rootPath + 'app.module.ts';
@@ -226,6 +237,7 @@ export default function(options: any): Rule {
       addStyles(appPath),
       addBuildThemeScript(),
       addCustomThemeStyles(options),
+      addViewportToRoot(),
       addPackagesToDependency(),
       (_host: Tree, context: SchematicContext) => {
         context.addTask(new NodePackageInstallTask());
