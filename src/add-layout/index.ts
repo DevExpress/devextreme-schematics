@@ -110,10 +110,11 @@ function addCustomThemeStyles(options: any) {
 
 function addViewportToRoot(appPath: string) {
   return (host: Tree) => {
-    let indexContent = host.read(`${appPath.replace(/app\//, '')}index.html`)!.toString();
-    indexContent = indexContent.replace(/<app-root>/, '<app-root class="dx-viewport">');
+    const indexPath = `${appPath.replace(/app\//, '')}index.html`;
+    let indexContent = host.read(indexPath)!.toString();
 
-    host.overwrite(`${appPath.replace(/app\//, '')}index.html`, indexContent);
+    indexContent = indexContent.replace(/<app-root>/, '<app-root class="dx-viewport">');
+    host.overwrite(indexPath, indexContent);
 
     return host;
   }
