@@ -15,7 +15,11 @@ import { DxPopupModule } from 'devextreme-angular/ui/popup';
 })
 
 export class HeaderComponent {
-    @Output() menuToggle = new EventEmitter<boolean>();
+    @Output()
+    menuToggle = new EventEmitter<boolean>();
+
+    @Input()
+    menuToggleEnabled = false;
 
     @Input()
     title: string;
@@ -24,10 +28,10 @@ export class HeaderComponent {
     isUserAuthorized = true;
     userMenuItems = [{
         text: 'Profile',
-        icon: 'user'
+        itemIcon: 'user'
     }, {
         text: 'Logout',
-        icon: 'runner'
+        itemIcon: 'runner'
     }];
 
     constructor(private router: Router) {}

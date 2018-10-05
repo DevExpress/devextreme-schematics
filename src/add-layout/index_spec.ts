@@ -51,10 +51,13 @@ describe('layout', () => {
     expect(devextremeConfigContent).toMatch(/"applicationEngine": "angular"/);
 
     const componentContent = tree.readContent('/testApp/src/app/app.component.html');
-    expect(componentContent).toMatch(/<app-side-nav-outer-toolbar #layout>/);
+    expect(componentContent).toMatch(/app-side-nav-outer-toolbar title="TestApp"/);
 
     const stylesContent = tree.readContent('/testApp/src/styles.scss');
     expect(stylesContent).toMatch(/html, body {/);
+
+    const indexContent = tree.readContent('/testApp/src/index.html');
+    expect(indexContent).toMatch(/<app-root class="dx-viewport">/);
 
     const angularContent = JSON.parse(tree.readContent('/angular.json'));
     const styles = angularContent.projects.testApp.architect.build.options.styles;
@@ -64,7 +67,7 @@ describe('layout', () => {
     expect(styles[2]).toBe('./src/themes/generated/theme.base.css');
 
     const moduleContent = tree.readContent('/testApp/src/app/app.module.ts');
-    expect(moduleContent).toMatch(/import { AppSideNavOuterToolbarModule }/);
+    expect(moduleContent).toMatch(/import { SideNavOuterToolbarModule, SideNavInnerToolbarModule }/);
     expect(moduleContent).toMatch(/import { AppRoutingModule }/);
   });
 
@@ -85,7 +88,7 @@ describe('layout', () => {
     expect(tree.files).toContain('/testApp/src/app/app1.component.ts');
 
     const componentContent = tree.readContent('/testApp/src/app/app1.component.html');
-    expect(componentContent).toMatch(/<app-side-nav-outer-toolbar #layout>/);
+    expect(componentContent).toMatch(/app-side-nav-outer-toolbar title="TestApp"/);
   });
 
   it('should add routing to layout', () => {
@@ -100,5 +103,15 @@ describe('layout', () => {
     const tree = runner.runSchematic('add-layout', options, appTree);
 
     expect(tree.files).toContain('/testApp/src/app/app-routing.module.ts');
+  });
+
+  it('should use selected layout', () => {
+    const runner = new SchematicTestRunner('schematics', collectionPath);
+    options.layout = 'side-nav-inner-toolbar';
+    options.overrideAppComponent = true;
+    const tree = runner.runSchematic('add-layout', options, appTree);
+    const content = tree.readContent('/testApp/src/app/app.component.html');
+
+    expect(content).toMatch(/app-side-nav-inner-toolbar title="TestApp"/);
   });
 });

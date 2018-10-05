@@ -1,10 +1,14 @@
-<div class="container dx-theme-material-typography" [ngClass]="sizeClasses">
-    <div class="header">
-        <ng-content select="app-header"></ng-content>
+<div class="layout" [ngClass]="sizeClasses">
+    <div id="header">
+        <app-header
+            [menuToggleEnabled]="true"
+            (menuToggle)="menuOpened = !menuOpened;"
+            [title]="title">
+        </app-header>
     </div>
 
     <dx-drawer
-        class="content"
+        class="drawer"
         [closeOnOutsideClick]="shaderEnabled"
         [openedStateMode]="menuMode"
         [revealMode]="menuRevealMode"
@@ -23,7 +27,9 @@
         </app-side-navigation-menu>
 
         <dx-scroll-view>
-            <ng-content></ng-content>
+            <div class="content">
+                <ng-content></ng-content>
+            </div>
 
             <div class="footer">
                 <ng-content select="app-footer"></ng-content>

@@ -35,7 +35,7 @@
     .dx-treeview-node[aria-level='1'] {
         border-bottom: 1px solid $base-border-color;
         .dx-treeview-item-content span {
-            padding-left: 12px;
+            padding-left: 13px;
         }
     }
 
@@ -43,5 +43,11 @@
         font-weight: 300;
         padding-left: 38px;
     }
+}
+
+:host-context(.dx-theme-generic) ::ng-deep.dx-treeview .dx-treeview-item .dx-icon {
+    width: 26px;
+    height: 26px;
+    padding: 4px;
 }
 
