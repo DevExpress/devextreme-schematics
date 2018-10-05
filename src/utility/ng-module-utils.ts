@@ -29,15 +29,17 @@ function addImport(tree: Tree, options: ModuleOptions, widget: string) {
 
   const classifiedComponent = 'Dx' + widget + 'Module';
   for (const change of addImportToModule(source, modulePath, classifiedComponent, 'devextreme-angular')) {
-    if (change instanceof InsertChange)
+    if (change instanceof InsertChange) {
       declarationRecorder.insertLeft(change.pos, change.toAdd);
+    }
   }
 
   const classifiedName = strings.classify(options.name + 'Component');
   for (const change of addDeclarationToModule(source, modulePath, classifiedName, relativePath)) {
-    if (change instanceof InsertChange)
+    if (change instanceof InsertChange) {
       declarationRecorder.insertLeft(change.pos, change.toAdd);
+    }
   }
 
   tree.commitUpdate(declarationRecorder);
-};
+}

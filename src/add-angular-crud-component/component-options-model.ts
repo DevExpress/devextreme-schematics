@@ -1,5 +1,5 @@
 export interface ComponentOptionsModel {
-  [key:string]: any;
+  [key: string]: any;
   controlToScaffold: string;
   columns: string[];
   editing: EditinigModel;

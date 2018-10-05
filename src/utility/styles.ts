@@ -11,10 +11,13 @@ function cleanStyles(projectStyles: Array<any>, defaultStyles: any) {
 export function addStylesToApp(host: Tree, project: string, config: any, styles?: Array<any>) {
   const projectName = getProjectName(host, project);
   const projectBuildOptopns = config['projects'][projectName]['architect']['build']['options'];
-  const defaultStyles = ['node_modules/devextreme/dist/css/dx.light.css', 'node_modules/devextreme/dist/css/dx.common.css'];
+  const defaultStyles = [
+    'node_modules/devextreme/dist/css/dx.light.css',
+    'node_modules/devextreme/dist/css/dx.common.css'
+  ];
   let projectStyles = projectBuildOptopns['styles'];
 
-  if(!styles) {
+  if (!styles) {
     styles = defaultStyles;
   } else {
     projectStyles = cleanStyles(projectStyles, defaultStyles);

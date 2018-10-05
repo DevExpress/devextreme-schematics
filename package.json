@@ -4,7 +4,8 @@
   "description": "DevExtreme schematics",
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "test": "npm run build && jasmine **/*_spec.js"
+    "lint": "tslint -c tslint.json 'src/*/*.ts' -e '**/*.d.ts'",
+    "test": "npm run lint && npm run build && jasmine **/*_spec.js"
   },
   "author": "Developer Express Inc.",
   "license": "MIT",
@@ -33,6 +34,7 @@
     "typescript": "^2.5.2"
   },
   "devDependencies": {
-    "jasmine": "^2.8.0"
+    "jasmine": "^2.8.0",
+    "tslint": "^5.11.0"
   }
 }

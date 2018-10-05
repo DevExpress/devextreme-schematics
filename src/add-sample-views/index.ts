@@ -1,6 +1,5 @@
 import {
   Rule,
-  SchematicContext,
   Tree,
   chain,
   apply,
@@ -21,11 +20,11 @@ import {
   getProjectName
  } from '../utility/project';
 
- import {
+import {
    applyChanges
  } from '../utility/change';
 
- import { getSourceFile } from '../utility/source';
+import { getSourceFile } from '../utility/source';
 
 const sampleViewOptions = [
   {
@@ -85,7 +84,7 @@ function addImportsToRoutingModule(isView: boolean, routingPath: string, options
     }
 
     return applyChanges(host, changes, routingPath);
-  }
+  };
 }
 
 function addDefaultNavigation(rootPath: string) {
@@ -101,11 +100,11 @@ function addDefaultNavigation(rootPath: string) {
 }
 
 export default function(options: any): Rule {
-  return (host: Tree, _context: SchematicContext) => {
+  return (host: Tree) => {
     const project = getProjectName(host, options.project);
     const rootPath = getApplicationPath(host, project);
     const routingPath = rootPath + 'app-routing.module.ts';
-    let rules: any[] = [];
+    const rules: any[] = [];
 
     const templateSource = apply(url('./files'), [
       move(rootPath)
