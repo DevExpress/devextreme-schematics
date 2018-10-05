@@ -6,11 +6,13 @@ function getSeparator(text: string) {
   return isEmpty ? ', ' : '';
 }
 
+/* tslint:disable:max-line-length */
 function prepareChangesForAdditionInArray(recorder: UpdateRecorder, filePath: string, changes: any, content: string, endIndex: number) {
+/* tslint:enable:max-line-length */
   const position = content!.lastIndexOf(']', endIndex);
 
   if (position > -1) {
-    let insertData = new InsertChange(filePath, position, getSeparator(content) + changes);
+    const insertData = new InsertChange(filePath, position, getSeparator(content) + changes);
     recorder.insertLeft(insertData.pos, insertData.toAdd);
   }
 

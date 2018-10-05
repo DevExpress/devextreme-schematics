@@ -1,5 +1,5 @@
 export interface ApiSpecModel {
-  [key:string]: any;
+  [key: string]: any;
   dbset: string;
   model: string;
   actions: any;

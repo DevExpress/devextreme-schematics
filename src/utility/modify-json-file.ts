@@ -1,6 +1,6 @@
 import { Tree } from '@angular-devkit/schematics';
 
-export function modifyJSONFile (host: Tree, path: string, callback: (obj: any) => any) {
+export function modifyJSONFile(host: Tree, path: string, callback: (obj: any) => any) {
   const serializedConfig = host.read(path)!.toString();
   let obj = JSON.parse(serializedConfig);
 
@@ -9,4 +9,4 @@ export function modifyJSONFile (host: Tree, path: string, callback: (obj: any) =
   host.overwrite(path, JSON.stringify(obj, null, 2));
 
   return host;
-};
+}
