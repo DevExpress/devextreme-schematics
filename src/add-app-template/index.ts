@@ -5,7 +5,7 @@ import {
 } from '@angular-devkit/schematics';
 
 export default function(options: any): Rule {
-  let rules = [
+  const rules = [
     schematic('install', {
       dxversion: options.dxversion,
       project: options.project
@@ -21,4 +21,4 @@ export default function(options: any): Rule {
   }
 
   return chain(rules);
-};
+}

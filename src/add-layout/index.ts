@@ -13,7 +13,9 @@ import {
 
 import { strings } from '@angular-devkit/core';
 
+/* tslint:disable:no-var-requires */
 const runNpxCommand = require('devextreme-cli/utility/run-npx-command');
+/* tslint:enable:no-var-requires */
 
 import {
   getApplicationPath,
@@ -21,15 +23,15 @@ import {
   getProjectName
  } from '../utility/project';
 
- import {
+import {
   addStylesToApp
  } from '../utility/styles';
 
- import {
+import {
   modifyJSONFile
  } from '../utility/modify-json-file';
 
- import {
+import {
   NodeDependencyType,
   addPackageJsonDependency
 } from '@schematics/angular/utility/dependencies';
@@ -38,9 +40,9 @@ import {
   NodePackageInstallTask
 } from '@angular-devkit/schematics/tasks';
 
- import { getSourceFile } from '../utility/source';
+import { getSourceFile } from '../utility/source';
 
- import {
+import {
   addImportToModule
 } from '@schematics/angular/utility/ast-utils';
 
@@ -95,13 +97,13 @@ function addBuildThemeScript() {
 function addCustomThemeStyles(options: any) {
   return (host: Tree) => {
     modifyJSONFile(host, './angular.json', config => {
-      const styles = [
+      const stylesList = [
         './src/themes/generated/theme.base.css',
         './src/themes/generated/theme.additional.css',
         'node_modules/devextreme/dist/css/dx.common.css'
       ];
 
-      return addStylesToApp(host, options.project, config, styles);
+      return addStylesToApp(host, options.project, config, stylesList);
     });
 
     return host;
@@ -117,7 +119,7 @@ function addViewportToRoot(appPath: string) {
     host.overwrite(indexPath, indexContent);
 
     return host;
-  }
+  };
 }
 
 function addImportToAppModule(rootPath: string, importName: string, path: string) {
@@ -167,7 +169,7 @@ function addContentToAppComponent(rootPath: string, component: string, project: 
 
 function getComponentName(host: Tree, rootPath: string) {
   let name = '';
-  let index = 1;
+  const index = 1;
 
   if (!host.exists(rootPath + 'app.component.ts')) {
     name = 'app';
@@ -206,13 +208,13 @@ function addPackagesToDependency() {
 }
 
 export default function(options: any): Rule {
-  return (host: Tree, _context: SchematicContext) => {
+  return (host: Tree) => {
     const project = getProjectName(host, options.project);
     const appPath = getApplicationPath(host, project);
     const rootPath = getRootPath(host, project);
     const layout = options.layout;
 
-    let rules = [
+    const rules = [
       mergeWith(
         apply(url('./files/src'), [
           options.overrideAppComponent ? filter(path => !path.includes('__name__')) : noop(),
@@ -240,7 +242,7 @@ export default function(options: any): Rule {
       addCustomThemeStyles(options),
       addViewportToRoot(appPath),
       addPackagesToDependency(),
-      (_host: Tree, context: SchematicContext) => {
+      (_: Tree, context: SchematicContext) => {
         context.addTask(new NodePackageInstallTask());
       }
     ];

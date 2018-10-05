@@ -12,13 +12,13 @@ import { ComponentOptions } from './schema';
 import { addImportToParentModule } from '../utility/ng-module-utils';
 
 export default function(options: ComponentOptions): Rule {
-  return (tree: Tree, _context: SchematicContext) => {
-    options.path = options.path || "src/app";
+  return (tree: Tree, context: SchematicContext) => {
+    options.path = options.path || 'src/app';
     options.path = options.path ? normalize(options.path) : options.path;
 
     const apiSpec = getApiSpec(options);
     const componentOptions = getComponentOptions(options);
-    const controlToScaffold = componentOptions.controlToScaffold || "DataGrid";
+    const controlToScaffold = componentOptions.controlToScaffold || 'DataGrid';
 
     const templateCSS = apply(url('./files/css/' + strings.dasherize(controlToScaffold)), [
       template({
@@ -59,12 +59,12 @@ export default function(options: ComponentOptions): Rule {
       ])),
     ]);
 
-    return rule(tree, _context);
+    return rule(tree, context);
   };
 }
 
-function getApiSpec(options: ComponentOptions) : ApiSpecModel {
-  try {    
+function getApiSpec(options: ComponentOptions): ApiSpecModel {
+  try {
     return JSON5.parse(options.apiSpec) as ApiSpecModel;
   } catch {
     const apiSpecJson = FS.readFileSync(options.apiSpec).toString('utf-8');
@@ -72,8 +72,8 @@ function getApiSpec(options: ComponentOptions) : ApiSpecModel {
   }
 }
 
-function getComponentOptions(options: ComponentOptions) : ComponentOptionsModel {
-  try {    
+function getComponentOptions(options: ComponentOptions): ComponentOptionsModel {
+  try {
     return JSON5.parse(options.componentOptions) as ComponentOptionsModel;
   } catch {
     const componentOptionJson = FS.readFileSync(options.componentOptions).toString('utf-8');

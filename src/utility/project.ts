@@ -7,10 +7,10 @@ export function getProjectName(host: Tree, project: any) {
   const projects = Object.keys(workspace.projects);
 
   return projectName && projects.indexOf(projectName) > -1 ? projectName : projects[0];
-};
+}
 
 export function getApplicationPath(host: Tree, projectName: string) {
-  let rootPath = getRootPath(host, projectName);
+  const rootPath = getRootPath(host, projectName);
   return rootPath ? `${rootPath}/app/` : 'src/app/';
 }
 

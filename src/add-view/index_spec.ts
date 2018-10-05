@@ -32,9 +32,9 @@ describe('view', () => {
     project: 'testApp'
   };
 
-  const schematicRunner = new SchematicTestRunner('@schematics/angular', require.resolve('../../node_modules/@schematics/angular/collection.json'));
+  const angularSchematicsCollection = require.resolve('../../node_modules/@schematics/angular/collection.json');
+  const schematicRunner = new SchematicTestRunner('@schematics/angular', angularSchematicsCollection);
   let appTree: UnitTestTree;
-
 
   beforeEach(() => {
     appTree = schematicRunner.runSchematic('workspace', workspaceOptions);
@@ -69,7 +69,12 @@ describe('view', () => {
     const options = { ...componentOptions, addRoute: true, module: 'test/test-routing' };
 
     const runner = new SchematicTestRunner('schematics', collectionPath);
-    let tree = runner.runExternalSchematic('@schematics/angular', 'module', { name: 'test', routing: true, project: 'testApp' }, appTree);
+    let tree = runner.runExternalSchematic('@schematics/angular', 'module', {
+      name: 'test',
+      routing: true,
+      project: 'testApp'
+    }, appTree);
+
     tree = runner.runSchematic('add-view', options, tree);
 
     const moduleContent = tree.readContent('/testApp/src/app/test/test-routing.module.ts');
