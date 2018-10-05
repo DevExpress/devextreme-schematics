@@ -4,7 +4,7 @@
     display: block;
 }
 
-::ng-deep .dx-toolbar-after {
+:host ::ng-deep .dx-toolbar-after {
     padding-right: 40px;
 }
 
