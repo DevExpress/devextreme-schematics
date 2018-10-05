@@ -4,17 +4,18 @@ import { SideNavigationMenuModule } from '../../shared/components';
 import { HeaderModule } from '../../shared/components';
 import { DxDrawerModule } from 'devextreme-angular/ui/drawer';
 import { DxScrollViewModule } from 'devextreme-angular/ui/scroll-view';
+import { DxToolbarModule } from 'devextreme-angular/ui/toolbar';
 import { CommonModule } from '@angular/common';
 
 import { navigation } from '../../app-navigation';
 import { Router, NavigationEnd } from '@angular/router';
 
 @Component({
-    selector: 'app-side-nav-outer-toolbar',
-    templateUrl: './side-nav-outer-toolbar.component.html',
-    styleUrls: ['./side-nav-outer-toolbar.component.scss']
+    selector: 'app-side-nav-inner-toolbar',
+    templateUrl: './side-nav-inner-toolbar.component.html',
+    styleUrls: ['./side-nav-inner-toolbar.component.scss']
 })
-export class SideNavOuterToolbarComponent implements OnInit {
+export class SideNavInnerToolbarComponent implements OnInit {
     menuItems = navigation;
     selectedRoute = '';
 
@@ -54,6 +55,11 @@ export class SideNavOuterToolbarComponent implements OnInit {
         this.menuRevealMode = isXSmall ? 'slide' : 'expand';
         this.minMenuSize = isXSmall ? 0 : 60;
         this.shaderEnabled = !this.isLargeScreen;
+    }
+
+    toggleMenu = (e) => {
+        this.menuOpened = !this.menuOpened;
+        e.event.stopPropagation();
     }
 
     get isLargeScreen() {
@@ -108,8 +114,8 @@ export class SideNavOuterToolbarComponent implements OnInit {
 }
 
 @NgModule({
-    imports: [ SideNavigationMenuModule, DxDrawerModule, HeaderModule, DxScrollViewModule, CommonModule ],
-    exports: [ SideNavOuterToolbarComponent ],
-    declarations: [ SideNavOuterToolbarComponent ]
+    imports: [ SideNavigationMenuModule, DxDrawerModule, HeaderModule, DxToolbarModule, DxScrollViewModule, CommonModule ],
+    exports: [ SideNavInnerToolbarComponent ],
+    declarations: [ SideNavInnerToolbarComponent ]
 })
-export class SideNavOuterToolbarModule { }
+export class SideNavInnerToolbarModule { }

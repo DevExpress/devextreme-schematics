@@ -9,10 +9,9 @@ import {
   noop,
   filter,
   mergeWith,
-  SchematicsException,
   template } from '@angular-devkit/schematics';
 
-import { strings, basename, normalize } from '@angular-devkit/core';
+import { strings } from '@angular-devkit/core';
 
 const runNpxCommand = require('devextreme-cli/utility/run-npx-command');
 
@@ -109,6 +108,18 @@ function addCustomThemeStyles(options: any) {
   };
 }
 
+function addViewportToRoot(appPath: string) {
+  return (host: Tree) => {
+    const indexPath = `${appPath.replace(/app\//, '')}index.html`;
+    let indexContent = host.read(indexPath)!.toString();
+
+    indexContent = indexContent.replace(/<app-root>/, '<app-root class="dx-viewport">');
+    host.overwrite(indexPath, indexContent);
+
+    return host;
+  }
+}
+
 function addImportToAppModule(rootPath: string, importName: string, path: string) {
   return (host: Tree) => {
     const appModulePath = rootPath + 'app.module.ts';
@@ -124,14 +135,9 @@ function addImportToAppModule(rootPath: string, importName: string, path: string
   };
 }
 
-function getContentForAppComponent(project: string) {
+function getContentForAppComponent(project: string, layout: string) {
   const title = project.split('-').map(part => strings.capitalize(part)).join(' ');
-  return `<app-side-nav-outer-toolbar #layout>
-    <app-header
-        (menuToggle)="layout.menuOpened = !layout.menuOpened;"
-        title="${title}">
-    </app-header>
-
+  return `<app-${layout} title="${title}">
     <router-outlet></router-outlet>
 
     <app-footer>
@@ -139,15 +145,15 @@ function getContentForAppComponent(project: string) {
         <br/>
         All trademarks or registered trademarks are property of their respective owners.
     </app-footer>
-</app-side-nav-outer-toolbar>
+</app-${layout}>
 `;
 }
 
-function addContentToAppComponent(rootPath: string, component: string, project: string) {
+function addContentToAppComponent(rootPath: string, component: string, project: string, layout: string) {
   return(host: Tree) => {
     const appModulePath = rootPath + component;
     const source = getSourceFile(host, appModulePath);
-    const componentContent = getContentForAppComponent(project);
+    const componentContent = getContentForAppComponent(project, layout);
 
     if (!source) {
       return host;
@@ -175,12 +181,6 @@ function getComponentName(host: Tree, rootPath: string) {
   }
 
   return name;
-}
-
-function findLayout(layout: string) {
-  const layouts = ['side-nav-outer-toolbar'];
-
-  return layouts.some((item) => item === layout);
 }
 
 function hasRoutingModule(host: Tree, rootPath: string) {
@@ -212,10 +212,6 @@ export default function(options: any): Rule {
     const rootPath = getRootPath(host, project);
     const layout = options.layout;
 
-    if (!findLayout(layout)) {
-      throw new SchematicsException(`${layout} layout not found.`);
-    }
-
     let rules = [
       mergeWith(
         apply(url('./files/src'), [
@@ -223,7 +219,7 @@ export default function(options: any): Rule {
           hasRoutingModule(host, appPath) ? filter(path => !path.includes('app-routing.module')) : noop(),
           template({
             name: getComponentName(host, appPath),
-            content: getContentForAppComponent(project)
+            content: getContentForAppComponent(project, layout)
           }),
           move(rootPath)
         ])
@@ -236,12 +232,13 @@ export default function(options: any): Rule {
           move('./')
         ])
       ),
-      addImportToAppModule(appPath, `App${strings.classify(basename(normalize(layout)))}Module`, `./layouts/${layout}/${layout}.component`),
-      addImportToAppModule(appPath, 'HeaderModule', `./shared/components/header/header.component`),
+      addImportToAppModule(appPath, 'SideNavOuterToolbarModule', './layouts'),
+      addImportToAppModule(appPath, 'SideNavInnerToolbarModule', './layouts'),
       addImportToAppModule(appPath, 'FooterModule', `./shared/components/footer/footer.component`),
       addStyles(appPath),
       addBuildThemeScript(),
       addCustomThemeStyles(options),
+      addViewportToRoot(appPath),
       addPackagesToDependency(),
       (_host: Tree, context: SchematicContext) => {
         context.addTask(new NodePackageInstallTask());
@@ -249,7 +246,7 @@ export default function(options: any): Rule {
     ];
 
     if (options.overrideAppComponent) {
-      rules.push(addContentToAppComponent(appPath, 'app.component.html', project));
+      rules.push(addContentToAppComponent(appPath, 'app.component.html', project, layout));
     }
 
     if (!hasRoutingModule(host, appPath)) {
