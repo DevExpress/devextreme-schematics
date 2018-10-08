@@ -221,6 +221,7 @@ export default function(options: any): Rule {
           hasRoutingModule(host, appPath) ? filter(path => !path.includes('app-routing.module')) : noop(),
           template({
             name: getComponentName(host, appPath),
+            ...strings,
             content: getContentForAppComponent(project, layout)
           }),
           move(rootPath)
