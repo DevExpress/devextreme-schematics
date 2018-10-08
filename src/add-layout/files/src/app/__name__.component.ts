@@ -5,6 +5,6 @@ import { Component } from '@angular/core';
     templateUrl: './<%= name %>.component.html',
     styleUrls: ['./<%= name %>.component.scss']
 })
-export class <%= name %>Component  {
+export class <%= classify(name) %>Component  {
 
 }
