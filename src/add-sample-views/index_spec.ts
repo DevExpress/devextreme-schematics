@@ -24,9 +24,9 @@ describe('sample views', () => {
     project: 'testApp'
   };
 
-  const schematicRunner = new SchematicTestRunner('@schematics/angular', require.resolve('../../node_modules/@schematics/angular/collection.json'));
+  const angularSchematicsCollection = require.resolve('../../node_modules/@schematics/angular/collection.json');
+  const schematicRunner = new SchematicTestRunner('@schematics/angular', angularSchematicsCollection);
   let appTree: UnitTestTree;
-
 
   beforeEach(() => {
     appTree = schematicRunner.runSchematic('workspace', workspaceOptions);
@@ -49,6 +49,6 @@ describe('sample views', () => {
     const navugationContent = tree.readContent('/testApp/src/app/app-navigation.ts');
     expect(navugationContent).toMatch(/text: 'Home'/);
 
-    expect(tree.files).toContain('/testApp/src/app/pages/home/home.component.ts');;
+    expect(tree.files).toContain('/testApp/src/app/pages/home/home.component.ts');
   });
 });

@@ -25,9 +25,9 @@ describe('layout', () => {
     overrideAppComponent: true
   };
 
-  const schematicRunner = new SchematicTestRunner('@schematics/angular', require.resolve('../../node_modules/@schematics/angular/collection.json'));
+  const angularSchematicsCollection = require.resolve('../../node_modules/@schematics/angular/collection.json');
+  const schematicRunner = new SchematicTestRunner('@schematics/angular', angularSchematicsCollection);
   let appTree: UnitTestTree;
-
 
   beforeEach(() => {
     appTree = schematicRunner.runSchematic('workspace', workspaceOptions);
@@ -38,14 +38,22 @@ describe('layout', () => {
     const runner = new SchematicTestRunner('schematics', collectionPath);
     const tree = runner.runSchematic('add-layout', options, appTree);
 
-    expect(tree.files).toContain('/devextreme.json');
-    expect(tree.files).toContain('/testApp/src/app/app-navigation.ts');
-    expect(tree.files).toContain('/testApp/src/app/shared/components/header/header.component.ts');
-    expect(tree.files).toContain('/testApp/src/app/shared/components/login-form/login-form.component.ts');
-    expect(tree.files).toContain('/testApp/src/app/shared/components/side-navigation-menu/side-navigation-menu.component.ts');
-    expect(tree.files).toContain('/testApp/src/app/layouts/side-nav-outer-toolbar/side-nav-outer-toolbar.component.ts');
-    expect(tree.files).toContain('/testApp/src/themes/metadata.base.json');
-    expect(tree.files).toContain('/testApp/src/themes/metadata.additional.json');
+    expect(tree.files)
+      .toContain('/devextreme.json');
+    expect(tree.files)
+      .toContain('/testApp/src/app/app-navigation.ts');
+    expect(tree.files)
+      .toContain('/testApp/src/app/shared/components/header/header.component.ts');
+    expect(tree.files)
+      .toContain('/testApp/src/app/shared/components/login-form/login-form.component.ts');
+    expect(tree.files)
+      .toContain('/testApp/src/app/shared/components/side-navigation-menu/side-navigation-menu.component.ts');
+    expect(tree.files)
+      .toContain('/testApp/src/app/layouts/side-nav-outer-toolbar/side-nav-outer-toolbar.component.ts');
+    expect(tree.files)
+      .toContain('/testApp/src/themes/metadata.base.json');
+    expect(tree.files)
+      .toContain('/testApp/src/themes/metadata.additional.json');
 
     const devextremeConfigContent = tree.readContent('/devextreme.json');
     expect(devextremeConfigContent).toMatch(/"applicationEngine": "angular"/);
