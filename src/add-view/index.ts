@@ -22,7 +22,7 @@ import {
 
 import { getSourceFile } from '../utility/source';
 
-import { strings, basename, normalize } from '@angular-devkit/core';
+import { strings, basename, normalize, dirname } from '@angular-devkit/core';
 
 import {
   getProjectName,
@@ -138,11 +138,13 @@ function getModuleName(addRoute: boolean, moduleName: string) {
 
 function addContentToView(options: any) {
   return (host: Tree) => {
-    const {dirName, name, project} = options;
-    const componentPath = `/${getApplicationPath(host, project)}${dirName}/${name}.component.html`;
+    const name = strings.dasherize(basename(normalize(options.name)));
+    const path = `${dirname(options.name)}/${name}`;
+    const componentPath = `/${getApplicationPath(host, options.project)}${path}/${name}.component.html`;
     if (host.exists(componentPath)) {
-      host.overwrite(componentPath, `<h2>${name}</h2>\n<div class="dx-card">Put your content here</div>
-      `);
+      host.overwrite(
+        componentPath,
+        `<h2>${name}</h2>\n<div class="dx-card content-block">Put your content here</div>\n`);
     }
     return host;
   };
@@ -163,7 +165,7 @@ export default function(options: any): Rule {
         inlineStyle: options.inlineStyle,
         prefix: options.prefix
       }),
-      addContentToView({dirName: name, name: options.name, project})
+      addContentToView({ name, project })
     ];
 
     if (addRoute) {
