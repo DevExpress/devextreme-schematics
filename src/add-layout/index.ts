@@ -256,7 +256,7 @@ export default function(options: any): Rule {
       rules.push(addImportToAppModule(appPath, 'AppRoutingModule', './app-routing.module'));
     }
 
-    runNpxCommand(['devextreme build'], { cwd: process.cwd() });
+    runNpxCommand(['-c', 'devextreme build'], { cwd: process.cwd() });
 
     return chain(rules);
   };
