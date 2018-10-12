@@ -206,7 +206,7 @@ function addPackagesToDependency() {
   };
 }
 
-function buildTheme() {
+function buildThemes() {
   const command = /^win/.test(process.platform) ? 'npm.cmd' : 'npm';
   const spawnOptions = {
     stdio:  [process.stdin, process.stdout, process.stderr],
@@ -267,7 +267,7 @@ export default function(options: any): Rule {
     }
 
     if (existsSync('./angular.json')) {
-      buildTheme();
+      buildThemes();
     }
 
     return chain(rules);
