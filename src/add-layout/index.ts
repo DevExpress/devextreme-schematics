@@ -11,11 +11,10 @@ import {
   mergeWith,
   template } from '@angular-devkit/schematics';
 
-import { strings } from '@angular-devkit/core';
+import { spawn } from 'child_process';
+import { existsSync } from 'fs';
 
-/* tslint:disable:no-var-requires */
-const runNpxCommand = require('devextreme-cli/utility/run-npx-command');
-/* tslint:enable:no-var-requires */
+import { strings } from '@angular-devkit/core';
 
 import {
   getApplicationPath,
@@ -207,6 +206,19 @@ function addPackagesToDependency() {
   };
 }
 
+function buildTheme() {
+  const command = /^win/.test(process.platform) ? 'npm.cmd' : 'npm';
+
+  const spawnOptions = {
+    stdio:  [process.stdin, process.stdout, process.stderr],
+    shell: true,
+    cwd: process.cwd()
+  };
+
+  spawn(command, ['run', 'build-themes'], spawnOptions);
+
+}
+
 export default function(options: any): Rule {
   return (host: Tree) => {
     const project = getProjectName(host, options.project);
@@ -256,7 +268,9 @@ export default function(options: any): Rule {
       rules.push(addImportToAppModule(appPath, 'AppRoutingModule', './app-routing.module'));
     }
 
-    runNpxCommand(['devextreme', 'build'], { cwd: process.cwd() });
+    if (existsSync('./angular.json')) {
+      buildTheme();
+    }
 
     return chain(rules);
   };
