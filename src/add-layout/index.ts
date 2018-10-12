@@ -208,7 +208,6 @@ function addPackagesToDependency() {
 
 function buildTheme() {
   const command = /^win/.test(process.platform) ? 'npm.cmd' : 'npm';
-
   const spawnOptions = {
     stdio:  [process.stdin, process.stdout, process.stderr],
     shell: true,
@@ -216,7 +215,6 @@ function buildTheme() {
   };
 
   spawn(command, ['run', 'build-themes'], spawnOptions);
-
 }
 
 export default function(options: any): Rule {
