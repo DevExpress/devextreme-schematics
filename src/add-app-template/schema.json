@@ -27,7 +27,7 @@
     "resolveConflicts": {
       "type": "string",
       "enum": ["safe", "override"],
-      "description": "Specifies whether to override the existing app component",
+      "description": "Specifies whether to override the existing app component or create a component with another name.",
       "default": "safe"
     }
   }
