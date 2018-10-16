@@ -14,10 +14,11 @@
       "type": "string",
       "description": "The name of a project to modify"
     },
-    "overrideAppComponent": {
-      "type": "boolean",
+    "resolveConflicts": {
+      "type": "string",
+      "enum": ["safe", "override"],
       "description": "Specifies whether to override the existing app component",
-      "default": false
+      "default": "safe"
     }
   }
 }

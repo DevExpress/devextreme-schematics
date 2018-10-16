@@ -23,10 +23,11 @@
       "description": "Specifies whether to skip sample views generation",
       "default": false
     },
-    "overrideAppComponent": {
-      "type": "boolean",
+    "resolveConflicts": {
+      "type": "string",
+      "enum": ["safe", "override"],
       "description": "Specifies whether to override the existing app component",
-      "default": false
+      "default": "safe"
     }
   }
 }
