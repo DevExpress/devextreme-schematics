@@ -22,7 +22,7 @@ describe('layout', () => {
 
   const options: any = {
     layouts: 'side-nav-outer-toolbar',
-    overrideAppComponent: true
+    resolveConflicts: 'override'
   };
 
   const angularSchematicsCollection = require.resolve('../../node_modules/@schematics/angular/collection.json');
@@ -90,7 +90,7 @@ describe('layout', () => {
   it('should add layout without override', () => {
     const runner = new SchematicTestRunner('schematics', collectionPath);
 
-    options.overrideAppComponent = false;
+    options.resolveConflicts = 'safe';
     const tree = runner.runSchematic('add-layout', options, appTree);
 
     expect(tree.files).toContain('/testApp/src/app/app1.component.ts');
@@ -116,7 +116,7 @@ describe('layout', () => {
   it('should use selected layout', () => {
     const runner = new SchematicTestRunner('schematics', collectionPath);
     options.layout = 'side-nav-inner-toolbar';
-    options.overrideAppComponent = true;
+    options.resolveConflicts = 'override';
     const tree = runner.runSchematic('add-layout', options, appTree);
     const content = tree.readContent('/testApp/src/app/app.component.html');
 
