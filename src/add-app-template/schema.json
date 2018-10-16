@@ -6,6 +6,7 @@
   "properties": {
     "layout": {
       "type": "string",
+      "enum": ["side-nav-outer-toolbar", "side-nav-inner-toolbar"],
       "description": "The type of a DevExtreme layout to add",
       "default": "side-nav-outer-toolbar"
     },
