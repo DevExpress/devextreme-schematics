@@ -4,17 +4,17 @@ A schematic that adds a DevExtreme layout template to an Angular application.
 
 ## Properties
 
-- layout (string)  
+- layout (string)
  The type of a DevExtreme layout to add
 
-- dxversion (string)  
+- dxversion (string)
  The DevExtreme version
 
-- project (string)  
+- project (string)
  The name of a project to modify
 
-- empty (Boolean)  
+- empty (Boolean)
  Specifies whether to skip sample views generation
 
-- overrideAppComponent (Boolean)  
+- resolveConflicts (string)
  Specifies whether to override the existing app component

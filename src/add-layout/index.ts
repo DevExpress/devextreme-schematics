@@ -223,11 +223,12 @@ export default function(options: any): Rule {
     const appPath = getApplicationPath(host, project);
     const rootPath = getRootPath(host, project);
     const layout = options.layout;
+    const override = options.resolveConflicts === 'override';
 
     const rules = [
       mergeWith(
         apply(url('./files/src'), [
-          options.overrideAppComponent ? filter(path => !path.includes('__name__')) : noop(),
+          override ? filter(path => !path.includes('__name__')) : noop(),
           hasRoutingModule(host, appPath) ? filter(path => !path.includes('app-routing.module')) : noop(),
           template({
             name: getComponentName(host, appPath),
@@ -258,7 +259,7 @@ export default function(options: any): Rule {
       }
     ];
 
-    if (options.overrideAppComponent) {
+    if (override) {
       rules.push(addContentToAppComponent(appPath, 'app.component.html', project, layout));
     }
 

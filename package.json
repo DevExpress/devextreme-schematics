@@ -28,9 +28,7 @@
     "devextreme-cli": "latest",
     "@schematics/angular": "^0.7.5",
     "@types/jasmine": "^2.6.0",
-    "@types/json5": "0.0.30",
     "@types/node": "^8.10.27",
-    "json5": "^2.0.1",
     "typescript": "^2.5.2"
   },
   "devDependencies": {
