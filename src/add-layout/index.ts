@@ -93,12 +93,12 @@ function addBuildThemeScript() {
   };
 }
 
-function addCustomThemeStyles(options: any) {
+function addCustomThemeStyles(options: any, rootPath: string) {
   return (host: Tree) => {
     modifyJSONFile(host, './angular.json', config => {
       const stylesList = [
-        './src/themes/generated/theme.base.css',
-        './src/themes/generated/theme.additional.css',
+        `${rootPath}/themes/generated/theme.base.css`,
+        `${rootPath}/themes/generated/theme.additional.css`,
         'node_modules/devextreme/dist/css/dx.common.css'
       ];
 
@@ -232,6 +232,7 @@ export default function(options: any): Rule {
           hasRoutingModule(host, appPath) ? filter(path => !path.includes('app-routing.module')) : noop(),
           template({
             name: getComponentName(host, appPath),
+            path: rootPath.replace(/\/?(\w)+\/?/g, '../'),
             ...strings,
             content: getContentForAppComponent(project, layout)
           }),
@@ -241,7 +242,8 @@ export default function(options: any): Rule {
       mergeWith(
         apply(url('./files/root'), [
           template({
-            engine: '"angular"'
+            engine: '"angular"',
+            sourcePath: rootPath
           }),
           move('./')
         ])
@@ -251,7 +253,7 @@ export default function(options: any): Rule {
       addImportToAppModule(appPath, 'FooterModule', `./shared/components/footer/footer.component`),
       addStyles(appPath),
       addBuildThemeScript(),
-      addCustomThemeStyles(options),
+      addCustomThemeStyles(options, rootPath),
       addViewportToRoot(appPath),
       addPackagesToDependency(),
       (_: Tree, context: SchematicContext) => {
