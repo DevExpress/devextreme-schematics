@@ -81,6 +81,7 @@ describe('install', () => {
       name: 'testApp2',
       inlineStyle: false,
       inlineTemplate: false,
+      projectRoot: 'src2',
       routing: true,
       style: 'css',
       skipTests: false,
