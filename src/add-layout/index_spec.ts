@@ -57,6 +57,7 @@ describe('layout', () => {
 
     const devextremeConfigContent = tree.readContent('/devextreme.json');
     expect(devextremeConfigContent).toMatch(/"applicationEngine": "angular"/);
+    expect(devextremeConfigContent).toMatch(/"inputFile": "\/testApp\/src\/themes\/metadata.additional.json"/);
 
     const componentContent = tree.readContent('/testApp/src/app/app.component.html');
     expect(componentContent).toMatch(/app-side-nav-outer-toolbar title="TestApp"/);
@@ -71,8 +72,8 @@ describe('layout', () => {
     const styles = angularContent.projects.testApp.architect.build.options.styles;
 
     expect(styles[0]).toBe('node_modules/devextreme/dist/css/dx.common.css');
-    expect(styles[1]).toBe('./src/themes/generated/theme.additional.css');
-    expect(styles[2]).toBe('./src/themes/generated/theme.base.css');
+    expect(styles[1]).toBe('/testApp/src/themes/generated/theme.additional.css');
+    expect(styles[2]).toBe('/testApp/src/themes/generated/theme.base.css');
 
     const moduleContent = tree.readContent('/testApp/src/app/app.module.ts');
     expect(moduleContent).toMatch(/import { SideNavOuterToolbarModule, SideNavInnerToolbarModule }/);

@@ -6,7 +6,7 @@ export function getProjectName(host: Tree, project: any) {
   const workspace = getWorkspace(host);
   const projects = Object.keys(workspace.projects);
 
-  return projectName && projects.indexOf(projectName) > -1 ? projectName : projects[0];
+  return projectName && projects.indexOf(projectName) > -1 ? projectName : workspace.defaultProject;
 }
 
 export function getApplicationPath(host: Tree, projectName: string) {
