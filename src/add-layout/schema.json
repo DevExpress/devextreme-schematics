@@ -18,7 +18,15 @@
       "type": "string",
       "enum": ["safe", "override"],
       "description": "Specifies whether to override the existing app component or create a component with another name.",
-      "default": "safe"
+      "default": "safe",
+      "x-prompt": {
+        "message": "How do you want to resolve conflicts?",
+        "type": "list",
+        "items": [
+          { "value": "safe", "label": "Safe" },
+          { "value": "override", "label": "Override" }
+        ]
+      }
     }
   }
 }
