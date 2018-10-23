@@ -91,7 +91,7 @@ describe('layout', () => {
   it('should add layout without override', () => {
     const runner = new SchematicTestRunner('schematics', collectionPath);
 
-    options.resolveConflicts = 'safe';
+    options.resolveConflicts = 'createNew';
     const tree = runner.runSchematic('add-layout', options, appTree);
 
     expect(tree.files).toContain('/testApp/src/app/app1.component.ts');
