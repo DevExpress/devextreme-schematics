@@ -10,11 +10,11 @@
       "description": "The type of a DevExtreme layout to add",
       "default": "side-nav-outer-toolbar",
       "x-prompt": {
-        "message": "What type of a Devextreme layout do you want to add?",
+        "message": "What layout do you want to add?",
         "type": "list",
         "items": [
-          { "value": "side-nav-outer-toolbar", "label": "side-nav-outer-toolbar" },
-          { "value": "side-nav-inner-toolbar", "label": "side-nav-inner-toolbar" }
+          { "value": "side-nav-outer-toolbar", "label": "Side navigation (outer toolbar)" },
+          { "value": "side-nav-inner-toolbar", "label": "Side navigation (inner toolbar)" }
         ]
       }
     },
