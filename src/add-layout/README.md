@@ -12,3 +12,6 @@ A schematic that adds a DevExtreme layout to an Angular application.
 
 - resolveConflicts (string)
  Specifies whether to override the existing app component
+
+ - skipInstall (boolean)
+ Skip installing dependency packages
