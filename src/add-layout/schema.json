@@ -35,6 +35,11 @@
           { "value": "override", "label": "Override the existing file" }
         ]
       }
+    },
+    "skipInstall": {
+      "type": "boolean",
+      "description": "Skip installing dependency packages.",
+      "default": false
     }
   }
 }
