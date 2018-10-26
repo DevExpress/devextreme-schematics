@@ -15,3 +15,4 @@ A schematic that adds a DevExtreme layout to an Angular application.
 
 - skipInstall (boolean)
  Specifies whether to skip the dependency package installation
+
