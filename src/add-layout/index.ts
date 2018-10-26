@@ -193,7 +193,7 @@ function addPackagesToDependency() {
     addPackageJsonDependency(host, {
       type: NodeDependencyType.Default,
       name: '@angular/cdk',
-      version: '^6.0.0'
+      version: '^7.0.0'
     });
 
     addPackageJsonDependency(host, {
@@ -255,11 +255,14 @@ export default function(options: any): Rule {
       addBuildThemeScript(),
       addCustomThemeStyles(options, rootPath),
       addViewportToRoot(appPath),
-      addPackagesToDependency(),
-      (_: Tree, context: SchematicContext) => {
-        context.addTask(new NodePackageInstallTask());
-      }
+      addPackagesToDependency()
     ];
+
+    if (!options.skipInstall) {
+      rules.push((_: Tree, context: SchematicContext) => {
+        context.addTask(new NodePackageInstallTask());
+      });
+    }
 
     if (override) {
       rules.push(addContentToAppComponent(appPath, 'app.component.html', project, layout));
