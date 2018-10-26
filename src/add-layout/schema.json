@@ -38,7 +38,7 @@
     },
     "skipInstall": {
       "type": "boolean",
-      "description": "Skip installing dependency packages.",
+      "description": "Specifies whether to skip the dependency package installation.",
       "default": false
     }
   }
