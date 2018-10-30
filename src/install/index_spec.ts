@@ -71,9 +71,12 @@ describe('install', () => {
     const runner = new SchematicTestRunner('schematics', collectionPath);
     const tree = runner.runSchematic('install', {}, appTree);
     const tsconfig = JSON.parse(tree.readContent('tsconfig.json'));
-    const jszip = tsconfig['compilerOptions']['paths']['jszip'];
+    const paths = tsconfig['compilerOptions']['paths'];
 
-    expect(jszip[0]).toBe('node_modules/jszip/dist/jszip.min.js');
+    expect(paths['jszip'][0]).toBe('node_modules/jszip/dist/jszip.min.js');
+    expect(paths['quill-delta-to-html'][0])
+      .toBe('node_modules/quill-delta-to-html/dist/browser/QuillDeltaToHtmlConverter.bundle.js');
+    expect(paths['quill'][0]).toBe('node_modules/quill/dist/quill.min.js');
   });
 
   it('should add devextreme styles to the specified project', () => {

@@ -19,11 +19,22 @@ import {
 import { latestVersions } from '../utility/latest-versions';
 import { modifyJSONFile } from '../utility/modify-json-file';
 
+const libraries = [{
+  name: 'jszip',
+  path: 'node_modules/jszip/dist/jszip.min.js'
+}, {
+  name: 'quill-delta-to-html',
+  path: 'node_modules/quill-delta-to-html/dist/browser/QuillDeltaToHtmlConverter.bundle.js'
+}, {
+  name: 'quill',
+  path: 'node_modules/quill/dist/quill.min.js'
+}];
+
 export default function(options: any): Rule {
   return chain([
     (host: Tree) => addDevExtremeDependency(host, { dxversion: options.dxversion }),
     (host: Tree) => addDevExtremeCSS(host, { project: options.project }),
-    (host: Tree) => reqisterJSZip(host),
+    (host: Tree) => reqisterLibraries(host),
     (_, context: SchematicContext) => {
       context.addTask(new NodePackageInstallTask());
     }
@@ -59,7 +70,7 @@ function addDevExtremeCSS(host: Tree, options: any) {
   return host;
 }
 
-function reqisterJSZip(host: Tree) {
+function reqisterLibraries(host: Tree) {
   modifyJSONFile(host, './tsconfig.json', config => {
     const compilerOptions = config['compilerOptions'];
     let paths = compilerOptions['paths'];
@@ -68,9 +79,12 @@ function reqisterJSZip(host: Tree) {
       paths = {};
     }
 
-    if (!paths['jszip']) {
-      paths['jszip'] = ['node_modules/jszip/dist/jszip.min.js'];
-    }
+    libraries.forEach((library) => {
+      const name =  library.name;
+      if (!paths[name]) {
+        paths[name] = [library.path];
+      }
+    });
 
     compilerOptions['paths'] = paths;
 
