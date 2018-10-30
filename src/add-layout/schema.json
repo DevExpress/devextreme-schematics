@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/schema",
   "id": "SchematicsDevextremeAddLayout",
-  "title": "Add a DevExtreme Layout to an Angular application.",
+  "title": "Add a DevExtreme layout to a DevExtreme Angular application",
   "type": "object",
   "properties": {
     "layout": {

@@ -1,6 +1,6 @@
 # add-layout
 
-A schematic that adds a DevExtreme layout to an Angular application.
+A schematic that adds a DevExtreme layout to a DevExtreme Angular application.
 
 ## Properties
 
