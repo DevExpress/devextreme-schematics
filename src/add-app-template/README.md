@@ -17,4 +17,4 @@ A schematic that adds a DevExtreme layout template to an Angular application.
  Specifies whether to skip sample views generation
 
 - resolveConflicts (string)
- Specifies whether to override the existing app component
+ Specifies whether to override the existing app component or create a component with another name

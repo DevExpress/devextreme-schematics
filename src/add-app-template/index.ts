@@ -12,7 +12,8 @@ export default function(options: any): Rule {
     }),
     schematic('add-layout', {
       layout: options.layout,
-      resolveConflicts: options.resolveConflicts
+      resolveConflicts: options.resolveConflicts,
+      skipInstall: true
     })
   ];
 

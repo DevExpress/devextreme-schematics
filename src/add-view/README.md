@@ -1,6 +1,6 @@
 # add-view
 
-Add a view to a DevExtreme app template.
+Add a view to a DevExtreme Angular application.
 
 ## Properties
 

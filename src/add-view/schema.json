@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/schema",
   "id": "SchematicsDevextremeAddView",
-  "title": "Add a view to a DevExtreme app template.",
+  "title": "Add a view to a DevExtreme Angular application",
   "type": "object",
   "properties": {
     "name": {
