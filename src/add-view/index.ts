@@ -22,7 +22,7 @@ import {
 
 import { getSourceFile } from '../utility/source';
 
-import { strings, basename, normalize } from '@angular-devkit/core';
+import { strings, basename, normalize, dirname } from '@angular-devkit/core';
 
 import {
   getProjectName,
@@ -42,7 +42,7 @@ function getChangesForRoutes(name: string, routes: Node) {
     : `{
         path: '${strings.dasherize(name)}',
         component: ${componentName}
-    }`
+    }`;
 }
 
 function getPathToFile(host: Tree, projectName: string, moduleName: string) {
@@ -89,7 +89,7 @@ function addViewToNavigation(options: any) {
 
       return applyChanges(host, changes, navigationFilePath, source.getText(), source.getEnd());
     }
-  }
+  };
 }
 
 export function addViewToRouting(options: any) {
@@ -114,16 +114,16 @@ export function addViewToRouting(options: any) {
 
     const changes = getChangesForRoutes(options.name, routes);
 
-    if(!changes) {
-      return host
+    if (!changes) {
+      return host;
     }
 
     return applyChanges(host, changes, routingModulePath, source.getText(), routes.getEnd());
-  }
+  };
 }
 
 function getPathForView(name: string) {
-  if(name.includes('/')) {
+  if (name.includes('/')) {
     return name;
   }
   return 'pages/' + name;
@@ -136,25 +136,42 @@ function getModuleName(addRoute: boolean, moduleName: string) {
   return moduleName;
 }
 
-export default function (options: any): Rule {
+function addContentToView(options: any) {
+  return (host: Tree) => {
+    const name = strings.dasherize(basename(normalize(options.name)));
+    const path = `${dirname(options.name)}/${name}`;
+    const componentPath = `/${getApplicationPath(host, options.project)}${path}/${name}.component.html`;
+    if (host.exists(componentPath)) {
+      host.overwrite(
+        componentPath,
+        `<h2>${name}</h2>\n<div class="dx-card content-block">Put your content here</div>\n`);
+    }
+    return host;
+  };
+}
+
+export default function(options: any): Rule {
   return (host: Tree) => {
     const addRoute = options.addRoute;
     const project = getProjectName(host, options);
     const module = getModuleName(addRoute, options.module);
     const name = getPathForView(options.name);
 
-    let rules = [externalSchematic('@schematics/angular', 'component', {
-      name,
-      project,
-      module,
-      spec: options.spec,
-      inlineStyle: options.inlineStyle,
-      prefix: options.prefix
-    })];
+    const rules = [externalSchematic('@schematics/angular', 'component', {
+        name,
+        project,
+        module,
+        spec: options.spec,
+        inlineStyle: options.inlineStyle,
+        prefix: options.prefix
+      }),
+      addContentToView({ name, project })
+    ];
+
     if (addRoute) {
       rules.push(addViewToRouting({ name, project, module }));
       rules.push(addViewToNavigation({ name, icon: options.icon, project }));
     }
     return chain(rules);
-  }
+  };
 }

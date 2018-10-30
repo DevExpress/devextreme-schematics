@@ -1,27 +1,36 @@
 {
   "name": "devextreme-schematics",
-  "version": "0.0.0",
+  "version": "1.0.0-beta.5",
   "description": "DevExtreme schematics",
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "test": "npm run build && jasmine **/*_spec.js"
+    "lint": "tslint -c tslint.json 'src/*/*.ts' -e '**/*.d.ts'",
+    "test": "npm run lint && npm run build && jasmine **/*_spec.js"
   },
-  "author": "",
+  "author": "Developer Express Inc.",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/DevExpress/devextreme-schematics.git"
+  },
+  "files": [
+    "src/**/*",
+    "!*.ts",
+    "*.d.ts",
+    "src/*/files/**/*.ts"
+  ],
   "schematics": "./src/collection.json",
   "dependencies": {
-    "@angular-devkit/core": "^0.7.5",
-    "@angular-devkit/schematics": "^0.7.5",
-    "@angular-devkit/schematics-cli": "^0.7.5",
-    "@angular/cli": "^6.1.5",
-    "@schematics/angular": "^0.7.5",
+    "@angular-devkit/core": "^7.0.2",
+    "@angular-devkit/schematics": "^7.0.2",
+    "devextreme-cli": "latest",
+    "@schematics/angular": "^7.0.2",
     "@types/jasmine": "^2.6.0",
-    "@types/json5": "0.0.30",
     "@types/node": "^8.10.27",
-    "json5": "^2.0.1",
-    "typescript": "^2.5.2"
+    "typescript": "3.1.3"
   },
   "devDependencies": {
-    "jasmine": "^2.8.0"
+    "jasmine": "^2.8.0",
+    "tslint": "^5.11.0"
   }
 }

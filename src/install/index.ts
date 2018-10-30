@@ -19,12 +19,12 @@ import {
 import { latestVersions } from '../utility/latest-versions';
 import { modifyJSONFile } from '../utility/modify-json-file';
 
-export default function (options: any): Rule {
+export default function(options: any): Rule {
   return chain([
     (host: Tree) => addDevExtremeDependency(host, { dxversion: options.dxversion }),
     (host: Tree) => addDevExtremeCSS(host, { project: options.project }),
     (host: Tree) => reqisterJSZip(host),
-    (_host: Tree, context: SchematicContext) => {
+    (_, context: SchematicContext) => {
       context.addTask(new NodePackageInstallTask());
     }
   ]);
@@ -64,11 +64,11 @@ function reqisterJSZip(host: Tree) {
     const compilerOptions = config['compilerOptions'];
     let paths = compilerOptions['paths'];
 
-    if(!paths) {
+    if (!paths) {
       paths = {};
     }
 
-    if(!paths['jszip']) {
+    if (!paths['jszip']) {
       paths['jszip'] = ['node_modules/jszip/dist/jszip.min.js'];
     }
 

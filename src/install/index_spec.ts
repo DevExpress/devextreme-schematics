@@ -23,9 +23,9 @@ describe('install', () => {
     version: '6.0.0'
   };
 
-  const schematicRunner = new SchematicTestRunner('@schematics/angular', require.resolve('../../node_modules/@schematics/angular/collection.json'));
+  const angularSchematicsCollection = require.resolve('../../node_modules/@schematics/angular/collection.json');
+  const schematicRunner = new SchematicTestRunner('@schematics/angular', angularSchematicsCollection);
   let appTree: UnitTestTree;
-
 
   beforeEach(() => {
     appTree = schematicRunner.runSchematic('workspace', workspaceOptions);
@@ -75,12 +75,13 @@ describe('install', () => {
 
     expect(jszip[0]).toBe('node_modules/jszip/dist/jszip.min.js');
   });
-  
+
   it('should add devextreme styles to the specified project', () => {
     const secondAppOptions: any = {
       name: 'testApp2',
       inlineStyle: false,
       inlineTemplate: false,
+      projectRoot: 'src2',
       routing: true,
       style: 'css',
       skipTests: false,

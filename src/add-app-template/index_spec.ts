@@ -19,7 +19,8 @@ const workspaceOptions: WorkspaceOptions = {
   version: '6.0.0'
 };
 
-const schematicRunner = new SchematicTestRunner('@schematics/angular', require.resolve('../../node_modules/@schematics/angular/collection.json'));
+const angularSchematicsCollection = require.resolve('../../node_modules/@schematics/angular/collection.json');
+const schematicRunner = new SchematicTestRunner('@schematics/angular', angularSchematicsCollection);
 let appTree: UnitTestTree;
 
 beforeEach(() => {

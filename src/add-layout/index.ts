@@ -6,26 +6,31 @@ import {
   url,
   move,
   chain,
+  noop,
+  filter,
   mergeWith,
-  SchematicsException,
   template } from '@angular-devkit/schematics';
+
+import { spawn } from 'child_process';
+import { existsSync } from 'fs';
 
 import { strings } from '@angular-devkit/core';
 
 import {
   getApplicationPath,
+  getRootPath,
   getProjectName
  } from '../utility/project';
 
- import {
+import {
   addStylesToApp
  } from '../utility/styles';
 
- import {
+import {
   modifyJSONFile
  } from '../utility/modify-json-file';
 
- import {
+import {
   NodeDependencyType,
   addPackageJsonDependency
 } from '@schematics/angular/utility/dependencies';
@@ -34,9 +39,9 @@ import {
   NodePackageInstallTask
 } from '@angular-devkit/schematics/tasks';
 
- import { getSourceFile } from '../utility/source';
+import { getSourceFile } from '../utility/source';
 
- import {
+import {
   addImportToModule
 } from '@schematics/angular/utility/ast-utils';
 
@@ -79,9 +84,7 @@ function addBuildThemeScript() {
     modifyJSONFile(host, './package.json', config => {
       const scripts = config['scripts'];
 
-      scripts['build-themes'] = 'devextreme build && copyfiles -u 4 \"./node_modules/devextreme/dist/css/@(icons|fonts)/*.*\" \"./src/themes/generated/\"';
-      scripts['start'] = `npm run build-themes && ${scripts['start']}`;
-      scripts['build'] = `npm run build-themes && ${scripts['build']}`;
+      scripts['build-themes'] = 'devextreme build';
 
       return config;
     });
@@ -90,17 +93,29 @@ function addBuildThemeScript() {
   };
 }
 
-function addCustomThemeStyles(options: any) {
+function addCustomThemeStyles(options: any, rootPath: string) {
   return (host: Tree) => {
     modifyJSONFile(host, './angular.json', config => {
-      const styles = [
-        './src/themes/generated/theme.base.css',
-        './src/themes/generated/theme.additional.css',
+      const stylesList = [
+        `${rootPath}/themes/generated/theme.base.css`,
+        `${rootPath}/themes/generated/theme.additional.css`,
         'node_modules/devextreme/dist/css/dx.common.css'
       ];
 
-      return addStylesToApp(host, options.project, config, styles);
+      return addStylesToApp(host, options.project, config, stylesList);
     });
+
+    return host;
+  };
+}
+
+function addViewportToRoot(appPath: string) {
+  return (host: Tree) => {
+    const indexPath = `${appPath.replace(/app\//, '')}index.html`;
+    let indexContent = host.read(indexPath)!.toString();
+
+    indexContent = indexContent.replace(/<app-root>/, '<app-root class="dx-viewport">');
+    host.overwrite(indexPath, indexContent);
 
     return host;
   };
@@ -121,14 +136,9 @@ function addImportToAppModule(rootPath: string, importName: string, path: string
   };
 }
 
-function getContentForAppComponent(project: string) {
+function getContentForAppComponent(project: string, layout: string) {
   const title = project.split('-').map(part => strings.capitalize(part)).join(' ');
-  return `<app-layout #layout>
-    <app-header
-        (menuToggle)="layout.menuOpened = !layout.menuOpened;"
-        title="${title}">
-    </app-header>
-
+  return `<app-${layout} title="${title}">
     <router-outlet></router-outlet>
 
     <app-footer>
@@ -136,15 +146,15 @@ function getContentForAppComponent(project: string) {
         <br/>
         All trademarks or registered trademarks are property of their respective owners.
     </app-footer>
-</app-layout>
+</app-${layout}>
 `;
 }
 
-function addContentToAppComponent(rootPath: string, component: string, project: string) {
+function addContentToAppComponent(rootPath: string, component: string, project: string, layout: string) {
   return(host: Tree) => {
     const appModulePath = rootPath + component;
     const source = getSourceFile(host, appModulePath);
-    const componentContent = getContentForAppComponent(project);
+    const componentContent = getContentForAppComponent(project, layout);
 
     if (!source) {
       return host;
@@ -158,7 +168,7 @@ function addContentToAppComponent(rootPath: string, component: string, project: 
 
 function getComponentName(host: Tree, rootPath: string) {
   let name = '';
-  let index = 1;
+  const index = 1;
 
   if (!host.exists(rootPath + 'app.component.ts')) {
     name = 'app';
@@ -174,12 +184,6 @@ function getComponentName(host: Tree, rootPath: string) {
   return name;
 }
 
-function findLayout(layout: string) {
-  const layouts = ['side-nav-outer-toolbar'];
-
-  return layouts.some((item) => item === layout);
-}
-
 function hasRoutingModule(host: Tree, rootPath: string) {
   return host.exists(rootPath + 'app-routing.module.ts');
 }
@@ -189,7 +193,7 @@ function addPackagesToDependency() {
     addPackageJsonDependency(host, {
       type: NodeDependencyType.Default,
       name: '@angular/cdk',
-      version: '^6.0.0'
+      version: '^7.0.0'
     });
 
     addPackageJsonDependency(host, {
@@ -202,85 +206,74 @@ function addPackagesToDependency() {
   };
 }
 
+function buildThemes() {
+  const command = /^win/.test(process.platform) ? 'npm.cmd' : 'npm';
+  const spawnOptions = {
+    stdio:  [process.stdin, process.stdout, process.stderr],
+    shell: true,
+    cwd: process.cwd()
+  };
+
+  spawn(command, ['run', 'build-themes'], spawnOptions);
+}
+
 export default function(options: any): Rule {
-  return (host: Tree, _context: SchematicContext) => {
+  return (host: Tree) => {
     const project = getProjectName(host, options.project);
-    const rootPath = getApplicationPath(host, project);
+    const appPath = getApplicationPath(host, project);
+    const rootPath = getRootPath(host, project);
     const layout = options.layout;
+    const override = options.resolveConflicts === 'override';
 
-    if (!findLayout(layout)) {
-      throw new SchematicsException(`${layout} layout not found.`);
-    }
-
-    let rules = [
+    const rules = [
       mergeWith(
-        apply(url('./files/shared'), [
-          move(rootPath + 'shared/components/')
-        ])
-      ),
-      mergeWith(
-        apply(url('./files/menu'), [
-          move(rootPath + 'shared/components/')
-        ])
-      ),
-      mergeWith(
-        apply(url('./files/navigations'), [
+        apply(url('./files/src'), [
+          override ? filter(path => !path.includes('__name__')) : noop(),
+          hasRoutingModule(host, appPath) ? filter(path => !path.includes('app-routing.module')) : noop(),
+          template({
+            name: getComponentName(host, appPath),
+            path: rootPath.replace(/\/?(\w)+\/?/g, '../'),
+            ...strings,
+            content: getContentForAppComponent(project, layout)
+          }),
           move(rootPath)
         ])
       ),
       mergeWith(
-        apply(url('./files/layouts'), [
-          move(rootPath + 'layouts/')
-        ])
-      ),
-      mergeWith(
-        apply(url('./files/devextreme-config'), [
+        apply(url('./files/root'), [
           template({
-            'engine': '"angular"'
+            engine: '"angular"',
+            sourcePath: rootPath
           }),
           move('./')
         ])
       ),
-      mergeWith(
-        apply(url('./files/themes'), [
-          move(rootPath.replace(/app\//, '') + 'themes/')
-        ])
-      ),
-      addImportToAppModule(rootPath, 'AppLayoutModule', `./layouts/${layout}/layout.component`),
-      addImportToAppModule(rootPath, 'HeaderModule', `./shared/components/header/header.component`),
-      addImportToAppModule(rootPath, 'FooterModule', `./shared/components/footer/footer.component`),
-      addStyles(rootPath),
+      addImportToAppModule(appPath, 'SideNavOuterToolbarModule', './layouts'),
+      addImportToAppModule(appPath, 'SideNavInnerToolbarModule', './layouts'),
+      addImportToAppModule(appPath, 'FooterModule', `./shared/components/footer/footer.component`),
+      addStyles(appPath),
       addBuildThemeScript(),
-      addCustomThemeStyles(options),
-      addPackagesToDependency(),
-      (_host: Tree, context: SchematicContext) => {
-        context.addTask(new NodePackageInstallTask());
-      }
+      addCustomThemeStyles(options, rootPath),
+      addViewportToRoot(appPath),
+      addPackagesToDependency()
     ];
 
-    if (options.overrideAppComponent) {
-      rules.push(addContentToAppComponent(rootPath, 'app.component.html', project));
-    } else {
-      const name = getComponentName(host, rootPath);
-      rules.push(mergeWith(
-        apply(url('./files/component'), [
-          template({
-            'name': name,
-            'content': getContentForAppComponent(project)
-          }),
-          move(rootPath)
-        ])
-      ));
+    if (!options.skipInstall) {
+      rules.push((_: Tree, context: SchematicContext) => {
+        context.addTask(new NodePackageInstallTask());
+      });
     }
 
-    if (!hasRoutingModule(host, rootPath)) {
-      rules.push(mergeWith(
-        apply(url('./files/routing'), [
-          move(rootPath)
-        ])
-      ));
+    if (override) {
+      rules.push(addContentToAppComponent(appPath, 'app.component.html', project, layout));
+    }
 
-      rules.push(addImportToAppModule(rootPath, 'AppRoutingModule', './app-routing.module'));
+    if (!hasRoutingModule(host, appPath)) {
+      rules.push(addImportToAppModule(appPath, 'AppRoutingModule', './app-routing.module'));
+    }
+
+    if (existsSync('./angular.json')) {
+      buildThemes();
     }
 
     return chain(rules);

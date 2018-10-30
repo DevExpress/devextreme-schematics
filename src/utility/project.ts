@@ -6,12 +6,15 @@ export function getProjectName(host: Tree, project: any) {
   const workspace = getWorkspace(host);
   const projects = Object.keys(workspace.projects);
 
-  return projectName && projects.indexOf(projectName) > -1 ? projectName : projects[0];
-};
+  return projectName && projects.indexOf(projectName) > -1 ? projectName : workspace.defaultProject;
+}
 
 export function getApplicationPath(host: Tree, projectName: string) {
-  const project = getWorkspace(host).projects[projectName];
-  let rootPath = project.sourceRoot || project.root;
-
+  const rootPath = getRootPath(host, projectName);
   return rootPath ? `${rootPath}/app/` : 'src/app/';
+}
+
+export function getRootPath(host: Tree, projectName: string) {
+  const project = getWorkspace(host).projects[projectName];
+  return project.sourceRoot || project.root;
 }

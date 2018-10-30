@@ -5,14 +5,15 @@ import {
 } from '@angular-devkit/schematics';
 
 export default function(options: any): Rule {
-  let rules = [
+  const rules = [
     schematic('install', {
       dxversion: options.dxversion,
       project: options.project
     }),
     schematic('add-layout', {
       layout: options.layout,
-      overrideAppComponent: options.overrideAppComponent
+      resolveConflicts: options.resolveConflicts,
+      skipInstall: true
     })
   ];
 
@@ -21,4 +22,4 @@ export default function(options: any): Rule {
   }
 
   return chain(rules);
-};
+}
