@@ -1,6 +1,5 @@
-@import "../../../themes/generated/variables.base.scss";
-
 .layout {
+    @import "../../../themes/generated/variables.base.scss";
     height: 100%;
     background-color: darken($base-bg, 5.00);
 }
@@ -11,21 +10,13 @@
     height: 100%;
 }
 
-#header {
-    flex: 0 0 auto;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
-
-    ::ng-deep .dx-icon {
-        color: $base-accent;
-    }
-}
-
 #navigation-header {
+    @import "../../../themes/generated/variables.additional.scss";
     background-color: $base-accent;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
 
-    ::ng-deep .dx-icon {
-        color: $base-bg;
+    ::ng-deep .menu-button .dx-icon {
+        color: $base-text-color;
     }
 }
 
@@ -34,11 +25,11 @@
     min-height: 0;
 }
 
-::ng-deep .dx-scrollable-content {
+:host ::ng-deep .dx-scrollable-content {
     height: 100%;
 }
 
-::ng-deep .dx-scrollview-content {
+:host ::ng-deep .dx-scrollview-content {
     display: flex;
     flex-direction: column;
     min-height: 100%;
@@ -46,6 +37,7 @@
 
 .content {
     flex-grow: 1;
+    line-height: 1.5;
 }
 
 .drawer {
@@ -69,6 +61,17 @@
     padding: 40px;
 }
 
+:host, .screen-large {
+    .drawer ::ng-deep .dx-card.wide-card, .drawer ::ng-deep .dx-card.wide-card {
+        padding: 0;
+        border-radius: 0;
+        margin-left: 0;
+        margin-right: 0;
+        border-right: 0;
+        border-left: 0;
+    }
+}
+
 .screen-x-small {
     .content {
         ::ng-deep h2, ::ng-deep .content-block, .footer {
@@ -86,7 +89,7 @@
         padding: 10px 0;
     }
 
-    ::ng-deep .dx-drawer-content .dx-menu-button {
-        margin: 0 20px;
+    ::ng-deep .dx-drawer-content .menu-button {
+        margin: 0 12px;
     }
 }

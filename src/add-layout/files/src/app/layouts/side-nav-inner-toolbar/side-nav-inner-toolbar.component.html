@@ -23,8 +23,9 @@
                         widget="dxButton"
                         [options]="{
                             icon: 'menu',
+                            stylingMode: 'text',
                             onClick: toggleMenu,
-                            elementAttr: { class: 'dx-menu-button' }
+                            elementAttr: { class: 'menu-button' }
                         }">
                     </dxi-item>
                     <dxi-item location="before" [text]="title">
@@ -33,12 +34,10 @@
         </app-side-navigation-menu>
 
         <div class="container">
-            <div id="header">
-                <app-header
-                    [menuToggleEnabled]="minMenuSize === 0"
-                    (menuToggle)="menuOpened = !menuOpened;">
-                </app-header>
-            </div>
+            <app-header
+                [menuToggleEnabled]="minMenuSize === 0"
+                (menuToggle)="menuOpened = !menuOpened;">
+            </app-header>
 
             <dx-scroll-view class="scroll-view">
                 <div class="content">
