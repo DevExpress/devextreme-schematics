@@ -21,7 +21,7 @@
     "dxversion": {
       "type": "string",
       "description": "The DevExtreme version",
-      "default": "18.2-unstable"
+      "default": "18.2"
     },
     "project": {
       "type": "string",

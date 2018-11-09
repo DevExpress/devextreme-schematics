@@ -1,6 +1,6 @@
 {
   "name": "devextreme-schematics",
-  "version": "1.0.0-beta.6",
+  "version": "1.0.0",
   "description": "DevExtreme schematics",
   "scripts": {
     "build": "tsc -p tsconfig.json",
@@ -23,7 +23,6 @@
   "dependencies": {
     "@angular-devkit/core": "^7.0.2",
     "@angular-devkit/schematics": "^7.0.2",
-    "devextreme-cli": "latest",
     "@schematics/angular": "^7.0.2",
     "@types/jasmine": "^2.6.0",
     "@types/node": "^8.10.27",
