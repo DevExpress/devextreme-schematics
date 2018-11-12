@@ -60,7 +60,7 @@ describe('layout', () => {
     expect(devextremeConfigContent).toMatch(/"inputFile": "\/testApp\/src\/themes\/metadata.additional.json"/);
 
     const componentContent = tree.readContent('/testApp/src/app/app.component.html');
-    expect(componentContent).toMatch(/app-side-nav-outer-toolbar title="TestApp"/);
+    expect(componentContent).toMatch(/app-side-nav-outer-toolbar title={{title}}/);
 
     const stylesContent = tree.readContent('/testApp/src/styles.scss');
     expect(stylesContent).toMatch(/html, body {/);
@@ -97,7 +97,7 @@ describe('layout', () => {
     expect(tree.files).toContain('/testApp/src/app/app1.component.ts');
 
     const componentContent = tree.readContent('/testApp/src/app/app1.component.html');
-    expect(componentContent).toMatch(/app-side-nav-outer-toolbar title="TestApp"/);
+    expect(componentContent).toMatch(/app-side-nav-outer-toolbar title={{title}}/);
   });
 
   it('should add routing to layout', () => {
@@ -121,6 +121,6 @@ describe('layout', () => {
     const tree = runner.runSchematic('add-layout', options, appTree);
     const content = tree.readContent('/testApp/src/app/app.component.html');
 
-    expect(content).toMatch(/app-side-nav-inner-toolbar title="TestApp"/);
+    expect(content).toMatch(/app-side-nav-inner-toolbar title={{title}}/);
   });
 });
