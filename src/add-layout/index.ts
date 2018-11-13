@@ -136,9 +136,8 @@ function addImportToAppModule(rootPath: string, importName: string, path: string
   };
 }
 
-function getContentForAppComponent(project: string, layout: string) {
-  const title = project.split('-').map(part => strings.capitalize(part)).join(' ');
-  return `<app-${layout} title="${title}">
+function getContentForAppComponent(layout: string) {
+  return `<app-${layout} title={{title}}>
     <router-outlet></router-outlet>
 
     <app-footer>
@@ -150,11 +149,11 @@ function getContentForAppComponent(project: string, layout: string) {
 `;
 }
 
-function addContentToAppComponent(rootPath: string, component: string, project: string, layout: string) {
+function addContentToAppComponent(rootPath: string, layout: string) {
   return(host: Tree) => {
-    const appModulePath = rootPath + component;
+    const appModulePath = rootPath + 'app.component.html';
     const source = getSourceFile(host, appModulePath);
-    const componentContent = getContentForAppComponent(project, layout);
+    const componentContent = getContentForAppComponent(layout);
 
     if (!source) {
       return host;
@@ -234,7 +233,7 @@ export default function(options: any): Rule {
             name: getComponentName(host, appPath),
             path: rootPath.replace(/\/?(\w)+\/?/g, '../'),
             ...strings,
-            content: getContentForAppComponent(project, layout)
+            content: getContentForAppComponent(layout)
           }),
           move(rootPath)
         ])
@@ -265,7 +264,7 @@ export default function(options: any): Rule {
     }
 
     if (override) {
-      rules.push(addContentToAppComponent(appPath, 'app.component.html', project, layout));
+      rules.push(addContentToAppComponent(appPath, layout));
     }
 
     if (!hasRoutingModule(host, appPath)) {
