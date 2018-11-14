@@ -31,7 +31,7 @@ import {
  } from '../utility/project';
 
 import {
-  replaceDashes
+  humanize
 } from '../utility/string';
 
 import {
@@ -212,7 +212,7 @@ function buildThemes() {
 export default function(options: any): Rule {
   return (host: Tree) => {
     const project = getProjectName(host, options.project);
-    const appName = replaceDashes(project);
+    const appName = humanize(project);
     const appPath = getApplicationPath(host, project);
     const rootPath = getRootPath(host, project);
     const layout = options.layout;
