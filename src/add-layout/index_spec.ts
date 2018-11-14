@@ -78,6 +78,17 @@ describe('layout', () => {
     const moduleContent = tree.readContent('/testApp/src/app/app.module.ts');
     expect(moduleContent).toMatch(/import { SideNavOuterToolbarModule, SideNavInnerToolbarModule }/);
     expect(moduleContent).toMatch(/import { AppRoutingModule }/);
+
+    const testContent = tree.readContent('/e2e/src/app.e2e-spec.ts');
+    expect(testContent).toMatch(/'Welcome to TestApp!'/);
+
+    const testUtilsContent = tree.readContent('/e2e/src/app.po.ts');
+    expect(testUtilsContent).toMatch(/'app-root .dx-drawer-content .dx-card p:nth-child\(2\)'/);
+
+    const appContent = tree.readContent('/testApp/src/app/app.component.ts');
+    expect(appContent).toMatch(/templateUrl: '.\/app.component.html',/);
+    expect(appContent).toMatch(/styleUrls: \['.\/app.component.scss'\]/);
+    expect(appContent).toMatch(/title = TestApp;/);
   });
 
   it('should add angular/cdk dependency', () => {
@@ -98,6 +109,14 @@ describe('layout', () => {
 
     const componentContent = tree.readContent('/testApp/src/app/app1.component.html');
     expect(componentContent).toMatch(/app-side-nav-outer-toolbar title={{title}}/);
+
+    const appContent = tree.readContent('/testApp/src/app/app.component.ts');
+    expect(appContent).toMatch(/templateUrl: '.\/app.component.html',/);
+    expect(appContent).toMatch(/styleUrls: \['.\/app.component.scss'\]/);
+
+    const newAppContent = tree.readContent('/testApp/src/app/app1.component.ts');
+    expect(newAppContent).toMatch(/templateUrl: '.\/app1.component.html',/);
+    expect(newAppContent).toMatch(/styleUrls: \['.\/app1.component.scss'\]/);
   });
 
   it('should add routing to layout', () => {

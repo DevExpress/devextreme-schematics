@@ -17,10 +17,22 @@ import { existsSync } from 'fs';
 import { strings } from '@angular-devkit/core';
 
 import {
+  stylesContent,
+  appComponentContent,
+  appComponentTemplateContent,
+  e2eTestContet,
+  testUtilsContent
+} from './contents';
+
+import {
   getApplicationPath,
   getRootPath,
   getProjectName
  } from '../utility/project';
+
+import {
+  humanize
+} from '../utility/string';
 
 import {
   addStylesToApp
@@ -53,17 +65,6 @@ import {
   applyChanges
 } from '../utility/change';
 
-const styles = `
-html, body {
-  margin: 0px;
-  min-height: 100%;
-  height: 100%;
-}
-
-* {
-  box-sizing: border-box;
-}`;
-
 function addStyles(rootPath: string) {
   return (host: Tree) => {
     const stylesPath = rootPath.replace(/app\//, '') + 'styles.scss';
@@ -73,7 +74,7 @@ function addStyles(rootPath: string) {
       return host;
     }
 
-    const changes = new InsertChange(stylesPath, source.getEnd(), styles);
+    const changes = new InsertChange(stylesPath, source.getEnd(), stylesContent);
 
     return applyChanges(host, [changes], stylesPath);
   };
@@ -136,30 +137,22 @@ function addImportToAppModule(rootPath: string, importName: string, path: string
   };
 }
 
-function getContentForAppComponent(layout: string) {
-  return `<app-${layout} title={{title}}>
-    <router-outlet></router-outlet>
+function getAppComponentContent(componentName: string, appName: string) {
+  let content = appComponentContent.replace(/componentName/g, componentName);
+  content = content.replace('exportComponentName', strings.classify(componentName));
 
-    <app-footer>
-        Copyright © 2011-2018 Developer Express Inc.
-        <br/>
-        All trademarks or registered trademarks are property of their respective owners.
-    </app-footer>
-</app-${layout}>
-`;
+  return content.replace('titleValue', appName);
 }
 
-function addContentToAppComponent(rootPath: string, layout: string) {
+function overrideContentInFile(path: string, content: string) {
   return(host: Tree) => {
-    const appModulePath = rootPath + 'app.component.html';
-    const source = getSourceFile(host, appModulePath);
-    const componentContent = getContentForAppComponent(layout);
+    const source = getSourceFile(host, path);
 
     if (!source) {
       return host;
     }
 
-    host.overwrite(appModulePath, componentContent);
+    host.overwrite(path, content);
 
     return host;
   };
@@ -219,10 +212,12 @@ function buildThemes() {
 export default function(options: any): Rule {
   return (host: Tree) => {
     const project = getProjectName(host, options.project);
+    const appName = humanize(project);
     const appPath = getApplicationPath(host, project);
     const rootPath = getRootPath(host, project);
     const layout = options.layout;
     const override = options.resolveConflicts === 'override';
+    const coponentName = override ? 'app' : getComponentName(host, appPath);
 
     const rules = [
       mergeWith(
@@ -230,10 +225,10 @@ export default function(options: any): Rule {
           override ? filter(path => !path.includes('__name__')) : noop(),
           hasRoutingModule(host, appPath) ? filter(path => !path.includes('app-routing.module')) : noop(),
           template({
-            name: getComponentName(host, appPath),
+            name: coponentName,
             path: rootPath.replace(/\/?(\w)+\/?/g, '../'),
-            ...strings,
-            content: getContentForAppComponent(layout)
+            templateContent: appComponentTemplateContent.replace('layoutName', layout),
+            componentContent: getAppComponentContent(coponentName, appName)
           }),
           move(rootPath)
         ])
@@ -264,7 +259,11 @@ export default function(options: any): Rule {
     }
 
     if (override) {
-      rules.push(addContentToAppComponent(appPath, layout));
+      rules.push(overrideContentInFile(appPath + 'app.component.html',
+        appComponentTemplateContent.replace('layoutName', layout)));
+      rules.push(overrideContentInFile(appPath + 'app.component.ts', getAppComponentContent(coponentName, appName)));
+      rules.push(overrideContentInFile('e2e/src/app.e2e-spec.ts', e2eTestContet.replace('appName', appName)));
+      rules.push(overrideContentInFile('e2e/src/app.po.ts', testUtilsContent));
     }
 
     if (!hasRoutingModule(host, appPath)) {
