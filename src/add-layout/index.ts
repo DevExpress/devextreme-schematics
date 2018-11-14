@@ -17,6 +17,14 @@ import { existsSync } from 'fs';
 import { strings } from '@angular-devkit/core';
 
 import {
+  stylesContent,
+  appComponentContent,
+  appComponentTemplateContent,
+  e2eTestContet,
+  testUtilsContent
+} from './contents';
+
+import {
   getApplicationPath,
   getRootPath,
   getProjectName
@@ -53,57 +61,6 @@ import {
   applyChanges
 } from '../utility/change';
 
-const styles = `
-html, body {
-  margin: 0px;
-  min-height: 100%;
-  height: 100%;
-}
-
-* {
-  box-sizing: border-box;
-}`;
-
-const appComponentContent = `<app-layoutName title={{title}}>
-<router-outlet></router-outlet>
-
-<app-footer>
-    Copyright © 2011-2018 Developer Express Inc.
-    <br/>
-    All trademarks or registered trademarks are property of their respective owners.
-</app-footer>
-</app-layoutName>
-`;
-
-const e2eTestContet = `import { AppPage } from './app.po';
-
-describe('workspace-project App', () => {
-  let page: AppPage;
-
-  beforeEach(() => {
-    page = new AppPage();
-  });
-
-  it('should display welcome message', () => {
-    page.navigateTo();
-    expect(page.getParagraphText()).toEqual('Welcome to appName!');
-  });
-});
-`;
-
-const testUtilsContent = `import { browser, by, element } from 'protractor';
-
-export class AppPage {
-  navigateTo() {
-    return browser.get('/');
-  }
-
-  getParagraphText() {
-    return element(by.css('app-root .dx-drawer-content .dx-card p:nth-child(2)')).getText();
-  }
-}
-`;
-
 function addStyles(rootPath: string) {
   return (host: Tree) => {
     const stylesPath = rootPath.replace(/app\//, '') + 'styles.scss';
@@ -113,7 +70,7 @@ function addStyles(rootPath: string) {
       return host;
     }
 
-    const changes = new InsertChange(stylesPath, source.getEnd(), styles);
+    const changes = new InsertChange(stylesPath, source.getEnd(), stylesContent);
 
     return applyChanges(host, [changes], stylesPath);
   };
@@ -174,6 +131,13 @@ function addImportToAppModule(rootPath: string, importName: string, path: string
 
     return applyChanges(host, changes, appModulePath);
   };
+}
+
+function getAppComponentContent(componentName: string, title: string) {
+  let content = appComponentContent.replace(/componentName/g, componentName);
+  content = content.replace('exportComponentName', strings.classify(componentName));
+
+  return content.replace('titleValue', title);
 }
 
 function overrideContentInFile(path: string, content: string) {
@@ -244,10 +208,12 @@ function buildThemes() {
 export default function(options: any): Rule {
   return (host: Tree) => {
     const project = getProjectName(host, options.project);
+    const appName = project.split('-').map((part: string) => strings.capitalize(part)).join(' ');
     const appPath = getApplicationPath(host, project);
     const rootPath = getRootPath(host, project);
     const layout = options.layout;
     const override = options.resolveConflicts === 'override';
+    const coponentName = override ? 'app' : getComponentName(host, appPath);
 
     const rules = [
       mergeWith(
@@ -255,10 +221,11 @@ export default function(options: any): Rule {
           override ? filter(path => !path.includes('__name__')) : noop(),
           hasRoutingModule(host, appPath) ? filter(path => !path.includes('app-routing.module')) : noop(),
           template({
-            name: getComponentName(host, appPath),
+            name: coponentName,
             path: rootPath.replace(/\/?(\w)+\/?/g, '../'),
             ...strings,
-            content: appComponentContent.replace('layoutName', layout)
+            templateContent: appComponentTemplateContent.replace('layoutName', layout),
+            componentContent: getAppComponentContent(coponentName, appName)
           }),
           move(rootPath)
         ])
@@ -290,8 +257,9 @@ export default function(options: any): Rule {
 
     if (override) {
       rules.push(overrideContentInFile(appPath + 'app.component.html',
-        appComponentContent.replace('layoutName', layout)));
-      rules.push(overrideContentInFile('e2e/src/app.e2e-spec.ts', e2eTestContet.replace('appName', project)));
+        appComponentTemplateContent.replace('layoutName', layout)));
+      rules.push(overrideContentInFile(appPath + 'app.component.ts', getAppComponentContent(coponentName, appName)));
+      rules.push(overrideContentInFile('e2e/src/app.e2e-spec.ts', e2eTestContet.replace('appName', appName)));
       rules.push(overrideContentInFile('e2e/src/app.po.ts', testUtilsContent));
     }
 
