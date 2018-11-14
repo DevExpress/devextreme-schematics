@@ -21,6 +21,8 @@ import {
   getProjectName
  } from '../utility/project';
 
+ import { replaceDashes } from '../utility/string';
+
 import {
    applyChanges
  } from '../utility/change';
@@ -109,7 +111,7 @@ export default function(options: any): Rule {
 
     const templateSource = apply(url('./files'), [
       template({
-        project
+        project: replaceDashes(project)
       }),
       move(rootPath)
     ]);

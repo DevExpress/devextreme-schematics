@@ -30,6 +30,10 @@ import {
   getProjectName
  } from '../utility/project';
 
+ import {
+  replaceDashes
+ } from '../utility/string';
+
 import {
   addStylesToApp
  } from '../utility/styles';
@@ -208,7 +212,7 @@ function buildThemes() {
 export default function(options: any): Rule {
   return (host: Tree) => {
     const project = getProjectName(host, options.project);
-    const appName = project.split('-').map((part: string) => strings.capitalize(part)).join(' ');
+    const appName = replaceDashes(project);
     const appPath = getApplicationPath(host, project);
     const rootPath = getRootPath(host, project);
     const layout = options.layout;
