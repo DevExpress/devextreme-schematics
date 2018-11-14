@@ -137,11 +137,11 @@ function addImportToAppModule(rootPath: string, importName: string, path: string
   };
 }
 
-function getAppComponentContent(componentName: string, title: string) {
+function getAppComponentContent(componentName: string, appName: string) {
   let content = appComponentContent.replace(/componentName/g, componentName);
   content = content.replace('exportComponentName', strings.classify(componentName));
 
-  return content.replace('titleValue', title);
+  return content.replace('titleValue', appName);
 }
 
 function overrideContentInFile(path: string, content: string) {
