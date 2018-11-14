@@ -64,6 +64,37 @@ html, body {
   box-sizing: border-box;
 }`;
 
+const e2eTestContet = `
+import { AppPage } from './app.po';
+
+describe('workspace-project App', () => {
+  let page: AppPage;
+
+  beforeEach(() => {
+    page = new AppPage();
+  });
+
+  it('should display welcome message', () => {
+    page.navigateTo();
+    expect(page.getParagraphText()).toEqual('Welcome to DevExtreme Angular Template!');
+  });
+});
+`;
+
+const testUtilsContent = `
+import { browser, by, element } from 'protractor';
+
+export class AppPage {
+  navigateTo() {
+    return browser.get('/');
+  }
+
+  getParagraphText() {
+    return element(by.css('app-root .dx-drawer-content .dx-card p:nth-child(2)')).getText();
+  }
+}
+`;
+
 function addStyles(rootPath: string) {
   return (host: Tree) => {
     const stylesPath = rootPath.replace(/app\//, '') + 'styles.scss';
@@ -149,17 +180,15 @@ function getContentForAppComponent(layout: string) {
 `;
 }
 
-function addContentToAppComponent(rootPath: string, layout: string) {
+function overrideContentInFile(path: string, content: string) {
   return(host: Tree) => {
-    const appModulePath = rootPath + 'app.component.html';
-    const source = getSourceFile(host, appModulePath);
-    const componentContent = getContentForAppComponent(layout);
+    const source = getSourceFile(host, path);
 
     if (!source) {
       return host;
     }
 
-    host.overwrite(appModulePath, componentContent);
+    host.overwrite(path, content);
 
     return host;
   };
@@ -264,7 +293,9 @@ export default function(options: any): Rule {
     }
 
     if (override) {
-      rules.push(addContentToAppComponent(appPath, layout));
+      rules.push(overrideContentInFile(appPath + 'app.component.html', getContentForAppComponent(layout)));
+      rules.push(overrideContentInFile('e2e/src/app.e2e-spec.ts', e2eTestContet));
+      rules.push(overrideContentInFile('e2e/src/app.po.ts', testUtilsContent));
     }
 
     if (!hasRoutingModule(host, appPath)) {

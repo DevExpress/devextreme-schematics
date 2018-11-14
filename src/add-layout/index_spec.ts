@@ -78,6 +78,12 @@ describe('layout', () => {
     const moduleContent = tree.readContent('/testApp/src/app/app.module.ts');
     expect(moduleContent).toMatch(/import { SideNavOuterToolbarModule, SideNavInnerToolbarModule }/);
     expect(moduleContent).toMatch(/import { AppRoutingModule }/);
+
+    const testContent = tree.readContent('/e2e/src/app.e2e-spec.ts');
+    expect(testContent).toMatch(/'Welcome to DevExtreme Angular Template!'/);
+
+    const testUtilsContent = tree.readContent('/e2e/src/app.po.ts');
+    expect(testUtilsContent).toMatch(/'app-root .dx-drawer-content .dx-card p:nth-child\(2\)'/);
   });
 
   it('should add angular/cdk dependency', () => {
