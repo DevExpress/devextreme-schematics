@@ -227,7 +227,6 @@ export default function(options: any): Rule {
           template({
             name: coponentName,
             path: rootPath.replace(/\/?(\w)+\/?/g, '../'),
-            ...strings,
             templateContent: appComponentTemplateContent.replace('layoutName', layout),
             componentContent: getAppComponentContent(coponentName, appName)
           }),
