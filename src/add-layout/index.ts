@@ -64,8 +64,18 @@ html, body {
   box-sizing: border-box;
 }`;
 
-const e2eTestContet = `
-import { AppPage } from './app.po';
+const appComponentContent = `<app-layoutName title={{title}}>
+<router-outlet></router-outlet>
+
+<app-footer>
+    Copyright © 2011-2018 Developer Express Inc.
+    <br/>
+    All trademarks or registered trademarks are property of their respective owners.
+</app-footer>
+</app-layoutName>
+`;
+
+const e2eTestContet = `import { AppPage } from './app.po';
 
 describe('workspace-project App', () => {
   let page: AppPage;
@@ -76,13 +86,12 @@ describe('workspace-project App', () => {
 
   it('should display welcome message', () => {
     page.navigateTo();
-    expect(page.getParagraphText()).toEqual('Welcome to DevExtreme Angular Template!');
+    expect(page.getParagraphText()).toEqual('Welcome to appName!');
   });
 });
 `;
 
-const testUtilsContent = `
-import { browser, by, element } from 'protractor';
+const testUtilsContent = `import { browser, by, element } from 'protractor';
 
 export class AppPage {
   navigateTo() {
@@ -167,19 +176,6 @@ function addImportToAppModule(rootPath: string, importName: string, path: string
   };
 }
 
-function getContentForAppComponent(layout: string) {
-  return `<app-${layout} title={{title}}>
-    <router-outlet></router-outlet>
-
-    <app-footer>
-        Copyright © 2011-2018 Developer Express Inc.
-        <br/>
-        All trademarks or registered trademarks are property of their respective owners.
-    </app-footer>
-</app-${layout}>
-`;
-}
-
 function overrideContentInFile(path: string, content: string) {
   return(host: Tree) => {
     const source = getSourceFile(host, path);
@@ -262,7 +258,7 @@ export default function(options: any): Rule {
             name: getComponentName(host, appPath),
             path: rootPath.replace(/\/?(\w)+\/?/g, '../'),
             ...strings,
-            content: getContentForAppComponent(layout)
+            content: appComponentContent.replace('layoutName', layout)
           }),
           move(rootPath)
         ])
@@ -293,8 +289,9 @@ export default function(options: any): Rule {
     }
 
     if (override) {
-      rules.push(overrideContentInFile(appPath + 'app.component.html', getContentForAppComponent(layout)));
-      rules.push(overrideContentInFile('e2e/src/app.e2e-spec.ts', e2eTestContet));
+      rules.push(overrideContentInFile(appPath + 'app.component.html',
+        appComponentContent.replace('layoutName', layout)));
+      rules.push(overrideContentInFile('e2e/src/app.e2e-spec.ts', e2eTestContet.replace('appName', project)));
       rules.push(overrideContentInFile('e2e/src/app.po.ts', testUtilsContent));
     }
 

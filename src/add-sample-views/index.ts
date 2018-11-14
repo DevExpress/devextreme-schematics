@@ -3,6 +3,7 @@ import {
   Tree,
   chain,
   apply,
+  template,
   move,
   url,
   mergeWith
@@ -107,6 +108,9 @@ export default function(options: any): Rule {
     const rules: any[] = [];
 
     const templateSource = apply(url('./files'), [
+      template({
+        project
+      }),
       move(rootPath)
     ]);
 
