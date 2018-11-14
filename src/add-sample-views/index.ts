@@ -21,7 +21,7 @@ import {
   getProjectName
  } from '../utility/project';
 
- import { replaceDashes } from '../utility/string';
+import { replaceDashes } from '../utility/string';
 
 import {
    applyChanges

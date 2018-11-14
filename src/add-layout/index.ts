@@ -30,9 +30,9 @@ import {
   getProjectName
  } from '../utility/project';
 
- import {
+import {
   replaceDashes
- } from '../utility/string';
+} from '../utility/string';
 
 import {
   addStylesToApp
