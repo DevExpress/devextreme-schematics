@@ -2,6 +2,8 @@ import { SchematicTestRunner, UnitTestTree } from '@angular-devkit/schematics/te
 import { Schema as WorkspaceOptions } from '@schematics/angular/workspace/schema';
 import * as path from 'path';
 
+import { modifyJSONFile } from '../utility/modify-json-file';
+
 const collectionPath = path.join(__dirname, '../collection.json');
 
 describe('layout', () => {
@@ -89,6 +91,33 @@ describe('layout', () => {
     expect(appContent).toMatch(/templateUrl: '.\/app.component.html',/);
     expect(appContent).toMatch(/styleUrls: \['.\/app.component.scss'\]/);
     expect(appContent).toMatch(/title = TestApp;/);
+  });
+
+  it('should add npm scripts', () => {
+    const runner = new SchematicTestRunner('schematics', collectionPath);
+    const tree = runner.runSchematic('add-layout', options, appTree);
+    const packageConfig = JSON.parse(tree.readContent('package.json'));
+    expect(packageConfig.scripts['build-themes']).toBe('devextreme build');
+    expect(packageConfig.scripts['postinstall']).toBe('npm run build-themes');
+  });
+
+  it('should add npm scripts safely', () => {
+    modifyJSONFile(appTree, './package.json', config => {
+      const scripts = config['scripts'];
+
+      scripts['build-themes'] = 'prev value 1';
+      scripts['postinstall'] = 'prev value 2';
+
+      return config;
+    });
+
+    const runner = new SchematicTestRunner('schematics', collectionPath);
+    const tree = runner.runSchematic('add-layout', options, appTree);
+    const packageConfig = JSON.parse(tree.readContent('package.json'));
+    expect(packageConfig.scripts['origin-build-themes']).toBe('prev value 1');
+    expect(packageConfig.scripts['origin-postinstall']).toBe('prev value 2');
+    expect(packageConfig.scripts['build-themes']).toBe('npm run origin-build-themes && devextreme build');
+    expect(packageConfig.scripts['postinstall']).toBe('npm run origin-postinstall && npm run build-themes');
   });
 
   it('should add angular/cdk dependency', () => {

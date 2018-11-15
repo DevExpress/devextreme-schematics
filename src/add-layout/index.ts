@@ -11,9 +11,6 @@ import {
   mergeWith,
   template } from '@angular-devkit/schematics';
 
-import { spawn } from 'child_process';
-import { existsSync } from 'fs';
-
 import { strings } from '@angular-devkit/core';
 
 import {
@@ -80,12 +77,32 @@ function addStyles(rootPath: string) {
   };
 }
 
+function addScriptSafe(scripts: any, name: string, value: string) {
+  const currentValue = scripts[name];
+
+  if (!currentValue) {
+    scripts[name] = value;
+    return;
+  }
+
+  const alterName = `origin-${name}`;
+  const safeValue = `npm run ${alterName} && ${value}`;
+
+  if (currentValue === value || currentValue === safeValue) {
+    return;
+  }
+
+  scripts[alterName] = currentValue;
+  scripts[name] = safeValue;
+}
+
 function addBuildThemeScript() {
   return (host: Tree) => {
     modifyJSONFile(host, './package.json', config => {
       const scripts = config['scripts'];
 
-      scripts['build-themes'] = 'devextreme build';
+      addScriptSafe(scripts, 'build-themes', 'devextreme build');
+      addScriptSafe(scripts, 'postinstall', 'npm run build-themes');
 
       return config;
     });
@@ -188,25 +205,8 @@ function addPackagesToDependency() {
       version: '^7.0.0'
     });
 
-    addPackageJsonDependency(host, {
-      type: NodeDependencyType.Default,
-      name: 'copyfiles',
-      version: '^2.1.0'
-    });
-
     return host;
   };
-}
-
-function buildThemes() {
-  const command = /^win/.test(process.platform) ? 'npm.cmd' : 'npm';
-  const spawnOptions = {
-    stdio:  [process.stdin, process.stdout, process.stderr],
-    shell: true,
-    cwd: process.cwd()
-  };
-
-  spawn(command, ['run', 'build-themes'], spawnOptions);
 }
 
 export default function(options: any): Rule {
@@ -268,10 +268,6 @@ export default function(options: any): Rule {
 
     if (!hasRoutingModule(host, appPath)) {
       rules.push(addImportToAppModule(appPath, 'AppRoutingModule', './app-routing.module'));
-    }
-
-    if (existsSync('./angular.json')) {
-      buildThemes();
     }
 
     return chain(rules);
