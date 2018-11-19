@@ -13,6 +13,8 @@ import {
 
 import { strings } from '@angular-devkit/core';
 
+import { join } from 'path';
+
 import {
   stylesContent,
   appComponentContent,
@@ -64,7 +66,7 @@ import {
 
 function addStyles(rootPath: string) {
   return (host: Tree) => {
-    const stylesPath = rootPath.replace(/app\//, '') + 'styles.scss';
+    const stylesPath = join(rootPath, 'styles.scss');
     const source = getSourceFile(host, stylesPath);
 
     if (!source) {
@@ -245,7 +247,7 @@ export default function(options: any): Rule {
       addImportToAppModule(appPath, 'SideNavOuterToolbarModule', './layouts'),
       addImportToAppModule(appPath, 'SideNavInnerToolbarModule', './layouts'),
       addImportToAppModule(appPath, 'FooterModule', `./shared/components/footer/footer.component`),
-      addStyles(appPath),
+      addStyles(rootPath),
       addBuildThemeScript(),
       addCustomThemeStyles(options, rootPath),
       addViewportToRoot(appPath),
