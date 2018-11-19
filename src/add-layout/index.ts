@@ -129,9 +129,9 @@ function addCustomThemeStyles(options: any, rootPath: string) {
   };
 }
 
-function addViewportToRoot(appPath: string) {
+function addViewportToRoot(rootPath: string) {
   return (host: Tree) => {
-    const indexPath = `${appPath.replace(/app\//, '')}index.html`;
+    const indexPath =  join(rootPath, 'index.html');
     let indexContent = host.read(indexPath)!.toString();
 
     indexContent = indexContent.replace(/<app-root>/, '<app-root class="dx-viewport">');
@@ -250,7 +250,7 @@ export default function(options: any): Rule {
       addStyles(rootPath),
       addBuildThemeScript(),
       addCustomThemeStyles(options, rootPath),
-      addViewportToRoot(appPath),
+      addViewportToRoot(rootPath),
       addPackagesToDependency()
     ];
 
