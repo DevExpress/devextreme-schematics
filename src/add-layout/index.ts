@@ -227,7 +227,7 @@ export default function(options: any): Rule {
           template({
             name: coponentName,
             path: rootPath.replace(/\/?(\w)+\/?/g, '../'),
-            templateContent: appComponentTemplateContent.replace('layoutName', layout),
+            templateContent: appComponentTemplateContent.replace(/layoutName/g, layout),
             componentContent: getAppComponentContent(coponentName, appName)
           }),
           move(rootPath)
@@ -260,9 +260,9 @@ export default function(options: any): Rule {
 
     if (override) {
       rules.push(overrideContentInFile(appPath + 'app.component.html',
-        appComponentTemplateContent.replace('layoutName', layout)));
+        appComponentTemplateContent.replace(/layoutName/g, layout)));
       rules.push(overrideContentInFile(appPath + 'app.component.ts', getAppComponentContent(coponentName, appName)));
-      rules.push(overrideContentInFile('e2e/src/app.e2e-spec.ts', e2eTestContet.replace('appName', appName)));
+      rules.push(overrideContentInFile('e2e/src/app.e2e-spec.ts', e2eTestContet.replace(/appName/g, appName)));
       rules.push(overrideContentInFile('e2e/src/app.po.ts', testUtilsContent));
     }
 
