@@ -236,7 +236,7 @@ export default function(options: any): Rule {
       mergeWith(
         apply(url('./files/root'), [
           template({
-            engine: '"angular"',
+            engine: 'angular',
             sourcePath: rootPath
           }),
           move('./')
