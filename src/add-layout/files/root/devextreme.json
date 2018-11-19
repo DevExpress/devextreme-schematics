@@ -1,5 +1,5 @@
 {
-    "applicationEngine": <%= engine %>,
+    "applicationEngine": "<%= engine %>",
     "build": {
         "commands": [
             {

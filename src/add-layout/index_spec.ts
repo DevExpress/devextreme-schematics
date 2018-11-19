@@ -90,7 +90,7 @@ describe('layout', () => {
     const appContent = tree.readContent('/testApp/src/app/app.component.ts');
     expect(appContent).toMatch(/templateUrl: '.\/app.component.html',/);
     expect(appContent).toMatch(/styleUrls: \['.\/app.component.scss'\]/);
-    expect(appContent).toMatch(/title = TestApp;/);
+    expect(appContent).toMatch(/title = 'TestApp';/);
   });
 
   it('should add npm scripts', () => {
