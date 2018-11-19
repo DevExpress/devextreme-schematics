@@ -50,5 +50,8 @@ describe('sample views', () => {
     expect(navugationContent).toMatch(/text: 'Home'/);
 
     expect(tree.files).toContain('/testApp/src/app/pages/home/home.component.ts');
+
+    const homeContent = tree.readContent('/testApp/src/app/pages/home/home.component.html');
+    expect(homeContent).toMatch(/Welcome to <b>TestApp<\/b>/);
   });
 });

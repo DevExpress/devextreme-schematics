@@ -2,6 +2,8 @@ import { SchematicTestRunner, UnitTestTree } from '@angular-devkit/schematics/te
 import { Schema as WorkspaceOptions } from '@schematics/angular/workspace/schema';
 import * as path from 'path';
 
+import { modifyJSONFile } from '../utility/modify-json-file';
+
 const collectionPath = path.join(__dirname, '../collection.json');
 
 describe('layout', () => {
@@ -78,6 +80,44 @@ describe('layout', () => {
     const moduleContent = tree.readContent('/testApp/src/app/app.module.ts');
     expect(moduleContent).toMatch(/import { SideNavOuterToolbarModule, SideNavInnerToolbarModule }/);
     expect(moduleContent).toMatch(/import { AppRoutingModule }/);
+
+    const testContent = tree.readContent('/e2e/src/app.e2e-spec.ts');
+    expect(testContent).toMatch(/'Welcome to TestApp!'/);
+
+    const testUtilsContent = tree.readContent('/e2e/src/app.po.ts');
+    expect(testUtilsContent).toMatch(/'app-root .dx-drawer-content .dx-card p:nth-child\(2\)'/);
+
+    const appContent = tree.readContent('/testApp/src/app/app.component.ts');
+    expect(appContent).toMatch(/templateUrl: '.\/app.component.html',/);
+    expect(appContent).toMatch(/styleUrls: \['.\/app.component.scss'\]/);
+    expect(appContent).toMatch(/title = TestApp;/);
+  });
+
+  it('should add npm scripts', () => {
+    const runner = new SchematicTestRunner('schematics', collectionPath);
+    const tree = runner.runSchematic('add-layout', options, appTree);
+    const packageConfig = JSON.parse(tree.readContent('package.json'));
+    expect(packageConfig.scripts['build-themes']).toBe('devextreme build');
+    expect(packageConfig.scripts['postinstall']).toBe('npm run build-themes');
+  });
+
+  it('should add npm scripts safely', () => {
+    modifyJSONFile(appTree, './package.json', config => {
+      const scripts = config['scripts'];
+
+      scripts['build-themes'] = 'prev value 1';
+      scripts['postinstall'] = 'prev value 2';
+
+      return config;
+    });
+
+    const runner = new SchematicTestRunner('schematics', collectionPath);
+    const tree = runner.runSchematic('add-layout', options, appTree);
+    const packageConfig = JSON.parse(tree.readContent('package.json'));
+    expect(packageConfig.scripts['origin-build-themes']).toBe('prev value 1');
+    expect(packageConfig.scripts['origin-postinstall']).toBe('prev value 2');
+    expect(packageConfig.scripts['build-themes']).toBe('npm run origin-build-themes && devextreme build');
+    expect(packageConfig.scripts['postinstall']).toBe('npm run origin-postinstall && npm run build-themes');
   });
 
   it('should add angular/cdk dependency', () => {
@@ -98,6 +138,14 @@ describe('layout', () => {
 
     const componentContent = tree.readContent('/testApp/src/app/app1.component.html');
     expect(componentContent).toMatch(/app-side-nav-outer-toolbar title={{title}}/);
+
+    const appContent = tree.readContent('/testApp/src/app/app.component.ts');
+    expect(appContent).toMatch(/templateUrl: '.\/app.component.html',/);
+    expect(appContent).toMatch(/styleUrls: \['.\/app.component.scss'\]/);
+
+    const newAppContent = tree.readContent('/testApp/src/app/app1.component.ts');
+    expect(newAppContent).toMatch(/templateUrl: '.\/app1.component.html',/);
+    expect(newAppContent).toMatch(/styleUrls: \['.\/app1.component.scss'\]/);
   });
 
   it('should add routing to layout', () => {

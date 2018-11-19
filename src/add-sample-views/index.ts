@@ -3,6 +3,7 @@ import {
   Tree,
   chain,
   apply,
+  template,
   move,
   url,
   mergeWith
@@ -19,6 +20,8 @@ import {
   getApplicationPath,
   getProjectName
  } from '../utility/project';
+
+import { humanize } from '../utility/string';
 
 import {
    applyChanges
@@ -107,6 +110,9 @@ export default function(options: any): Rule {
     const rules: any[] = [];
 
     const templateSource = apply(url('./files'), [
+      template({
+        project: humanize(project)
+      }),
       move(rootPath)
     ]);
 
