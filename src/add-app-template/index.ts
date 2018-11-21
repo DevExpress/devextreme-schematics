@@ -13,12 +13,15 @@ export default function(options: any): Rule {
     schematic('add-layout', {
       layout: options.layout,
       resolveConflicts: options.resolveConflicts,
+      project: options.project,
       skipInstall: true
     })
   ];
 
   if (!options.empty) {
-    rules.push(schematic('add-sample-views', {}));
+    rules.push(schematic('add-sample-views', {
+      project: options.project
+    }));
   }
 
   return chain(rules);
