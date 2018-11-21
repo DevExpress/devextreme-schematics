@@ -28,7 +28,7 @@ const appComponentContent = `import { Component } from '@angular/core';
     styleUrls: ['./componentName.component.scss']
 })
 export class exportComponentNameComponent  {
-  title = titleValue;
+  title = 'titleValue';
 }
 `;
 
