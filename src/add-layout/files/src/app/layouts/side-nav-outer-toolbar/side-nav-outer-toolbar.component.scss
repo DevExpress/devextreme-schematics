@@ -15,7 +15,7 @@ app-header {
     height: 100%;
 }
 
-:host ::ng-deep .dx-scrollview-content {
+:host ::ng-deep .dx-scrollview-content, app-side-navigation-menu {
     display: flex;
     flex-direction: column;
     min-height: 100%;
