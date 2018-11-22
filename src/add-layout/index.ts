@@ -225,17 +225,13 @@ function modifyContentByTemplate(
 : Rule {
   return(host: Tree, context: SchematicContext) => {
     const modifyIfExists = (fileEntry: FileEntry) => {
-      if (!host.exists(filePath)) {
+      if (!host.exists(filePath) || !modifyContent) {
         return fileEntry;
       }
 
       const templateContent = fileEntry.content!.toString();
-      let modifiedContent = templateContent;
-
-      if (modifyContent) {
-        const currentContent = host.read(filePath)!.toString();
-        modifiedContent = modifyContent(templateContent, currentContent);
-      }
+      const currentContent = host.read(filePath)!.toString();
+      const modifiedContent = modifyContent(templateContent, currentContent);
 
       // NOTE: Workaround for https://github.com/angular/angular-cli/issues/11337
       host.overwrite(fileEntry.path, modifiedContent);
