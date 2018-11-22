@@ -32,39 +32,8 @@ export class exportComponentNameComponent  {
 }
 `;
 
-const e2eTestContet = `import { AppPage } from './app.po';
-
-describe('workspace-project App', () => {
-  let page: AppPage;
-
-  beforeEach(() => {
-    page = new AppPage();
-  });
-
-  it('should display welcome message', () => {
-    page.navigateTo();
-    expect(page.getParagraphText()).toEqual('Welcome to appName!');
-  });
-});
-`;
-
-const testUtilsContent = `import { browser, by, element } from 'protractor';
-
-export class AppPage {
-  navigateTo() {
-    return browser.get('/');
-  }
-
-  getParagraphText() {
-    return element(by.css('app-root .dx-drawer-content .dx-card p:nth-child(2)')).getText();
-  }
-}
-`;
-
 export {
   stylesContent,
   appComponentTemplateContent,
-  appComponentContent,
-  e2eTestContet,
-  testUtilsContent
+  appComponentContent
 };

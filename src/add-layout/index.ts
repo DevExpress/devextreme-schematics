@@ -8,19 +8,24 @@ import {
   chain,
   noop,
   filter,
+  forEach,
   mergeWith,
-  template } from '@angular-devkit/schematics';
+  MergeStrategy,
+  callRule,
+  FileEntry,
+  template
+} from '@angular-devkit/schematics';
 
 import { strings } from '@angular-devkit/core';
 
 import { join } from 'path';
 
+import { of } from 'rxjs';
+
 import {
   stylesContent,
   appComponentContent,
-  appComponentTemplateContent,
-  e2eTestContet,
-  testUtilsContent
+  appComponentTemplateContent
 } from './contents';
 
 import {
@@ -63,6 +68,7 @@ import {
 import {
   applyChanges
 } from '../utility/change';
+import { getWorkspace } from '@schematics/angular/utility/config';
 
 function addStyles(rootPath: string) {
   return (host: Tree) => {
@@ -211,6 +217,60 @@ function addPackagesToDependency() {
   };
 }
 
+function modifyContentByTemplate(
+  templateSourcePath: string,
+  filePath: string,
+  optinos: any = {},
+  modifyContent?: (templateContent: string, currentContent: string) => string)
+: Rule {
+  return(host: Tree, context: SchematicContext) => {
+    const modifyIfExists = (fileEntry: FileEntry) => {
+      if (!host.exists(filePath) || !modifyContent) {
+        return fileEntry;
+      }
+
+      const templateContent = fileEntry.content!.toString();
+      const currentContent = host.read(filePath)!.toString();
+      const modifiedContent = modifyContent(templateContent, currentContent);
+
+      // NOTE: Workaround for https://github.com/angular/angular-cli/issues/11337
+      host.overwrite(fileEntry.path, modifiedContent);
+      return null;
+    };
+
+    const rules = [
+      filter(path => join('./', path) === join('./', filePath)),
+      template(optinos),
+      forEach(modifyIfExists),
+      move('./')
+    ];
+
+    const modifiedSource = apply(url(templateSourcePath), rules);
+    const resultRule = mergeWith(modifiedSource, MergeStrategy.Overwrite);
+
+    return callRule(resultRule, of(host), context);
+  };
+}
+
+function updateDevextremeConfig(sourcePath: string) {
+  const devextremeConfigPath = '/devextreme.json';
+  const templateOptions = {
+    engine: 'angular',
+    sourcePath
+  };
+
+  const modifyConfig = (templateContent: string, currentContent: string) => {
+    const oldConfig = JSON.parse(currentContent);
+    const newConfig = JSON.parse(templateContent);
+
+    [].push.apply(oldConfig.build.commands, newConfig.build.commands);
+
+    return JSON.stringify(oldConfig, null, '   ');
+  };
+
+  return modifyContentByTemplate('./files/root', devextremeConfigPath, templateOptions, modifyConfig);
+}
+
 export default function(options: any): Rule {
   return (host: Tree) => {
     const project = getProjectName(host, options.project);
@@ -219,7 +279,7 @@ export default function(options: any): Rule {
     const rootPath = getRootPath(host, project);
     const layout = options.layout;
     const override = options.resolveConflicts === 'override';
-    const coponentName = override ? 'app' : getComponentName(host, appPath);
+    const componentName = override ? 'app' : getComponentName(host, appPath);
 
     const rules = [
       mergeWith(
@@ -227,23 +287,15 @@ export default function(options: any): Rule {
           override ? filter(path => !path.includes('__name__')) : noop(),
           hasRoutingModule(host, appPath) ? filter(path => !path.includes('app-routing.module')) : noop(),
           template({
-            name: coponentName,
+            name: componentName,
             path: rootPath.replace(/\/?(\w)+\/?/g, '../'),
             templateContent: appComponentTemplateContent.replace(/layoutName/g, layout),
-            componentContent: getAppComponentContent(coponentName, appName)
+            componentContent: getAppComponentContent(componentName, appName)
           }),
           move(rootPath)
         ])
       ),
-      mergeWith(
-        apply(url('./files/root'), [
-          template({
-            engine: 'angular',
-            sourcePath: rootPath
-          }),
-          move('./')
-        ])
-      ),
+      updateDevextremeConfig(rootPath),
       addImportToAppModule(appPath, 'SideNavOuterToolbarModule', './layouts'),
       addImportToAppModule(appPath, 'SideNavInnerToolbarModule', './layouts'),
       addImportToAppModule(appPath, 'FooterModule', `./shared/components/footer/footer.component`),
@@ -263,9 +315,13 @@ export default function(options: any): Rule {
     if (override) {
       rules.push(overrideContentInFile(appPath + 'app.component.html',
         appComponentTemplateContent.replace(/layoutName/g, layout)));
-      rules.push(overrideContentInFile(appPath + 'app.component.ts', getAppComponentContent(coponentName, appName)));
-      rules.push(overrideContentInFile('e2e/src/app.e2e-spec.ts', e2eTestContet.replace(/appName/g, appName)));
-      rules.push(overrideContentInFile('e2e/src/app.po.ts', testUtilsContent));
+      rules.push(overrideContentInFile(appPath + 'app.component.ts', getAppComponentContent(componentName, appName)));
+
+      const workspace = getWorkspace(host);
+      if (project === workspace.defaultProject) {
+        rules.push(modifyContentByTemplate('./files/root', 'e2e/src/app.e2e-spec.ts', { appName }));
+        rules.push(modifyContentByTemplate('./files/root', 'e2e/src/app.po.ts'));
+      }
     }
 
     if (!hasRoutingModule(host, appPath)) {
