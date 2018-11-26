@@ -171,4 +171,63 @@ describe('layout', () => {
 
     expect(content).toMatch(/app-side-nav-inner-toolbar title={{title}}/);
   });
+
+  it('should consider the `project` option', () => {
+    appTree = schematicRunner.runSchematic('application', {
+      ...appOptions,
+      name: 'testApp2',
+      projectRoot: 'projects/testApp2'
+    }, appTree);
+
+    const runner = new SchematicTestRunner('schematics', collectionPath);
+    const tree = runner.runSchematic('add-layout', {
+      ...options,
+      project: 'testApp2'
+    }, appTree);
+
+    expect(tree.files)
+      .toContain('/devextreme.json');
+    expect(tree.files)
+      .toContain('/projects/testApp2/src/themes/metadata.base.json');
+  });
+
+  it('should merge build commands in devextreme.json file', () => {
+    appTree = schematicRunner.runSchematic('application', {
+      ...appOptions,
+      name: 'testApp2',
+      projectRoot: 'projects/testApp2'
+    }, appTree);
+
+    const runner = new SchematicTestRunner('schematics', collectionPath);
+    let tree = runner.runSchematic('add-layout', options, appTree);
+    tree = runner.runSchematic('add-layout', {
+      ...options,
+      project: 'testApp2'
+    }, appTree);
+
+    const content = tree.readContent('/devextreme.json');
+    expect(content).toContain('"inputFile": "/testApp/src/themes/metadata.base.json",');
+    expect(content).toContain('"inputFile": "projects/testApp2/src/themes/metadata.base.json",');
+  });
+
+  it('should add e2e tests only for default project', () => {
+    appTree = schematicRunner.runSchematic('application', {
+      ...appOptions,
+      name: 'testApp2',
+      projectRoot: 'projects/testApp2'
+    }, appTree);
+
+    const runner = new SchematicTestRunner('schematics', collectionPath);
+    let tree = runner.runSchematic('add-layout', options, appTree);
+    tree = runner.runSchematic('add-layout', {
+      ...options,
+      project: 'testApp2'
+    }, appTree);
+
+    const testContent = tree.readContent('/e2e/src/app.e2e-spec.ts');
+    expect(testContent).toContain('Welcome to TestApp!');
+
+    const testUtilsContent = tree.readContent('/e2e/src/app.po.ts');
+    expect(testUtilsContent).toMatch(/'app-root .dx-drawer-content .dx-card p:nth-child\(2\)'/);
+  });
 });

@@ -36,4 +36,27 @@ describe('add-app-template', () => {
 
     expect('devextreme' in packageConfig.dependencies).toBe(true);
   });
+
+  it('should consider the `project` option', () => {
+    appTree = schematicRunner.runSchematic('application', {
+      name: 'testApp2',
+      inlineStyle: false,
+      inlineTemplate: false,
+      routing: true,
+      style: 'scss',
+      projectRoot: 'projects/testApp2'
+    }, appTree);
+
+    const runner = new SchematicTestRunner('schematics', collectionPath);
+    const tree = runner.runSchematic('add-app-template', {
+      project: 'testApp2'
+    }, appTree);
+
+    expect(tree.files)
+      .toContain('/devextreme.json');
+    expect(tree.files)
+      .toContain('/projects/testApp2/src/themes/metadata.base.json');
+    expect(tree.files)
+      .toContain('/projects/testApp2/src/app/pages/home/home.component.ts');
+  });
 });

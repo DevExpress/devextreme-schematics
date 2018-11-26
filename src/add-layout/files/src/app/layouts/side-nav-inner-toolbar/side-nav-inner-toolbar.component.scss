@@ -4,7 +4,7 @@
     background-color: darken($base-bg, 5.00);
 }
 
-.container {
+.container, app-side-navigation-menu {
     flex-direction: column;
     display: flex;
     height: 100%;
