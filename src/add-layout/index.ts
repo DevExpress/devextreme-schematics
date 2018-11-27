@@ -23,14 +23,13 @@ import { join } from 'path';
 import { of } from 'rxjs';
 
 import {
-  stylesContent,
-  appComponentContent,
-  appComponentTemplateContent
+  stylesContent
 } from './contents';
 
 import {
   getApplicationPath,
   getRootPath,
+  getSourceRootPath,
   getProjectName
  } from '../utility/project';
 
@@ -70,9 +69,9 @@ import {
 } from '../utility/change';
 import { getWorkspace } from '@schematics/angular/utility/config';
 
-function addStyles(rootPath: string) {
+function addStyles(sourcePath: string) {
   return (host: Tree) => {
-    const stylesPath = join(rootPath, 'styles.scss');
+    const stylesPath = join(sourcePath, 'styles.scss');
     const source = getSourceFile(host, stylesPath);
 
     if (!source) {
@@ -119,12 +118,12 @@ function addBuildThemeScript() {
   };
 }
 
-function addCustomThemeStyles(options: any, rootPath: string) {
+function addCustomThemeStyles(options: any, sourcePath: string) {
   return (host: Tree) => {
     modifyJSONFile(host, './angular.json', config => {
       const stylesList = [
-        `${rootPath}/themes/generated/theme.base.css`,
-        `${rootPath}/themes/generated/theme.additional.css`,
+        `${sourcePath}/themes/generated/theme.base.css`,
+        `${sourcePath}/themes/generated/theme.additional.css`,
         'node_modules/devextreme/dist/css/dx.common.css'
       ];
 
@@ -135,9 +134,9 @@ function addCustomThemeStyles(options: any, rootPath: string) {
   };
 }
 
-function addViewportToRoot(rootPath: string) {
+function addViewportToRoot(sourcePath: string) {
   return (host: Tree) => {
-    const indexPath =  join(rootPath, 'index.html');
+    const indexPath =  join(sourcePath, 'index.html');
     let indexContent = host.read(indexPath)!.toString();
 
     indexContent = indexContent.replace(/<app-root>/, '<app-root class="dx-viewport">');
@@ -147,9 +146,9 @@ function addViewportToRoot(rootPath: string) {
   };
 }
 
-function addImportToAppModule(rootPath: string, importName: string, path: string) {
+function addImportToAppModule(sourcePath: string, importName: string, path: string) {
   return (host: Tree) => {
-    const appModulePath = rootPath + 'app.module.ts';
+    const appModulePath = sourcePath + 'app.module.ts';
     const source = getSourceFile(host, appModulePath);
 
     if (!source) {
@@ -162,38 +161,17 @@ function addImportToAppModule(rootPath: string, importName: string, path: string
   };
 }
 
-function getAppComponentContent(componentName: string, appName: string) {
-  let content = appComponentContent.replace(/componentName/g, componentName);
-  content = content.replace('exportComponentName', strings.classify(componentName));
-
-  return content.replace('titleValue', appName);
-}
-
-function overrideContentInFile(path: string, content: string) {
-  return(host: Tree) => {
-    const source = getSourceFile(host, path);
-
-    if (!source) {
-      return host;
-    }
-
-    host.overwrite(path, content);
-
-    return host;
-  };
-}
-
-function getComponentName(host: Tree, rootPath: string) {
+function getComponentName(host: Tree, sourcePath: string) {
   let name = '';
   const index = 1;
 
-  if (!host.exists(rootPath + 'app.component.ts')) {
+  if (!host.exists(sourcePath + 'app.component.ts')) {
     name = 'app';
   }
 
   while (!name) {
     const componentName = `app${index}`;
-    if (!host.exists(`${rootPath}${componentName}.component.ts`)) {
+    if (!host.exists(`${sourcePath}${componentName}.component.ts`)) {
       name = componentName;
     }
   }
@@ -201,8 +179,8 @@ function getComponentName(host: Tree, rootPath: string) {
   return name;
 }
 
-function hasRoutingModule(host: Tree, rootPath: string) {
-  return host.exists(rootPath + 'app-routing.module.ts');
+function hasRoutingModule(host: Tree, sourcePath: string) {
+  return host.exists(sourcePath + 'app-routing.module.ts');
 }
 
 function addPackagesToDependency() {
@@ -218,6 +196,7 @@ function addPackagesToDependency() {
 }
 
 function modifyContentByTemplate(
+  pathToMove: string,
   templateSourcePath: string,
   filePath: string,
   optinos: any = {},
@@ -239,10 +218,16 @@ function modifyContentByTemplate(
     };
 
     const rules = [
-      filter(path => join('./', path) === join('./', filePath)),
+      filter(path => {
+        if(optinos.name) {
+          return join('./', path.toString().replace('__name__', optinos.name)) === join('./', filePath);
+        }
+
+        return join('./', path) === join('./', filePath);
+      }),
       template(optinos),
       forEach(modifyIfExists),
-      move('./')
+      move(pathToMove)
     ];
 
     const modifiedSource = apply(url(templateSourcePath), rules);
@@ -268,18 +253,19 @@ function updateDevextremeConfig(sourcePath: string) {
     return JSON.stringify(oldConfig, null, '   ');
   };
 
-  return modifyContentByTemplate('./files/root', devextremeConfigPath, templateOptions, modifyConfig);
+  return modifyContentByTemplate('./', './files/root', devextremeConfigPath, templateOptions, modifyConfig);
 }
 
 export default function(options: any): Rule {
   return (host: Tree) => {
     const project = getProjectName(host, options.project);
-    const appName = humanize(project);
+    const title = humanize(project);
     const appPath = getApplicationPath(host, project);
-    const rootPath = getRootPath(host, project);
+    const sourcePath = getSourceRootPath(host, project);
     const layout = options.layout;
     const override = options.resolveConflicts === 'override';
     const componentName = override ? 'app' : getComponentName(host, appPath);
+    const templateOptions = {name: componentName, layout, title, strings};
 
     const rules = [
       mergeWith(
@@ -287,22 +273,20 @@ export default function(options: any): Rule {
           override ? filter(path => !path.includes('__name__')) : noop(),
           hasRoutingModule(host, appPath) ? filter(path => !path.includes('app-routing.module')) : noop(),
           template({
-            name: componentName,
-            path: rootPath.replace(/\/?(\w)+\/?/g, '../'),
-            templateContent: appComponentTemplateContent.replace(/layoutName/g, layout),
-            componentContent: getAppComponentContent(componentName, appName)
+            path: sourcePath.replace(/\/?(\w)+\/?/g, '../'),
+            ...templateOptions
           }),
-          move(rootPath)
+          move(sourcePath)
         ])
       ),
-      updateDevextremeConfig(rootPath),
+      updateDevextremeConfig(sourcePath),
       addImportToAppModule(appPath, 'SideNavOuterToolbarModule', './layouts'),
       addImportToAppModule(appPath, 'SideNavInnerToolbarModule', './layouts'),
       addImportToAppModule(appPath, 'FooterModule', `./shared/components/footer/footer.component`),
-      addStyles(rootPath),
+      addStyles(sourcePath),
       addBuildThemeScript(),
-      addCustomThemeStyles(options, rootPath),
-      addViewportToRoot(rootPath),
+      addCustomThemeStyles(options, sourcePath),
+      addViewportToRoot(sourcePath),
       addPackagesToDependency()
     ];
 
@@ -313,14 +297,14 @@ export default function(options: any): Rule {
     }
 
     if (override) {
-      rules.push(overrideContentInFile(appPath + 'app.component.html',
-        appComponentTemplateContent.replace(/layoutName/g, layout)));
-      rules.push(overrideContentInFile(appPath + 'app.component.ts', getAppComponentContent(componentName, appName)));
+      const rootPath = getRootPath(host, project);
+      rules.push(modifyContentByTemplate(rootPath, './files',  'src/app/app.component.html', { ...templateOptions }));
+      rules.push(modifyContentByTemplate(rootPath, './files',  'src/app/app.component.ts', { ...templateOptions }));
 
       const workspace = getWorkspace(host);
       if (project === workspace.defaultProject) {
-        rules.push(modifyContentByTemplate('./files/root', 'e2e/src/app.e2e-spec.ts', { appName }));
-        rules.push(modifyContentByTemplate('./files/root', 'e2e/src/app.po.ts'));
+        rules.push(modifyContentByTemplate('./', './files/root', 'e2e/src/app.e2e-spec.ts', { title }));
+        rules.push(modifyContentByTemplate('./', './files/root', 'e2e/src/app.po.ts'));
       }
     }
 
