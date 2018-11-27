@@ -11,7 +11,7 @@ app-header {
     z-index: 1501;
 }
 
-:host ::ng-deep .dx-scrollable-content {
+:host ::ng-deep .dx-drawer-content .dx-scrollable-content {
     height: 100%;
 }
 
