@@ -140,18 +140,12 @@ function updateBudgets(options: any) {
     modifyJSONFile(host, './angular.json', config => {
       const projectName = getProjectName(host, options.project);
       const budgets: any[] = config.projects[projectName].architect.build.configurations.production.budgets;
-      const initialBudget = budgets.find((item) => item.type === 'initial');
-
-      let budget;
-      if (initialBudget) {
-        budget = initialBudget;
-      } else {
-        budget = { type: 'initial' };
-        budgets.push(budget);
+    
+      const budget = budgets.find((item) => item.type === 'initial');
+      if (budget) {
+        budget.maximumWarning = '4mb';
+        budget.maximumError = '6mb';
       }
-
-      budget.maximumWarning = '4mb';
-      budget.maximumError = '6mb';
 
       return config;
     });
