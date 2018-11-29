@@ -130,8 +130,10 @@ describe('layout', () => {
 
   it('should update budgets if updateBudgets option is true', () => {
     const runner = new SchematicTestRunner('schematics', collectionPath);
-    options.updateBudgets = true;
-    const tree = runner.runSchematic('add-layout', options, appTree);
+    const tree = runner.runSchematic('add-layout', {
+      ...options,
+      updateBudgets: true
+    }, appTree);
 
     const angularContent = JSON.parse(tree.readContent('/angular.json'));
     const budgets = angularContent.projects.testApp.architect.build.configurations.production.budgets;
@@ -144,9 +146,8 @@ describe('layout', () => {
     });
   });
 
-  it('should not update budgets if updateBudgets option is false', () => {
+  it('should not update budgets if updateBudgets option is not defined or false', () => {
     const runner = new SchematicTestRunner('schematics', collectionPath);
-    options.updateBudgets = false;
     const tree = runner.runSchematic('add-layout', options, appTree);
 
     const angularContent = JSON.parse(tree.readContent('/angular.json'));
