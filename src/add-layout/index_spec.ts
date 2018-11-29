@@ -128,6 +128,39 @@ describe('layout', () => {
     expect(packageConfig.dependencies['@angular/cdk']).toBeDefined();
   });
 
+  it('should update budgets if updateBudgets option is true', () => {
+    const runner = new SchematicTestRunner('schematics', collectionPath);
+    options.updateBudgets = true;
+    const tree = runner.runSchematic('add-layout', options, appTree);
+
+    const angularContent = JSON.parse(tree.readContent('/angular.json'));
+    const budgets = angularContent.projects.testApp.architect.build.configurations.production.budgets;
+
+    expect(budgets.length).toBe(1);
+    expect(budgets[0]).toEqual({
+      type: 'initial',
+      maximumWarning: '4mb',
+      maximumError: '6mb'
+    });
+  });
+
+  it('should not update budgets if updateBudgets option is false', () => {
+    const runner = new SchematicTestRunner('schematics', collectionPath);
+    options.updateBudgets = false;
+    const tree = runner.runSchematic('add-layout', options, appTree);
+
+    const angularContent = JSON.parse(tree.readContent('/angular.json'));
+    const budgets = angularContent.projects.testApp.architect.build.configurations.production.budgets;
+    const defaultBudget = {
+      type: 'initial',
+      maximumWarning: '2mb',
+      maximumError: '5mb'
+    };
+
+    expect(budgets.length).toBe(1);
+    expect(budgets[0]).toEqual(defaultBudget);
+  });
+
   it('should add layout without override', () => {
     const runner = new SchematicTestRunner('schematics', collectionPath);
 

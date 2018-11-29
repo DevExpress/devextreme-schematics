@@ -14,7 +14,8 @@ export default function(options: any): Rule {
       layout: options.layout,
       resolveConflicts: options.resolveConflicts,
       project: options.project,
-      skipInstall: true
+      skipInstall: true,
+      updateBudgets: options.updateBudgets
     })
   ];
 
