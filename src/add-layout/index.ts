@@ -118,6 +118,25 @@ function addCustomThemeStyles(options: any, sourcePath: string) {
   };
 }
 
+function updateBudgets(options: any) {
+  return (host: Tree) => {
+    modifyJSONFile(host, './angular.json', config => {
+      const projectName = getProjectName(host, options.project);
+      const budgets: any[] = config.projects[projectName].architect.build.configurations.production.budgets;
+
+      const budget = budgets.find((item) => item.type === 'initial');
+      if (budget) {
+        budget.maximumWarning = '4mb';
+        budget.maximumError = '6mb';
+      }
+
+      return config;
+    });
+
+    return host;
+  };
+}
+
 function addViewportToRoot(sourcePath: string) {
   return (host: Tree) => {
     const indexPath =  join(sourcePath, 'index.html');
@@ -302,6 +321,10 @@ export default function(options: any): Rule {
     ];
 
     [].push.apply(rules, addAppComponent(rootPath, templateOptions, componentOptions));
+
+    if (options.updateBudgets) {
+      rules.push(updateBudgets(options));
+    }
 
     if (!options.skipInstall) {
       rules.push((_: Tree, context: SchematicContext) => {
