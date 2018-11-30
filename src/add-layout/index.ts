@@ -58,14 +58,6 @@ import {
 } from '../utility/change';
 import { getWorkspace } from '@schematics/angular/utility/config';
 
-// function addStyles(sourcePath: string) {
-//   const modifyContent = (templateContent: string, currentContent: string) => {
-//     return currentContent + templateContent;
-//   };
-
-//   return modifyContentByTemplate(sourcePath, './files', `/src/styles.scss`, {}, {}, modifyContent);
-// }
-
 function addScriptSafe(scripts: any, name: string, value: string) {
   const currentValue = scripts[name];
 
