@@ -10,7 +10,6 @@ import {
   forEach,
   mergeWith,
   callRule,
-  MergeStrategy,
   FileEntry,
   template
 } from '@angular-devkit/schematics';
@@ -23,7 +22,6 @@ import { join } from 'path';
 
 import {
   getApplicationPath,
-  getRootPath,
   getSourceRootPath,
   getProjectName
  } from '../utility/project';
@@ -60,13 +58,13 @@ import {
 } from '../utility/change';
 import { getWorkspace } from '@schematics/angular/utility/config';
 
-function addStyles(sourcePath: string) {
-  const modifyContent = (templateContent: string, currentContent: string) => {
-    return currentContent + templateContent;
-  };
+// function addStyles(sourcePath: string) {
+//   const modifyContent = (templateContent: string, currentContent: string) => {
+//     return currentContent + templateContent;
+//   };
 
-  return modifyContentByTemplate(sourcePath, './files', `/src/styles.scss`, {}, {}, modifyContent);
-}
+//   return modifyContentByTemplate(sourcePath, './files', `/src/styles.scss`, {}, {}, modifyContent);
+// }
 
 function addScriptSafe(scripts: any, name: string, value: string) {
   const currentValue = scripts[name];
@@ -199,70 +197,46 @@ function addPackagesToDependency() {
 }
 
 function modifyContentByTemplate(
-  pathToMove: string,
+  sourcePath: string,
   templateSourcePath: string,
   filePath: string,
   templateOptions: any = {},
-  modifyOptions: any = {},
-  modifyContent?: (templateContent: string, currentContent: string) => string)
+  modifyContent?: (templateContent: string, currentContent: string, filePath: string ) => string)
 : Rule {
   return(host: Tree, context: SchematicContext) => {
     const modifyIfExists = (fileEntry: FileEntry) => {
-      const override = modifyOptions.override;
-      if (!override && !host.exists(filePath)) {
+      const fileEntryPath = join(sourcePath, fileEntry.path.toString());
+      if (!host.exists(fileEntryPath)) {
         return fileEntry;
       }
 
       const templateContent = fileEntry.content!.toString();
-      let fileEntryPath = fileEntry.path.toString();
       let modifiedContent = templateContent;
 
       if (modifyContent) {
-        const currentContent = host.read(filePath)!.toString();
-        modifiedContent = modifyContent(templateContent, currentContent);
-      }
-
-      if (override) {
-        fileEntryPath = join(modifyOptions.rootPath, fileEntryPath);
+        const currentContent = host.read(fileEntryPath)!.toString();
+        modifiedContent = modifyContent(templateContent, currentContent, fileEntryPath);
       }
 
       // NOTE: Workaround for https://github.com/angular/angular-cli/issues/11337
-      host.overwrite(fileEntryPath, modifiedContent);
-
+      host.overwrite(fileEntryPath,  modifiedContent);
       return null;
     };
 
     const rules = [
       filter(path => {
-        let isSkip = false;
-        const skipFiles = modifyOptions.skipFiles;
-        if (skipFiles) {
-          isSkip = skipFiles.some((file: string) => path.includes(file));
-        }
-
-        return !isSkip && (filePath === '*' || join('./', path) === join('./', filePath));
+        return filePath === '*' || join('./', path) === join('./', filePath);
       }),
       template(templateOptions),
       forEach(modifyIfExists),
-      move(pathToMove)
+      move(sourcePath)
     ];
 
     const modifiedSource = apply(url(templateSourcePath), rules);
-    const resultRule = mergeWith(modifiedSource, MergeStrategy.Overwrite);
+    const resultRule = mergeWith(modifiedSource);
 
     return callRule(resultRule, of(host), context);
   };
-}
-
-function addAppComponent(rootPath: string, templateOptions: any, componentOptions: any) {
-  return ['ts', 'html', 'scss'].map((ext) => {
-    return modifyContentByTemplate(
-      rootPath,
-      './files',
-      `src/app/__name__.component.${ext}`,
-      templateOptions,
-      componentOptions);
-  });
 }
 
 function updateDevextremeConfig(sourcePath: string) {
@@ -281,7 +255,7 @@ function updateDevextremeConfig(sourcePath: string) {
     return JSON.stringify(oldConfig, null, '   ');
   };
 
-  return modifyContentByTemplate('./', './files', devextremeConfigPath, templateOptions, {}, modifyConfig);
+  return modifyContentByTemplate('./', './files', devextremeConfigPath, templateOptions, modifyConfig);
 }
 
 export default function(options: any): Rule {
@@ -290,37 +264,35 @@ export default function(options: any): Rule {
     const title = humanize(project);
     const appPath = getApplicationPath(host, project);
     const sourcePath = getSourceRootPath(host, project);
-    const rootPath = getRootPath(host, project);
     const layout = options.layout;
     const override = options.resolveConflicts === 'override';
     const componentName = override ? 'app' : getComponentName(host, appPath);
     const pathToCss = sourcePath.replace(/\/?(\w)+\/?/g, '../');
     const templateOptions = {name: componentName, layout, title, strings, path: pathToCss};
-    const componentOptions = { override, rootPath };
-    const skipFiles = [
-      'styles.scss',
-      '__name__.component.html',
-      '__name__.component.ts',
-      '__name__.component.scss'];
 
-    if (hasRoutingModule(host, appPath)) {
-      skipFiles.push('app-routing.module.ts');
-    }
+    const modifyContent = (templateContent: string, currentContent: string, filePath: string) => {
+      if (filePath.includes('styles.scss')) {
+        return currentContent + templateContent;
+      }
+
+      if (filePath.includes('app-routing.module.ts') && hasRoutingModule(host, appPath)) {
+        return currentContent;
+      }
+
+      return templateContent;
+    };
 
     const rules = [
-      modifyContentByTemplate(sourcePath, './files/src', '*', templateOptions, { skipFiles }),
+      modifyContentByTemplate(sourcePath, './files/src', '*', templateOptions, modifyContent),
       updateDevextremeConfig(sourcePath),
       addImportToAppModule(appPath, 'SideNavOuterToolbarModule', './layouts'),
       addImportToAppModule(appPath, 'SideNavInnerToolbarModule', './layouts'),
       addImportToAppModule(appPath, 'FooterModule', `./shared/components/footer/footer.component`),
-      addStyles(rootPath),
       addBuildThemeScript(),
       addCustomThemeStyles(options, sourcePath),
       addViewportToRoot(sourcePath),
       addPackagesToDependency()
     ];
-
-    [].push.apply(rules, addAppComponent(rootPath, templateOptions, componentOptions));
 
     if (options.updateBudgets) {
       rules.push(updateBudgets(options));
