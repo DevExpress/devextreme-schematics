@@ -45,6 +45,9 @@
           { "value": "override", "label": "Override the existing file" }
         ]
       }
+    },
+    "updateBudgets": {
+      "type": "boolean"
     }
   }
 }
