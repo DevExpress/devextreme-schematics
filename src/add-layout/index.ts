@@ -58,7 +58,8 @@ import {
 } from '../utility/change';
 import { getWorkspace } from '@schematics/angular/utility/config';
 
-const fileSource = './files';
+const projectFilesSource = './files/src';
+const workspaceFilesSource = './files';
 
 function addScriptSafe(scripts: any, name: string, value: string) {
   const currentValue = scripts[name];
@@ -193,7 +194,7 @@ function addPackagesToDependency() {
 function modifyContentByTemplate(
   sourcePath: string,
   templateSourcePath: string,
-  filePath: string,
+  filePath: string | null,
   templateOptions: any = {},
   modifyContent?: (templateContent: string, currentContent: string, filePath: string ) => string)
 : Rule {
@@ -249,7 +250,7 @@ function updateDevextremeConfig(sourcePath: string) {
     return JSON.stringify(oldConfig, null, '   ');
   };
 
-  return modifyContentByTemplate('./', fileSource, devextremeConfigPath, templateOptions, modifyConfig);
+  return modifyContentByTemplate('./', workspaceFilesSource, devextremeConfigPath, templateOptions, modifyConfig);
 }
 
 export default function(options: any): Rule {
@@ -266,7 +267,7 @@ export default function(options: any): Rule {
 
     const modifyContent = (templateContent: string, currentContent: string, filePath: string) => {
       if (filePath.includes('styles.scss')) {
-        return `${currentContent} ${currentContent.slice(-1) !== '\n' ? '\n' : ''} ${templateContent}`;
+        return `${currentContent}\n${templateContent}`;
       }
 
       if (filePath.includes('app-routing.module.ts') && hasRoutingModule(host, appPath)) {
@@ -277,7 +278,7 @@ export default function(options: any): Rule {
     };
 
     const rules = [
-      modifyContentByTemplate(sourcePath, join(fileSource, 'src'), '', templateOptions, modifyContent),
+      modifyContentByTemplate(sourcePath, projectFilesSource, null, templateOptions, modifyContent),
       updateDevextremeConfig(sourcePath),
       addImportToAppModule(appPath, 'SideNavOuterToolbarModule', './layouts'),
       addImportToAppModule(appPath, 'SideNavInnerToolbarModule', './layouts'),
@@ -301,8 +302,8 @@ export default function(options: any): Rule {
     if (override) {
       const workspace = getWorkspace(host);
       if (project === workspace.defaultProject) {
-        rules.push(modifyContentByTemplate('./', fileSource, 'e2e/src/app.e2e-spec.ts', { title }));
-        rules.push(modifyContentByTemplate('./', fileSource, 'e2e/src/app.po.ts'));
+        rules.push(modifyContentByTemplate('./', workspaceFilesSource, 'e2e/src/app.e2e-spec.ts', { title }));
+        rules.push(modifyContentByTemplate('./', workspaceFilesSource, 'e2e/src/app.po.ts'));
       }
     }
 

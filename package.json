@@ -23,7 +23,8 @@
   "dependencies": {
     "@angular-devkit/core": "^7.0.2",
     "@angular-devkit/schematics": "^7.0.2",
-    "@schematics/angular": "^7.0.2"
+    "@schematics/angular": "^7.0.2",
+    "rxjs": "^6.3.3"
   },
   "devDependencies": {
     "jasmine": "^2.8.0",
