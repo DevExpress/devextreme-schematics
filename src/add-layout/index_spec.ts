@@ -180,6 +180,7 @@ describe('layout', () => {
     const newAppContent = tree.readContent('/testApp/src/app/app1.component.ts');
     expect(newAppContent).toMatch(/templateUrl: '.\/app1.component.html',/);
     expect(newAppContent).toMatch(/styleUrls: \['.\/app1.component.scss'\]/);
+    expect(newAppContent).toMatch(/title = 'TestApp';/);
   });
 
   it('should add routing to layout', () => {
