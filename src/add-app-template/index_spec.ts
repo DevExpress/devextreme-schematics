@@ -59,4 +59,14 @@ describe('add-app-template', () => {
     expect(tree.files)
       .toContain('/projects/testApp2/src/app/pages/home/home.component.ts');
   });
+
+  it('should consider the `updateBudgets` option', () => {
+    const runner = new SchematicTestRunner('schematics', collectionPath);
+    const tree = runner.runSchematic('add-app-template', { updateBudgets: true }, appTree);
+
+    const angularContent = JSON.parse(tree.readContent('/angular.json'));
+    const budgets = angularContent.projects.testApp.architect.build.configurations.production.budgets;
+
+    expect(budgets[0].maximumWarning).toEqual('4mb');
+  });
 });
