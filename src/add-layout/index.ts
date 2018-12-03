@@ -58,6 +58,8 @@ import {
 } from '../utility/change';
 import { getWorkspace } from '@schematics/angular/utility/config';
 
+const fileSource = './files';
+
 function addScriptSafe(scripts: any, name: string, value: string) {
   const currentValue = scripts[name];
 
@@ -217,7 +219,7 @@ function modifyContentByTemplate(
 
     const rules = [
       filter(path => {
-        return filePath === '*' || join('./', path) === join('./', filePath);
+        return !filePath || join('./', path) === join('./', filePath);
       }),
       template(templateOptions),
       forEach(modifyIfExists),
@@ -247,7 +249,7 @@ function updateDevextremeConfig(sourcePath: string) {
     return JSON.stringify(oldConfig, null, '   ');
   };
 
-  return modifyContentByTemplate('./', './files', devextremeConfigPath, templateOptions, modifyConfig);
+  return modifyContentByTemplate('./', fileSource, devextremeConfigPath, templateOptions, modifyConfig);
 }
 
 export default function(options: any): Rule {
@@ -260,11 +262,11 @@ export default function(options: any): Rule {
     const override = options.resolveConflicts === 'override';
     const componentName = override ? 'app' : getComponentName(host, appPath);
     const pathToCss = sourcePath.replace(/\/?(\w)+\/?/g, '../');
-    const templateOptions = {name: componentName, layout, title, strings, path: pathToCss};
+    const templateOptions = { name: componentName, layout, title, strings, path: pathToCss };
 
     const modifyContent = (templateContent: string, currentContent: string, filePath: string) => {
       if (filePath.includes('styles.scss')) {
-        return currentContent + templateContent;
+        return `${currentContent} ${currentContent.slice(-1) !== '\n' ? '\n' : ''} ${templateContent}`;
       }
 
       if (filePath.includes('app-routing.module.ts') && hasRoutingModule(host, appPath)) {
@@ -275,7 +277,7 @@ export default function(options: any): Rule {
     };
 
     const rules = [
-      modifyContentByTemplate(sourcePath, './files/src', '*', templateOptions, modifyContent),
+      modifyContentByTemplate(sourcePath, join(fileSource, 'src'), '', templateOptions, modifyContent),
       updateDevextremeConfig(sourcePath),
       addImportToAppModule(appPath, 'SideNavOuterToolbarModule', './layouts'),
       addImportToAppModule(appPath, 'SideNavInnerToolbarModule', './layouts'),
@@ -299,8 +301,8 @@ export default function(options: any): Rule {
     if (override) {
       const workspace = getWorkspace(host);
       if (project === workspace.defaultProject) {
-        rules.push(modifyContentByTemplate('./', './files', 'e2e/src/app.e2e-spec.ts', { title }));
-        rules.push(modifyContentByTemplate('./', './files', 'e2e/src/app.po.ts'));
+        rules.push(modifyContentByTemplate('./', fileSource, 'e2e/src/app.e2e-spec.ts', { title }));
+        rules.push(modifyContentByTemplate('./', fileSource, 'e2e/src/app.po.ts'));
       }
     }
 
