@@ -40,6 +40,9 @@
       "type": "boolean",
       "description": "Specifies whether to skip the dependency package installation.",
       "default": false
+    },
+    "updateBudgets": {
+      "type": "boolean"
     }
   }
 }
