@@ -130,12 +130,12 @@ function updateBudgets(options: any) {
   };
 }
 
-function addViewportToRoot(sourcePath: string) {
+function addViewportToBody(sourcePath: string) {
   return (host: Tree) => {
     const indexPath =  join(sourcePath, 'index.html');
     let indexContent = host.read(indexPath)!.toString();
 
-    indexContent = indexContent.replace(/<app-root>/, '<app-root class="dx-viewport">');
+    indexContent = indexContent.replace(/<body>/, '<body class="dx-viewport">');
     host.overwrite(indexPath, indexContent);
 
     return host;
@@ -285,7 +285,7 @@ export default function(options: any): Rule {
       addImportToAppModule(appPath, 'FooterModule', `./shared/components/footer/footer.component`),
       addBuildThemeScript(),
       addCustomThemeStyles(options, sourcePath),
-      addViewportToRoot(sourcePath),
+      addViewportToBody(sourcePath),
       addPackagesToDependency()
     ];
 
