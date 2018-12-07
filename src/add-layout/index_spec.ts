@@ -68,7 +68,7 @@ describe('layout', () => {
     expect(stylesContent).toMatch(/html, body {/);
 
     const indexContent = tree.readContent('/testApp/src/index.html');
-    expect(indexContent).toMatch(/<app-root class="dx-viewport">/);
+    expect(indexContent).toMatch(/<body class="dx-viewport">/);
 
     const angularContent = JSON.parse(tree.readContent('/angular.json'));
     const styles = angularContent.projects.testApp.architect.build.options.styles;
@@ -180,6 +180,7 @@ describe('layout', () => {
     const newAppContent = tree.readContent('/testApp/src/app/app1.component.ts');
     expect(newAppContent).toMatch(/templateUrl: '.\/app1.component.html',/);
     expect(newAppContent).toMatch(/styleUrls: \['.\/app1.component.scss'\]/);
+    expect(newAppContent).toMatch(/title = 'TestApp';/);
   });
 
   it('should add routing to layout', () => {
