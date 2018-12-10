@@ -18,7 +18,7 @@ import { of } from 'rxjs';
 
 import { strings } from '@angular-devkit/core';
 
-import { join } from 'path';
+import { join, basename } from 'path';
 
 import {
   getApplicationPath,
@@ -50,7 +50,7 @@ import {
 import { getSourceFile } from '../utility/source';
 
 import {
-  addImportToModule
+  addImportToModule, addProviderToModule
 } from '@schematics/angular/utility/ast-utils';
 
 import {
@@ -99,8 +99,9 @@ function addCustomThemeStyles(options: any, sourcePath: string) {
   return (host: Tree) => {
     modifyJSONFile(host, './angular.json', config => {
       const stylesList = [
-        `${sourcePath}/themes/generated/theme.base.css`,
+        `${sourcePath}/dx-styles.scss`,
         `${sourcePath}/themes/generated/theme.additional.css`,
+        `${sourcePath}/themes/generated/theme.base.css`,
         'node_modules/devextreme/dist/css/dx.common.css'
       ];
 
@@ -152,6 +153,21 @@ function addImportToAppModule(sourcePath: string, importName: string, path: stri
     }
 
     const changes = addImportToModule(source, appModulePath, importName, path);
+
+    return applyChanges(host, changes, appModulePath);
+  };
+}
+
+function addProviderToAppModule(sourcePath: string, importName: string, path: string) {
+  return (host: Tree) => {
+    const appModulePath = sourcePath + 'app.module.ts';
+    const source = getSourceFile(host, appModulePath);
+
+    if (!source) {
+      return host;
+    }
+
+    const changes = addProviderToModule(source, appModulePath, importName, path);
 
     return applyChanges(host, changes, appModulePath);
   };
@@ -266,11 +282,11 @@ export default function(options: any): Rule {
     const templateOptions = { name: componentName, layout, title, strings, path: pathToCss };
 
     const modifyContent = (templateContent: string, currentContent: string, filePath: string) => {
-      if (filePath.includes('styles.scss')) {
+      if (basename(filePath) === 'styles.scss') {
         return `${currentContent}\n${templateContent}`;
       }
 
-      if (filePath.includes('app-routing.module.ts') && hasRoutingModule(host, appPath)) {
+      if (basename(filePath) === 'app-routing.module.ts' && hasRoutingModule(host, appPath)) {
         return currentContent;
       }
 
@@ -282,7 +298,12 @@ export default function(options: any): Rule {
       updateDevextremeConfig(sourcePath),
       addImportToAppModule(appPath, 'SideNavOuterToolbarModule', './layouts'),
       addImportToAppModule(appPath, 'SideNavInnerToolbarModule', './layouts'),
-      addImportToAppModule(appPath, 'FooterModule', `./shared/components/footer/footer.component`),
+      addImportToAppModule(appPath, 'SingleCardModule', './layouts'),
+      addImportToAppModule(appPath, 'FooterModule', './shared/components'),
+      addImportToAppModule(appPath, 'LoginFormModule', './shared/components'),
+      addProviderToAppModule(appPath, 'AuthService', './shared/services'),
+      addProviderToAppModule(appPath, 'ScreenService', './shared/services'),
+      addProviderToAppModule(appPath, 'AppInfoService', './shared/services'),
       addBuildThemeScript(),
       addCustomThemeStyles(options, sourcePath),
       addViewportToBody(sourcePath),
