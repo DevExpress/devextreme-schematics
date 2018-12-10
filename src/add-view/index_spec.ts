@@ -81,6 +81,7 @@ describe('view', () => {
 
     expect(moduleContent).toMatch(/component: TestComponent/);
     expect(moduleContent).toMatch(/path: 'pages\/test'/);
+    expect(moduleContent).toContain('canActivate: [ AuthGuardService ]');
   });
 
   it('should add view to navigation', () => {
