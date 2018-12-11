@@ -1,5 +1,6 @@
-import { Component, OnInit, NgModule, Output, Input, EventEmitter } from '@angular/core';
+import { Component, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 
 import { AuthService, AppInfoService } from '../../services';
 import { DxButtonModule } from 'devextreme-angular/ui/button';
@@ -13,13 +14,11 @@ import { DxValidationGroupModule } from 'devextreme-angular/ui/validation-group'
     templateUrl: './login-form.component.html',
     styleUrls: ['./login-form.component.scss']
 })
-export class LoginFormComponent implements OnInit {
+export class LoginFormComponent {
     login = '';
     password = '';
 
     constructor(private authService: AuthService, public appInfo: AppInfoService) { }
-
-    ngOnInit() { }
 
     onLoginClick(args) {
         if (!args.validationGroup.validate().isValid) {
@@ -34,6 +33,7 @@ export class LoginFormComponent implements OnInit {
 @NgModule({
     imports: [
         CommonModule,
+        RouterModule,
         DxButtonModule,
         DxCheckBoxModule,
         DxTextBoxModule,

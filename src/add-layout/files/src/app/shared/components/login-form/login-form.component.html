@@ -17,15 +17,14 @@
             </dx-validator>
         </dx-text-box>
     </div>
-    <div class="dx-field remember-me">
-        <dx-check-box [value]="false"></dx-check-box>
-        <div class="remember-me-label">Remember me</div>
+    <div class="dx-field">
+        <dx-check-box [value]="false" text="Remember me"></dx-check-box>
     </div>
     <div class="dx-field">
         <dx-button type="default" text="Login" (onClick)="onLoginClick($event)" width="100%"></dx-button>
     </div>
     <div class="dx-field">
-        <a href="/recovery">Forgot password ?</a>
+        <a routerLink="/recovery">Forgot password ?</a>
     </div>
     <div class="dx-field">
         <dx-button type="normal" text="Create an account" width="100%"></dx-button>

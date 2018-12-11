@@ -12,7 +12,7 @@
     }
 }
 
-::ng-deep .dx-toolbar-items-container .dx-toolbar-after {
+::ng-deep .dx-toolbar .dx-toolbar-items-container .dx-toolbar-after {
     padding: 0 40px;
 
     :host-context(.screen-x-small) & {
