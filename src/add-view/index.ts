@@ -41,7 +41,8 @@ function getChangesForRoutes(name: string, routes: Node) {
     ? ''
     : `{
         path: '${strings.dasherize(name)}',
-        component: ${componentName}
+        component: ${componentName},
+        canActivate: [ AuthGuardService ]
     }`;
 }
 

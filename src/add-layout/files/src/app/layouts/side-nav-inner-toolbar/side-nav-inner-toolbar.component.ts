@@ -1,7 +1,6 @@
 import { Component, OnInit, NgModule, Input } from '@angular/core';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { SideNavigationMenuModule } from '../../shared/components';
-import { HeaderModule } from '../../shared/components';
+import { SideNavigationMenuModule, HeaderModule } from '../../shared/components';
+import { ScreenService } from '../../shared/services';
 import { DxDrawerModule } from 'devextreme-angular/ui/drawer';
 import { DxScrollViewModule } from 'devextreme-angular/ui/scroll-view';
 import { DxToolbarModule } from 'devextreme-angular/ui/toolbar';
@@ -30,10 +29,10 @@ export class SideNavInnerToolbarComponent implements OnInit {
     minMenuSize = 0;
     shaderEnabled = false;
 
-    constructor(private breakpointObserver: BreakpointObserver, private router: Router) { }
+    constructor(private screen: ScreenService, private router: Router) { }
 
     ngOnInit() {
-        this.menuOpened = this.isLargeScreen;
+        this.menuOpened = this.screen.sizes['screen-large'];
 
         this.router.events.subscribe(val => {
             if (val instanceof NavigationEnd) {
@@ -41,41 +40,24 @@ export class SideNavInnerToolbarComponent implements OnInit {
             }
         });
 
-        this.breakpointObserver
-            .observe([Breakpoints.XSmall, Breakpoints.Small, Breakpoints.Medium, Breakpoints.Large])
-            .subscribe(() => this.updateDrawer());
+        this.screen.changed.subscribe(() => this.updateDrawer());
 
         this.updateDrawer();
     }
 
     updateDrawer() {
-        const isXSmall = this.breakpointObserver.isMatched(Breakpoints.XSmall);
+        const isXSmall = this.screen.sizes['screen-x-small'];
+        const isLarge = this.screen.sizes['screen-large'];
 
-        this.menuMode = this.isLargeScreen ? 'shrink' : 'overlap';
+        this.menuMode = isLarge ? 'shrink' : 'overlap';
         this.menuRevealMode = isXSmall ? 'slide' : 'expand';
         this.minMenuSize = isXSmall ? 0 : 60;
-        this.shaderEnabled = !this.isLargeScreen;
+        this.shaderEnabled = !isLarge;
     }
 
     toggleMenu = (e) => {
         this.menuOpened = !this.menuOpened;
         e.event.stopPropagation();
-    }
-
-    get isLargeScreen() {
-        const isLarge = this.breakpointObserver.isMatched(Breakpoints.Large);
-        const isXLarge = this.breakpointObserver.isMatched(Breakpoints.XLarge);
-
-        return isLarge || isXLarge;
-    }
-
-    get sizeClasses() {
-        return {
-            'screen-x-small': this.breakpointObserver.isMatched(Breakpoints.XSmall),
-            'screen-small': this.breakpointObserver.isMatched(Breakpoints.Small),
-            'screen-medium': this.breakpointObserver.isMatched(Breakpoints.Medium),
-            'screen-large': this.isLargeScreen,
-        };
     }
 
     get hideMenuAfterNavigation() {
