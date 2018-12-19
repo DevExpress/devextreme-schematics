@@ -43,7 +43,8 @@ describe('view', () => {
 
   it('should create new view', () => {
     const runner = new SchematicTestRunner('schematics', collectionPath);
-    const tree = runner.runSchematic('add-view', componentOptions, appTree);
+    let tree = runner.runSchematic('add-layout', { layout: 'side-nav-outer-toolbar' }, appTree);
+    tree = runner.runSchematic('add-view', componentOptions, appTree);
 
     expect(tree.files).toContain('/testApp/src/app/pages/test/test.component.ts');
     expect(tree.files).toContain('/testApp/src/app/pages/test/test.component.html');
@@ -57,12 +58,33 @@ describe('view', () => {
     const options = { ...componentOptions, addRoute: true };
 
     const runner = new SchematicTestRunner('schematics', collectionPath);
-    const tree = runner.runSchematic('add-view', options, appTree);
+    let tree = runner.runSchematic('add-layout', { layout: 'side-nav-outer-toolbar' }, appTree);
+    tree = runner.runSchematic('add-view', options, tree);
+    tree = runner.runSchematic('add-view', { ...options, name: 'test2' }, tree);
     const moduleContent = tree.readContent('/testApp/src/app/app-routing.module.ts');
 
-    expect(moduleContent).toMatch(/Routes = \[{/);
-    expect(moduleContent).toMatch(/component: TestComponent/);
-    expect(moduleContent).toMatch(/path: 'pages\/test'/);
+    expect(moduleContent).toContain(`const routes: Routes = [
+  {
+    path: 'pages/test2',
+    component: Test2Component,
+    canActivate: [ AuthGuardService ]
+  },
+  {
+    path: 'pages/test',
+    component: TestComponent,
+    canActivate: [ AuthGuardService ]
+  },
+  {
+    path: 'login-form',
+    component: LoginFormComponent,
+    canActivate: [ AuthGuardService ]
+  },
+  {
+    path: '**',
+    redirectTo: 'pages/test',
+    canActivate: [ AuthGuardService ]
+  }
+];`);
   });
 
   it('should add view to other routing module', () => {
@@ -75,6 +97,11 @@ describe('view', () => {
       project: 'testApp'
     }, appTree);
 
+    tree = runner.runSchematic('add-layout', {
+      layout: 'side-nav-outer-toolbar',
+      project: 'testApp',
+      name: 'test'
+    }, tree);
     tree = runner.runSchematic('add-view', options, tree);
 
     const moduleContent = tree.readContent('/testApp/src/app/test/test-routing.module.ts');
@@ -100,6 +127,18 @@ describe('view', () => {
     expect(moduleContent).toMatch(/text: 'Test'/);
     expect(moduleContent).toMatch(/icon: 'folder'/);
 
+    expect(moduleContent).toContain(`navigation = [
+  {
+    text: 'Test',
+    path: 'pages/test',
+    icon: 'folder'
+  },
+  {
+    text: 'Some test',
+    path: 'pages/some-test',
+    icon: 'home'
+  }
+];`);
     const pageContent = tree.readContent('/testApp/src/app/pages/some-test/some-test.component.html');
     expect(pageContent).toMatch(/<h2>some-test<\/h2>/);
   });
@@ -107,7 +146,8 @@ describe('view', () => {
   it('should create new view with path', () => {
     const runner = new SchematicTestRunner('schematics', collectionPath);
     componentOptions.name = 'folder/test';
-    const tree = runner.runSchematic('add-view', componentOptions, appTree);
+    let tree = runner.runSchematic('add-layout', { layout: 'side-nav-outer-toolbar' }, appTree);
+    tree = runner.runSchematic('add-view', componentOptions, appTree);
 
     expect(tree.files).toContain('/testApp/src/app/folder/test/test.component.ts');
     expect(tree.files).toContain('/testApp/src/app/folder/test/test.component.html');
