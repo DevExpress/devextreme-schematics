@@ -194,6 +194,9 @@ describe('layout', () => {
     expect(newAppContent).toMatch(/templateUrl: '.\/app1.component.html',/);
     expect(newAppContent).toMatch(/styleUrls: \['.\/app1.component.scss'\]/);
     expect(newAppContent).toContain(`import { AuthService, ScreenService, AppInfoService } from './shared/services';`);
+
+    const appInfo = tree.readContent('/testApp/src/app/shared/services/app-info.service.ts');
+    expect(appInfo).toContain(`return 'TestApp';`);
   });
 
   it('should add routing to layout', () => {
