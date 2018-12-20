@@ -5,6 +5,9 @@ import {
   Node
 } from 'typescript';
 
+const newLine = `
+`;
+
 export function applyChanges(host: Tree, changes: Change[], filePath: string) {
   const recorder = host.beginUpdate(filePath);
 
@@ -26,24 +29,23 @@ export function insertItemToArray(
   item: string,
   options: { location: 'start' | 'end' } = { location: 'start' }
 ) {
-  if (!/^\s*\{[\s\S]*\}\s*$/m.test(item)) {
+  const isItemValid = /^\s*\{[\s\S]*\}\s*$/m.test(item);
+  if (!isItemValid) {
     return host;
   }
 
   const nodeContent = node.getText();
-  const isEmpty = !/\[[\s\S]*\S+[\s\S]*\]/m.test(nodeContent);
   const nodePosition = node.getStart();
   const leftBracketPosition = nodePosition + nodeContent.indexOf('[');
   const rightBracketPosition = nodePosition + nodeContent.lastIndexOf(']');
   let itemPosition = leftBracketPosition + 1;
   let fileRecorder = host.beginUpdate(filePath);
 
-  item = `
-` + item;
+  item = newLine + item;
 
-  if (isEmpty) {
-    const formattedArray = `[
-]`;
+  const isNodeEmpty = !/\[[\s\S]*\S+[\s\S]*\]/m.test(nodeContent);
+  if (isNodeEmpty) {
+    const formattedArray = `[${newLine}]`;
     fileRecorder.remove(leftBracketPosition, rightBracketPosition - leftBracketPosition + 1);
     fileRecorder.insertLeft(leftBracketPosition, formattedArray);
     host.commitUpdate(fileRecorder);
