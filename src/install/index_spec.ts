@@ -43,15 +43,15 @@ describe('install', () => {
 
   it('should add devextreme dependency (custom)', () => {
     const runner = new SchematicTestRunner('schematics', collectionPath);
-    const tree = runner.runSchematic('install', { dxversion: '18.2.3' }, appTree);
+    const tree = runner.runSchematic('install', { dxversion: '18.2.4' }, appTree);
     const packageConfig = JSON.parse(tree.readContent('package.json'));
 
-    expect(packageConfig.dependencies.devextreme).toBe('18.2.3');
+    expect(packageConfig.dependencies.devextreme).toBe('18.2.4');
   });
 
   it('should add devextreme cli devDependency', () => {
     const runner = new SchematicTestRunner('schematics', collectionPath);
-    const tree = runner.runSchematic('install', { dxversion: '18.2.3' }, appTree);
+    const tree = runner.runSchematic('install', { dxversion: '18.2.4' }, appTree);
     const packageConfig = JSON.parse(tree.readContent('package.json'));
 
     expect(packageConfig.devDependencies['devextreme-cli']).toBeDefined();
