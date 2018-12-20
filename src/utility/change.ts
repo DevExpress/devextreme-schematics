@@ -1,37 +1,66 @@
-import { Tree, UpdateRecorder } from '@angular-devkit/schematics';
-import { InsertChange } from '@schematics/angular/utility/change';
+import { Tree } from '@angular-devkit/schematics';
+import { InsertChange, Change } from '@schematics/angular/utility/change';
 
-function getSeparator(text: string) {
-  const isEmpty = text.search(/}\s*,?\s*]/g) !== -1;
-  return isEmpty ? ', ' : '';
-}
+import {
+  Node
+} from 'typescript';
 
-/* tslint:disable:max-line-length */
-function prepareChangesForAdditionInArray(recorder: UpdateRecorder, filePath: string, changes: any, content: string, endIndex: number) {
-/* tslint:enable:max-line-length */
-  const position = content!.lastIndexOf(']', endIndex);
+const newLine = `
+`;
 
-  if (position > -1) {
-    const insertData = new InsertChange(filePath, position, getSeparator(content) + changes);
-    recorder.insertLeft(insertData.pos, insertData.toAdd);
-  }
+export function applyChanges(host: Tree, changes: Change[], filePath: string) {
+  const recorder = host.beginUpdate(filePath);
 
-  return recorder;
-}
-
-export function applyChanges(host: Tree, changes: any, filePath: string, content?: string, endIndex?: number) {
-
-  let recorder = host.beginUpdate(filePath);
-
-  if (Array.isArray(changes)) {
-    for (const change of changes) {
-      recorder.insertLeft(change.pos, change.toAdd);
-    }
-  } else if (content && endIndex) {
-      recorder = prepareChangesForAdditionInArray(recorder, filePath, changes, content, endIndex);
-  }
+  changes.forEach((change: InsertChange) => {
+    recorder.insertLeft(change.pos, change.toAdd);
+  });
 
   host.commitUpdate(recorder);
+
+  return host;
+}
+
+// TODO: implement options.index
+// TODO: implement spaces shift calculation
+export function insertItemToArray(
+  host: Tree,
+  filePath: string,
+  node: Node,
+  item: string,
+  options: { location: 'start' | 'end' } = { location: 'start' }
+) {
+  const isItemValid = /^\s*\{[\s\S]*\}\s*$/m.test(item);
+  if (!isItemValid) {
+    return host;
+  }
+
+  const nodeContent = node.getText();
+  const nodePosition = node.getStart();
+  const leftBracketPosition = nodePosition + nodeContent.indexOf('[');
+  const rightBracketPosition = nodePosition + nodeContent.lastIndexOf(']');
+  let itemPosition = leftBracketPosition + 1;
+  let fileRecorder = host.beginUpdate(filePath);
+
+  item = newLine + item;
+
+  const isNodeEmpty = !/\[[\s\S]*\S+[\s\S]*\]/m.test(nodeContent);
+  if (isNodeEmpty) {
+    const formattedArray = `[${newLine}]`;
+    fileRecorder.remove(leftBracketPosition, rightBracketPosition - leftBracketPosition + 1);
+    fileRecorder.insertLeft(leftBracketPosition, formattedArray);
+    host.commitUpdate(fileRecorder);
+    fileRecorder = host.beginUpdate(filePath);
+  } else {
+    if (options.location === 'end') {
+      itemPosition = nodePosition + nodeContent.lastIndexOf('}') + 1;
+      item = ',' + item;
+    } else {
+      item = item + ',';
+    }
+  }
+
+  fileRecorder.insertLeft(itemPosition, item);
+  host.commitUpdate(fileRecorder);
 
   return host;
 }

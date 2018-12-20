@@ -46,8 +46,29 @@ describe('sample views', () => {
     expect(moduleContent).toMatch(/import { HomeComponent } from /);
     expect(moduleContent).toMatch(/declarations: \[HomeComponent/);
 
-    const navugationContent = tree.readContent('/testApp/src/app/app-navigation.ts');
-    expect(navugationContent).toMatch(/text: 'Home'/);
+    const navigationContent = tree.readContent('/testApp/src/app/app-navigation.ts');
+    expect(navigationContent).toMatch(/text: 'Home'/);
+    expect(navigationContent).toContain(`export const navigation = [
+  {
+    text: 'Home',
+    path: '/home',
+    icon: 'home'
+  },
+  {
+    text: 'Examples',
+    icon: 'folder',
+    items: [
+      {
+        text: 'Profile',
+        path: '/profile'
+      },
+      {
+        text: 'Display Data',
+        path: '/display-data'
+      }
+    ]
+  }
+];`);
 
     expect(tree.files).toContain('/testApp/src/app/pages/home/home.component.ts');
 

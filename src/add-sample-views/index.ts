@@ -24,7 +24,8 @@ import {
 import { humanize } from '../utility/string';
 
 import {
-   applyChanges
+   applyChanges,
+   insertItemToArray
  } from '../utility/change';
 
 import { getSourceFile } from '../utility/source';
@@ -53,22 +54,27 @@ const devextremeOptions = [
     relativePath: 'devextreme-angular'
 }];
 
-const navigations = `
-    {
-        text: 'Home',
-        path: '/home',
-        icon: 'home'
-    }, {
-        text: 'Examples',
-        icon: 'folder',
-        items: [{
-            text: 'Profile',
-            path: '/profile'
-        }, {
-            text: 'Display Data',
-            path: '/display-data'
-        }]
-    }`;
+const navigations = [
+  `  {
+    text: 'Home',
+    path: '/home',
+    icon: 'home'
+  }`,
+  `  {
+    text: 'Examples',
+    icon: 'folder',
+    items: [
+      {
+        text: 'Profile',
+        path: '/profile'
+      },
+      {
+        text: 'Display Data',
+        path: '/display-data'
+      }
+    ]
+  }`
+];
 
 function addImportsToRoutingModule(isView: boolean, routingPath: string, options: any) {
   return (host: Tree) => {
@@ -93,12 +99,13 @@ function addImportsToRoutingModule(isView: boolean, routingPath: string, options
 function addDefaultNavigation(rootPath: string) {
   return (host: Tree) => {
     const navigationPath = rootPath + 'app-navigation.ts';
-    const navigationSource = getSourceFile(host, navigationPath);
 
-    if (!navigationSource) {
-      return host;
-    }
-    return applyChanges(host, navigations, navigationPath, navigationSource.getText(), navigationSource.getEnd());
+    navigations.forEach((navigation) => {
+      const navigationSource = getSourceFile(host, navigationPath)!;
+      insertItemToArray(host, navigationPath, navigationSource, navigation, { location: 'end' });
+    });
+
+    return host;
   };
 }
 

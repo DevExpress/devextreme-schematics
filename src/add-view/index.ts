@@ -11,14 +11,14 @@ import {
 } from '@schematics/angular/utility/find-module';
 
 import {
-  applyChanges
+  insertItemToArray
 } from '../utility/change';
 
 import {
-  Node,
-  SourceFile,
-  SyntaxKind
-} from 'typescript';
+  hasComponentInRoutes,
+  getRoute,
+  findRoutesInSource
+} from '../utility/routing';
 
 import { getSourceFile } from '../utility/source';
 
@@ -28,23 +28,6 @@ import {
   getProjectName,
   getApplicationPath
 } from '../utility/project';
-
-function findComponentInRoutes(text: string, componentName: string) {
-  return text.indexOf(componentName) !== -1;
-}
-
-function getChangesForRoutes(name: string, routes: Node) {
-  const componentName = `${strings.classify(basename(normalize(name)))}Component`;
-  const routesText = routes.getText();
-
-  return findComponentInRoutes(routesText, componentName)
-    ? ''
-    : `{
-        path: '${strings.dasherize(name)}',
-        component: ${componentName},
-        canActivate: [ AuthGuardService ]
-    }`;
-}
 
 function getPathToFile(host: Tree, projectName: string, moduleName: string) {
   const rootPath = getApplicationPath(host, projectName);
@@ -56,41 +39,44 @@ function getPathToFile(host: Tree, projectName: string, moduleName: string) {
   }
 }
 
-function isRouteVariable(node: Node, text: string) {
-  return node.kind === SyntaxKind.VariableStatement &&
-    text.search(/\:\s*Routes/) !== -1;
-}
-
-function findRoutesInSource(source: SourceFile) {
-  return source.forEachChild((node) => {
-    const text = node.getText();
-    if (isRouteVariable(node, text)) {
-      return node;
-    }
-  });
-}
-
 function addViewToNavigation(options: any) {
   return (host: Tree) => {
     const navigationName = 'app-navigation';
     const navigationFilePath = getPathToFile(host, options.project, navigationName);
 
-    if (navigationFilePath) {
-      const source = getSourceFile(host, navigationFilePath);
-
-      if (!source) {
-        return host;
-      }
-
-      const changes = `{
-            text: '${strings.capitalize(basename(normalize(options.name)))}',
-            path: '${strings.dasherize(options.name)}',
-            icon: '${options.icon}'
-        }`;
-
-      return applyChanges(host, changes, navigationFilePath, source.getText(), source.getEnd());
+    if (!navigationFilePath) {
+      return;
     }
+
+    const source = getSourceFile(host, navigationFilePath)!;
+    const pagePath = strings.dasherize(options.name);
+    const navigationItem = `  {
+    text: '${strings.capitalize(basename(normalize(options.name)))}',
+    path: '${pagePath}',
+    icon: '${options.icon}'
+  }`;
+
+    insertItemToArray(host, navigationFilePath, source, navigationItem, { location: 'end' });
+
+    return host;
   };
+}
+
+function addRedirectRoute(host: Tree, routingModulePath: string, page: string) {
+  const source = getSourceFile(host, routingModulePath)!;
+  const content = source.getText();
+  if (content.match(/path:\s*'\*\*'/g)) {
+    return;
+  }
+
+  const routes = findRoutesInSource(source)!;
+  const redirectRoute = `  {
+    path: '**',
+    redirectTo: '${strings.dasherize(page)}',
+    canActivate: [ AuthGuardService ]
+  }`;
+
+  insertItemToArray(host, routingModulePath, routes, redirectRoute, { location: 'end' });
 }
 
 export function addViewToRouting(options: any) {
@@ -101,25 +87,20 @@ export function addViewToRouting(options: any) {
       throw new SchematicsException('Specified module does not exist.');
     }
 
-    const source = getSourceFile(host, routingModulePath);
+    addRedirectRoute(host, routingModulePath, options.name);
 
-    if (!source) {
-      return host;
-    }
-
+    const source = getSourceFile(host, routingModulePath)!;
     const routes = findRoutesInSource(source);
 
     if (!routes) {
       throw new SchematicsException('No routes found.');
     }
 
-    const changes = getChangesForRoutes(options.name, routes);
-
-    if (!changes) {
-      return host;
+    if (!hasComponentInRoutes(routes, options.name)) {
+      const route = getRoute(options.name);
+      insertItemToArray(host, routingModulePath, routes, route);
     }
-
-    return applyChanges(host, changes, routingModulePath, source.getText(), routes.getEnd());
+    return host;
   };
 }
 
@@ -145,7 +126,9 @@ function addContentToView(options: any) {
     if (host.exists(componentPath)) {
       host.overwrite(
         componentPath,
-        `<h2>${name}</h2>\n<div class="dx-card content-block">Put your content here</div>\n`);
+        `<h2 class="content-block">${name}</h2>
+<div class="dx-card content-block responsive-paddings">Put your content here</div>
+`);
     }
     return host;
   };

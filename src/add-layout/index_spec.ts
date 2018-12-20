@@ -197,17 +197,25 @@ describe('layout', () => {
   });
 
   it('should add routing to layout', () => {
-
     let newAppTree = schematicRunner.runSchematic('workspace', workspaceOptions);
 
     appOptions.routing = false;
     newAppTree = schematicRunner.runSchematic('application', appOptions, newAppTree);
 
     const runner = new SchematicTestRunner('schematics', collectionPath);
-
     const tree = runner.runSchematic('add-layout', options, appTree);
 
     expect(tree.files).toContain('/testApp/src/app/app-routing.module.ts');
+    const moduleContent = tree.readContent('/testApp/src/app/app-routing.module.ts');
+    expect(moduleContent)
+      .toMatch(/imports:\s\[RouterModule\.forRoot\(routes\)\],/);
+
+    expect(moduleContent)
+      .toContain(`{
+    path: 'login-form',
+    component: LoginFormComponent,
+    canActivate: [ AuthGuardService ]
+  }`);
   });
 
   it('should use selected layout', () => {
