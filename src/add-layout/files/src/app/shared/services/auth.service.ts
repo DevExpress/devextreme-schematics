@@ -3,23 +3,23 @@ import { CanActivate, Router, ActivatedRouteSnapshot } from '@angular/router';
 
 @Injectable()
 export class AuthService {
-    loggedIn = true;
+  loggedIn = true;
 
-    constructor(private router: Router) {}
+  constructor(private router: Router) {}
 
-    logIn(login: string, passord: string) {
-        this.loggedIn = true;
-        this.router.navigate(['/']);
-    }
+  logIn(login: string, passord: string) {
+    this.loggedIn = true;
+    this.router.navigate(['/']);
+  }
 
-    logOut() {
-        this.loggedIn = false;
-        this.router.navigate(['/login-form']);
-    }
+  logOut() {
+    this.loggedIn = false;
+    this.router.navigate(['/login-form']);
+  }
 
-    get isLoggedIn() {
-        return this.loggedIn;
-    }
+  get isLoggedIn() {
+    return this.loggedIn;
+  }
 }
 
 @Injectable()
