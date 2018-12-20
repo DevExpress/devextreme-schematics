@@ -16,7 +16,9 @@ import {
 
 import { of } from 'rxjs';
 
-import { SourceFile } from 'typescript';
+import {
+  SourceFile
+} from 'typescript';
 
 import { strings } from '@angular-devkit/core';
 
@@ -52,12 +54,20 @@ import {
 import { getSourceFile } from '../utility/source';
 
 import {
-  addImportToModule, addProviderToModule
-} from '@schematics/angular/utility/ast-utils';
+  applyChanges,
+  insertItemToArray
+} from '../utility/change';
 
 import {
-  applyChanges
-} from '../utility/change';
+  hasComponentInRoutes,
+  getRoute,
+  findRoutesInSource
+} from '../utility/routing';
+
+import {
+  addImportToModule, addProviderToModule, insertImport
+} from '@schematics/angular/utility/ast-utils';
+
 import { getWorkspace } from '@schematics/angular/utility/config';
 import { Change } from '@schematics/angular/utility/change';
 
@@ -234,7 +244,7 @@ function modifyContentByTemplate(
   templateOptions: any = {},
   modifyContent?: (templateContent: string, currentContent: string, filePath: string ) => string)
 : Rule {
-  return(host: Tree, context: SchematicContext) => {
+  return (host: Tree, context: SchematicContext) => {
     const modifyIfExists = (fileEntry: FileEntry) => {
       const fileEntryPath = join(sourcePath, fileEntry.path.toString());
       if (!host.exists(fileEntryPath)) {
@@ -244,13 +254,15 @@ function modifyContentByTemplate(
       const templateContent = fileEntry.content!.toString();
       let modifiedContent = templateContent;
 
+      const currentContent = host.read(fileEntryPath)!.toString();
       if (modifyContent) {
-        const currentContent = host.read(fileEntryPath)!.toString();
         modifiedContent = modifyContent(templateContent, currentContent, fileEntryPath);
       }
 
       // NOTE: Workaround for https://github.com/angular/angular-cli/issues/11337
-      host.overwrite(fileEntryPath,  modifiedContent);
+      if (modifiedContent !== currentContent) {
+        host.overwrite(fileEntryPath,  modifiedContent);
+      }
       return null;
     };
 
@@ -289,6 +301,21 @@ function updateDevextremeConfig(sourcePath: string) {
   return modifyContentByTemplate('./', workspaceFilesSource, devextremeConfigPath, templateOptions, modifyConfig);
 }
 
+const modifyRoutingModule = (host: Tree, routingModulePath: string) => {
+  // TODO: Try to use the isolated host to generate the result string
+  let source = getSourceFile(host, routingModulePath)!;
+  const importChange = insertImport(source, routingModulePath, 'LoginFormComponent', './shared/components');
+  const providerChanges = addProviderToModule(source, routingModulePath, 'AuthGuardService', './shared/services');
+  applyChanges(host, [ importChange, ...providerChanges], routingModulePath);
+
+  source = getSourceFile(host, routingModulePath)!;
+  const routes = findRoutesInSource(source)!;
+  if (!hasComponentInRoutes(routes, 'login-form')) {
+    const loginFormRoute = getRoute('login-form');
+    insertItemToArray(host, routingModulePath, routes, loginFormRoute);
+  }
+};
+
 export default function(options: any): Rule {
   return (host: Tree) => {
     const project = getProjectName(host, options.project);
@@ -307,6 +334,7 @@ export default function(options: any): Rule {
       }
 
       if (basename(filePath) === 'app-routing.module.ts' && hasRoutingModule(host, appPath)) {
+        modifyRoutingModule(host, filePath);
         return currentContent;
       }
 
