@@ -1,9 +1,16 @@
-<app-<%= layout %> title={{title}}>
-    <router-outlet></router-outlet>
+<ng-container *ngIf="isAutorized(); else notAuthorized">
+    <app-<%= layout %> title="{{appInfo.title}}">
+        <router-outlet></router-outlet>
+        <app-footer>
+            Copyright © 2011-2018 Developer Express Inc.
+            <br/>
+            All trademarks or registered trademarks are property of their respective owners.
+        </app-footer>
+    </app-<%= layout %>>
+</ng-container>
 
-    <app-footer>
-        Copyright © 2011-2018 Developer Express Inc.
-        <br/>
-        All trademarks or registered trademarks are property of their respective owners.
-    </app-footer>
-</app-<%= layout %>>
+<ng-template #notAuthorized>
+    <app-single-card>
+        <router-outlet></router-outlet>
+    </app-single-card>
+</ng-template>
