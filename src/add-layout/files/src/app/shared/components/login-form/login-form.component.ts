@@ -10,37 +10,37 @@ import { DxValidatorModule } from 'devextreme-angular/ui/validator';
 import { DxValidationGroupModule } from 'devextreme-angular/ui/validation-group';
 
 @Component({
-    selector: 'app-login-form',
-    templateUrl: './login-form.component.html',
-    styleUrls: ['./login-form.component.scss']
+  selector: 'app-login-form',
+  templateUrl: './login-form.component.html',
+  styleUrls: ['./login-form.component.scss']
 })
 export class LoginFormComponent {
-    login = '';
-    password = '';
+  login = '';
+  password = '';
 
-    constructor(private authService: AuthService, public appInfo: AppInfoService) { }
+  constructor(private authService: AuthService, public appInfo: AppInfoService) { }
 
-    onLoginClick(args) {
-        if (!args.validationGroup.validate().isValid) {
-            return;
-        }
-
-        this.authService.logIn(this.login, this.password);
-
-        args.validationGroup.reset();
+  onLoginClick(args) {
+    if (!args.validationGroup.validate().isValid) {
+      return;
     }
+
+    this.authService.logIn(this.login, this.password);
+
+    args.validationGroup.reset();
+  }
 }
 @NgModule({
-    imports: [
-        CommonModule,
-        RouterModule,
-        DxButtonModule,
-        DxCheckBoxModule,
-        DxTextBoxModule,
-        DxValidatorModule,
-        DxValidationGroupModule
-    ],
-    declarations: [ LoginFormComponent ],
-    exports: [ LoginFormComponent ]
+  imports: [
+    CommonModule,
+    RouterModule,
+    DxButtonModule,
+    DxCheckBoxModule,
+    DxTextBoxModule,
+    DxValidatorModule,
+    DxValidationGroupModule
+  ],
+  declarations: [ LoginFormComponent ],
+  exports: [ LoginFormComponent ]
 })
 export class LoginFormModule { }
