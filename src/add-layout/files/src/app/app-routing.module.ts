@@ -4,11 +4,11 @@ import { LoginFormComponent } from './shared/components';
 import { AuthGuardService } from './shared/services';
 
 const routes: Routes = [
-    {
-        path: 'login-form',
-        component: LoginFormComponent,
-        canActivate: [ AuthGuardService ]
-    }
+  {
+    path: 'login-form',
+    component: LoginFormComponent,
+    canActivate: [ AuthGuardService ]
+  }
 ];
 
 @NgModule({
