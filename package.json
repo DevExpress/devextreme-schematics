@@ -1,6 +1,6 @@
 {
   "name": "devextreme-schematics",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "DevExtreme schematics",
   "scripts": {
     "build": "tsc -p tsconfig.json",
@@ -21,16 +21,16 @@
   ],
   "schematics": "./src/collection.json",
   "dependencies": {
-    "@angular-devkit/core": "^7.0.2",
-    "@angular-devkit/schematics": "^7.0.2",
-    "@schematics/angular": "^7.0.2",
+    "@angular-devkit/core": "^7.1.4",
+    "@angular-devkit/schematics": "^7.1.4",
+    "@schematics/angular": "^7.1.4",
     "rxjs": "^6.3.3"
   },
   "devDependencies": {
+    "@types/jasmine": "^2.8.14",
+    "@types/node": "^8.10.39",
     "jasmine": "^2.8.0",
-    "tslint": "^5.11.0",
-    "@types/jasmine": "^2.6.0",
-    "@types/node": "^8.10.27",
+    "tslint": "^5.12.0",
     "typescript": "3.1.3"
   }
 }
