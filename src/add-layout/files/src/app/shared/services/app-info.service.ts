@@ -2,9 +2,9 @@ import { Injectable } from '@angular/core';
 
 @Injectable()
 export class AppInfoService {
-    constructor() {}
+  constructor() {}
 
-    public get title() {
-        return 'DevExtreme App';
-    }
+  public get title() {
+    return '<%= title %>';
+  }
 }
