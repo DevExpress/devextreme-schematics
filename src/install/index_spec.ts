@@ -9,6 +9,7 @@ describe('install', () => {
   // TODO: Extract workspase preparing somewhere
   const appOptions: any = {
     name: 'testApp',
+    projectRoot: '',
     inlineStyle: false,
     inlineTemplate: false,
     routing: true,

@@ -7,6 +7,7 @@ const collectionPath = path.join(__dirname, '../collection.json');
 describe('view', () => {
   const appOptions: any = {
     name: 'testApp',
+    projectRoot: '',
     inlineStyle: false,
     inlineTemplate: false,
     routing: true,
@@ -46,10 +47,10 @@ describe('view', () => {
     let tree = runner.runSchematic('add-layout', { layout: 'side-nav-outer-toolbar' }, appTree);
     tree = runner.runSchematic('add-view', componentOptions, appTree);
 
-    expect(tree.files).toContain('/testApp/src/app/pages/test/test.component.ts');
-    expect(tree.files).toContain('/testApp/src/app/pages/test/test.component.html');
+    expect(tree.files).toContain('/src/app/pages/test/test.component.ts');
+    expect(tree.files).toContain('/src/app/pages/test/test.component.html');
 
-    const content = tree.readContent('/testApp/src/app/pages/test/test.component.html');
+    const content = tree.readContent('/src/app/pages/test/test.component.html');
 
     expect(content).toMatch(/<h2 class="content-block">test<\/h2>/);
   });
@@ -61,7 +62,7 @@ describe('view', () => {
     let tree = runner.runSchematic('add-layout', { layout: 'side-nav-outer-toolbar' }, appTree);
     tree = runner.runSchematic('add-view', options, tree);
     tree = runner.runSchematic('add-view', { ...options, name: 'test2' }, tree);
-    const moduleContent = tree.readContent('/testApp/src/app/app-routing.module.ts');
+    const moduleContent = tree.readContent('/src/app/app-routing.module.ts');
 
     expect(moduleContent).toContain(`const routes: Routes = [
   {
@@ -104,7 +105,7 @@ describe('view', () => {
     }, tree);
     tree = runner.runSchematic('add-view', options, tree);
 
-    const moduleContent = tree.readContent('/testApp/src/app/test/test-routing.module.ts');
+    const moduleContent = tree.readContent('/src/app/test/test-routing.module.ts');
 
     expect(moduleContent).toMatch(/component: TestComponent/);
     expect(moduleContent).toMatch(/path: 'pages\/test'/);
@@ -120,7 +121,7 @@ describe('view', () => {
     componentOptions.icon = 'home';
     tree = runner.runSchematic('add-view', componentOptions, tree);
 
-    const moduleContent = tree.readContent('/testApp/src/app/app-navigation.ts');
+    const moduleContent = tree.readContent('/src/app/app-navigation.ts');
 
     expect(moduleContent).toMatch(/text: 'Some test'/);
     expect(moduleContent).toMatch(/icon: 'home'/);
@@ -139,7 +140,7 @@ describe('view', () => {
     icon: 'home'
   }
 ];`);
-    const pageContent = tree.readContent('/testApp/src/app/pages/some-test/some-test.component.html');
+    const pageContent = tree.readContent('/src/app/pages/some-test/some-test.component.html');
     expect(pageContent).toMatch(/<h2 class="content-block">some-test<\/h2>/);
   });
 
@@ -149,7 +150,7 @@ describe('view', () => {
     let tree = runner.runSchematic('add-layout', { layout: 'side-nav-outer-toolbar' }, appTree);
     tree = runner.runSchematic('add-view', componentOptions, appTree);
 
-    expect(tree.files).toContain('/testApp/src/app/folder/test/test.component.ts');
-    expect(tree.files).toContain('/testApp/src/app/folder/test/test.component.html');
+    expect(tree.files).toContain('/src/app/folder/test/test.component.ts');
+    expect(tree.files).toContain('/src/app/folder/test/test.component.html');
   });
 });

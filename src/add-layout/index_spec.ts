@@ -9,6 +9,7 @@ const collectionPath = path.join(__dirname, '../collection.json');
 describe('layout', () => {
   const appOptions: any = {
     name: 'testApp',
+    projectRoot: '',
     inlineStyle: false,
     inlineTemplate: false,
     routing: true,
@@ -43,51 +44,51 @@ describe('layout', () => {
     expect(tree.files)
       .toContain('/devextreme.json');
     expect(tree.files)
-      .toContain('/testApp/src/app/app-navigation.ts');
+      .toContain('/src/app/app-navigation.ts');
     expect(tree.files)
-      .toContain('/testApp/src/app/shared/components/header/header.component.ts');
+      .toContain('/src/app/shared/components/header/header.component.ts');
     expect(tree.files)
-      .toContain('/testApp/src/app/shared/components/login-form/login-form.component.ts');
+      .toContain('/src/app/shared/components/login-form/login-form.component.ts');
     expect(tree.files)
-      .toContain('/testApp/src/app/shared/components/side-navigation-menu/side-navigation-menu.component.ts');
+      .toContain('/src/app/shared/components/side-navigation-menu/side-navigation-menu.component.ts');
     expect(tree.files)
-      .toContain('/testApp/src/app/shared/services/app-info.service.ts');
+      .toContain('/src/app/shared/services/app-info.service.ts');
     expect(tree.files)
-      .toContain('/testApp/src/app/shared/services/auth.service.ts');
+      .toContain('/src/app/shared/services/auth.service.ts');
     expect(tree.files)
-      .toContain('/testApp/src/app/shared/services/screen.service.ts');
+      .toContain('/src/app/shared/services/screen.service.ts');
     expect(tree.files)
-      .toContain('/testApp/src/app/layouts/side-nav-outer-toolbar/side-nav-outer-toolbar.component.ts');
+      .toContain('/src/app/layouts/side-nav-outer-toolbar/side-nav-outer-toolbar.component.ts');
     expect(tree.files)
-      .toContain('/testApp/src/app/layouts/side-nav-inner-toolbar/side-nav-inner-toolbar.component.ts');
+      .toContain('/src/app/layouts/side-nav-inner-toolbar/side-nav-inner-toolbar.component.ts');
     expect(tree.files)
-      .toContain('/testApp/src/app/layouts/single-card/single-card.component.ts');
+      .toContain('/src/app/layouts/single-card/single-card.component.ts');
     expect(tree.files)
-      .toContain('/testApp/src/themes/metadata.base.json');
+      .toContain('/src/themes/metadata.base.json');
     expect(tree.files)
-      .toContain('/testApp/src/themes/metadata.additional.json');
+      .toContain('/src/themes/metadata.additional.json');
 
     const devextremeConfigContent = tree.readContent('/devextreme.json');
-    expect(devextremeConfigContent).toMatch(/"applicationEngine": "angular"/);
-    expect(devextremeConfigContent).toMatch(/"inputFile": "\/testApp\/src\/themes\/metadata.additional.json"/);
+    expect(devextremeConfigContent).toContain('"applicationEngine": "angular"');
+    expect(devextremeConfigContent).toContain('"inputFile": "src/themes/metadata.additional.json"');
 
-    const componentContent = tree.readContent('/testApp/src/app/app.component.html');
+    const componentContent = tree.readContent('/src/app/app.component.html');
     expect(componentContent).toContain('app-side-nav-outer-toolbar title="{{appInfo.title}}"');
 
-    const stylesContent = tree.readContent('/testApp/src/styles.scss');
+    const stylesContent = tree.readContent('/src/styles.scss');
     expect(stylesContent).toMatch(/html, body {/);
 
-    const indexContent = tree.readContent('/testApp/src/index.html');
+    const indexContent = tree.readContent('/src/index.html');
     expect(indexContent).toMatch(/<body class="dx-viewport">/);
 
     const angularContent = JSON.parse(tree.readContent('/angular.json'));
     const styles = angularContent.projects.testApp.architect.build.options.styles;
 
     expect(styles[0]).toBe('node_modules/devextreme/dist/css/dx.common.css');
-    expect(styles[1]).toBe('/testApp/src/themes/generated/theme.base.css');
-    expect(styles[2]).toBe('/testApp/src/themes/generated/theme.additional.css');
+    expect(styles[1]).toBe('src/themes/generated/theme.base.css');
+    expect(styles[2]).toBe('src/themes/generated/theme.additional.css');
 
-    const moduleContent = tree.readContent('/testApp/src/app/app.module.ts');
+    const moduleContent = tree.readContent('/src/app/app.module.ts');
     expect(moduleContent)
       .toContain('import { SideNavOuterToolbarModule, SideNavInnerToolbarModule, SingleCardModule }');
     expect(moduleContent)
@@ -100,7 +101,7 @@ describe('layout', () => {
     const testUtilsContent = tree.readContent('/e2e/src/app.po.ts');
     expect(testUtilsContent).toMatch(/'app-root .dx-drawer-content .dx-card p:nth-child\(2\)'/);
 
-    const appContent = tree.readContent('/testApp/src/app/app.component.ts');
+    const appContent = tree.readContent('/src/app/app.component.ts');
     expect(appContent).toMatch(/templateUrl: '.\/app.component.html',/);
     expect(appContent).toMatch(/styleUrls: \['.\/app.component.scss'\]/);
     expect(appContent).toContain(`import { AuthService, ScreenService, AppInfoService } from './shared/services';`);
@@ -181,21 +182,21 @@ describe('layout', () => {
     options.resolveConflicts = 'createNew';
     const tree = runner.runSchematic('add-layout', options, appTree);
 
-    expect(tree.files).toContain('/testApp/src/app/app1.component.ts');
+    expect(tree.files).toContain('/src/app/app1.component.ts');
 
-    const componentContent = tree.readContent('/testApp/src/app/app1.component.html');
+    const componentContent = tree.readContent('/src/app/app1.component.html');
     expect(componentContent).toContain('app-side-nav-outer-toolbar title="{{appInfo.title}}"');
 
-    const appContent = tree.readContent('/testApp/src/app/app.component.ts');
+    const appContent = tree.readContent('/src/app/app.component.ts');
     expect(appContent).toMatch(/templateUrl: '.\/app.component.html',/);
     expect(appContent).toMatch(/styleUrls: \['.\/app.component.scss'\]/);
 
-    const newAppContent = tree.readContent('/testApp/src/app/app1.component.ts');
+    const newAppContent = tree.readContent('/src/app/app1.component.ts');
     expect(newAppContent).toMatch(/templateUrl: '.\/app1.component.html',/);
     expect(newAppContent).toMatch(/styleUrls: \['.\/app1.component.scss'\]/);
     expect(newAppContent).toContain(`import { AuthService, ScreenService, AppInfoService } from './shared/services';`);
 
-    const appInfo = tree.readContent('/testApp/src/app/shared/services/app-info.service.ts');
+    const appInfo = tree.readContent('/src/app/shared/services/app-info.service.ts');
     expect(appInfo).toContain(`return 'TestApp';`);
   });
 
@@ -208,8 +209,8 @@ describe('layout', () => {
     const runner = new SchematicTestRunner('schematics', collectionPath);
     const tree = runner.runSchematic('add-layout', options, appTree);
 
-    expect(tree.files).toContain('/testApp/src/app/app-routing.module.ts');
-    const moduleContent = tree.readContent('/testApp/src/app/app-routing.module.ts');
+    expect(tree.files).toContain('/src/app/app-routing.module.ts');
+    const moduleContent = tree.readContent('/src/app/app-routing.module.ts');
     expect(moduleContent)
       .toMatch(/imports:\s\[RouterModule\.forRoot\(routes\)\],/);
 
@@ -226,7 +227,7 @@ describe('layout', () => {
     options.layout = 'side-nav-inner-toolbar';
     options.resolveConflicts = 'override';
     const tree = runner.runSchematic('add-layout', options, appTree);
-    const content = tree.readContent('/testApp/src/app/app.component.html');
+    const content = tree.readContent('/src/app/app.component.html');
 
     expect(content).toContain('app-side-nav-inner-toolbar title="{{appInfo.title}}"');
   });
@@ -265,7 +266,7 @@ describe('layout', () => {
     }, appTree);
 
     const content = tree.readContent('/devextreme.json');
-    expect(content).toContain('"inputFile": "/testApp/src/themes/metadata.base.json",');
+    expect(content).toContain('"inputFile": "src/themes/metadata.base.json",');
     expect(content).toContain('"inputFile": "projects/testApp2/src/themes/metadata.base.json",');
   });
 
