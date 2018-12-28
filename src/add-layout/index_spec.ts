@@ -101,7 +101,6 @@ describe('layout', () => {
     const testUtilsContent = tree.readContent('/e2e/src/app.po.ts');
     expect(testUtilsContent).toMatch(/'app-root .dx-drawer-content .dx-card p:nth-child\(2\)'/);
 
-
     const appContent = tree.readContent('/src/app/app.component.ts');
     expect(appContent).toContain('templateUrl: \'./app.component.html\',');
     expect(appContent).toContain('styleUrls: [\'./app.component.scss\']');
