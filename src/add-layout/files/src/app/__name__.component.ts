@@ -2,7 +2,7 @@ import { Component, HostBinding } from '@angular/core';
 import { AuthService, ScreenService, AppInfoService } from './shared/services';
 
 @Component({
-  selector: 'app-root',
+  selector: '<%= prefix %>-root',
   templateUrl: './<%= name %>.component.html',
   styleUrls: ['./<%= name %>.component.scss']
 })
