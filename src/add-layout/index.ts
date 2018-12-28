@@ -319,6 +319,8 @@ const modifyRoutingModule = (host: Tree, routingModulePath: string) => {
 export default function(options: any): Rule {
   return (host: Tree) => {
     const project = getProjectName(host, options.project);
+    const workspace = getWorkspace(host);
+    const prefix = workspace.projects[project].prefix;
     const title = humanize(project);
     const appPath = getApplicationPath(host, project);
     const sourcePath = getSourceRootPath(host, project);
@@ -326,7 +328,7 @@ export default function(options: any): Rule {
     const override = options.resolveConflicts === 'override';
     const componentName = override ? 'app' : getComponentName(host, appPath);
     const pathToCss = sourcePath.replace(/\/?(\w)+\/?/g, '../');
-    const templateOptions = { name: componentName, layout, title, strings, path: pathToCss };
+    const templateOptions = { name: componentName, layout, title, strings, path: pathToCss, prefix };
 
     const modifyContent = (templateContent: string, currentContent: string, filePath: string) => {
       if (basename(filePath) === 'styles.scss') {
@@ -362,7 +364,6 @@ export default function(options: any): Rule {
     }
 
     if (override) {
-      const workspace = getWorkspace(host);
       if (project === workspace.defaultProject) {
         rules.push(modifyContentByTemplate('./', workspaceFilesSource, 'e2e/src/app.e2e-spec.ts', { title }));
         rules.push(modifyContentByTemplate('./', workspaceFilesSource, 'e2e/src/app.po.ts'));

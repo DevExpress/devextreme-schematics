@@ -101,8 +101,9 @@ describe('layout', () => {
     expect(testUtilsContent).toMatch(/'app-root .dx-drawer-content .dx-card p:nth-child\(2\)'/);
 
     const appContent = tree.readContent('/testApp/src/app/app.component.ts');
-    expect(appContent).toMatch(/templateUrl: '.\/app.component.html',/);
-    expect(appContent).toMatch(/styleUrls: \['.\/app.component.scss'\]/);
+    expect(appContent).toContain('templateUrl: \'./app.component.html\',');
+    expect(appContent).toContain('styleUrls: [\'./app.component.scss\']');
+    expect(appContent).toContain('selector: \'app-root\',');
     expect(appContent).toContain(`import { AuthService, ScreenService, AppInfoService } from './shared/services';`);
   });
 
@@ -254,6 +255,7 @@ describe('layout', () => {
     appTree = schematicRunner.runSchematic('application', {
       ...appOptions,
       name: 'testApp2',
+      prefix: 'app2',
       projectRoot: 'projects/testApp2'
     }, appTree);
 
@@ -263,6 +265,9 @@ describe('layout', () => {
       ...options,
       project: 'testApp2'
     }, appTree);
+
+    const appContent = tree.readContent('projects/testApp2/src/app/app.component.ts');
+    expect(appContent).toContain('selector: \'app2-root\',');
 
     const content = tree.readContent('/devextreme.json');
     expect(content).toContain('"inputFile": "/testApp/src/themes/metadata.base.json",');
