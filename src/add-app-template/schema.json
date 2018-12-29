@@ -18,20 +18,6 @@
         ]
       }
     },
-    "dxversion": {
-      "type": "string",
-      "description": "The DevExtreme version",
-      "default": "18.2"
-    },
-    "project": {
-      "type": "string",
-      "description": "The name of a project to modify"
-    },
-    "empty": {
-      "type": "boolean",
-      "description": "Specifies whether to skip sample views generation",
-      "default": false
-    },
     "resolveConflicts": {
       "type": "string",
       "enum": ["createNew", "override"],
@@ -44,6 +30,23 @@
           { "value": "createNew", "label": "Create a new file" },
           { "value": "override", "label": "Override the existing file" }
         ]
+      }
+    },
+    "dxversion": {
+      "type": "string",
+      "description": "The DevExtreme version",
+      "default": "18.2"
+    },
+    "empty": {
+      "type": "boolean",
+      "description": "Specifies whether to skip sample views generation",
+      "default": false
+    },
+    "project": {
+      "type": "string",
+      "description": "The name of a project to modify",
+      "$default": {
+        "$source": "projectName"
       }
     },
     "updateBudgets": {

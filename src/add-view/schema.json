@@ -28,7 +28,10 @@
     },
     "project": {
       "type": "string",
-      "description": "The name of a project to modify"
+      "description": "The name of a project to modify",
+      "$default": {
+        "$source": "projectName"
+      }
     },
     "spec": {
       "type": "boolean",

@@ -6,6 +6,7 @@ const collectionPath = path.join(__dirname, '../collection.json');
 
 const appOptions: any = {
   name: 'testApp',
+  projectRoot: '',
   inlineStyle: false,
   inlineTemplate: false,
   routing: true,
