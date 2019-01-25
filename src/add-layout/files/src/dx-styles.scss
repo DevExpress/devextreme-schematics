@@ -11,6 +11,7 @@
 .content-block {
   margin-left: 40px;
   margin-right: 40px;
+  margin-top: 20px;
 
   .screen-x-small & {
     margin-left: 20px;
@@ -34,10 +35,8 @@
   border-left: 0;
 }
 
-.with-footer {
-  .dx-scrollable-content {
-    height: 100%;
-  }
+.with-footer > div > div >.dx-scrollable-content {
+  height: 100%;
 
   .dx-scrollview-content {
     display: flex;
@@ -45,3 +44,5 @@
     min-height: 100%;
   }
 }
+
+$side-panel-min-width: 60px;
