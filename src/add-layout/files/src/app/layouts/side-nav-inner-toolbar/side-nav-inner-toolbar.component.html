@@ -15,7 +15,7 @@
         class="dx-swatch-additional"
         *dxTemplate="let dataMenu of 'panel'"
         (selectedItemChanged)="navigationChanged($event)"
-        (click)="navigationClick()">
+        (openMenu)="navigationClick()">
             <dx-toolbar id="navigation-header">
                 <dxi-item
                     *ngIf="minMenuSize !== 0"
