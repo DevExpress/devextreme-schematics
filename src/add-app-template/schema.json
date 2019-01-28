@@ -32,6 +32,13 @@
         ]
       }
     },
+    "project": {
+      "type": "string",
+      "description": "The name of a project to modify",
+      "$default": {
+        "$source": "projectName"
+      }
+    },
     "dxversion": {
       "type": "string",
       "description": "The DevExtreme version",
@@ -41,13 +48,6 @@
       "type": "boolean",
       "description": "Specifies whether to skip sample views generation",
       "default": false
-    },
-    "project": {
-      "type": "string",
-      "description": "The name of a project to modify",
-      "$default": {
-        "$source": "projectName"
-      }
     },
     "updateBudgets": {
       "type": "boolean"

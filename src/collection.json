@@ -8,8 +8,7 @@
     },
     "add-layout": {
       "description": "Add DevExtreme Layout to the Angular application.",
-      "factory": "./add-layout/index",
-      "schema": "./add-layout/schema.json"
+      "factory": "./add-layout/index"
     },
     "add-sample-views": {
       "description": "Add Sample views to the Angular application.",

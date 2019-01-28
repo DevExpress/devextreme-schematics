@@ -24,7 +24,7 @@ describe('layout', () => {
   };
 
   const options: any = {
-    layouts: 'side-nav-outer-toolbar',
+    layout: 'side-nav-outer-toolbar',
     resolveConflicts: 'override'
   };
 
