@@ -59,31 +59,31 @@
       }
       // ##
     }
-  }
-}
 
-// ## Selected & Focuced items customization
-:host ::ng-deep .dx-treeview {
-  .dx-treeview-node-container {
-    .dx-treeview-node {
-      &.dx-state-selected:not(.dx-state-focused)> .dx-treeview-item {
-        background: transparent;
-      }
+    // ## Selected & Focuced items customization
+    ::ng-deep .dx-treeview {
+      .dx-treeview-node-container {
+        .dx-treeview-node {
+          &.dx-state-selected:not(.dx-state-focused)> .dx-treeview-item {
+            background: transparent;
+          }
 
-      &.dx-state-selected > .dx-treeview-item * {
-        color: $base-accent;
-      }
+          &.dx-state-selected > .dx-treeview-item * {
+            color: $base-accent;
+          }
 
-      &:not(.dx-state-focused)>.dx-treeview-item.dx-state-hover {
-        background-color: lighten($base-bg, 4.00);
+          &:not(.dx-state-focused)>.dx-treeview-item.dx-state-hover {
+            background-color: lighten($base-bg, 4.00);
+          }
+        }
       }
     }
-  }
-}
 
-:host :host-context(.dx-theme-generic) ::ng-deep.dx-treeview {
-  .dx-treeview-node-container .dx-treeview-node.dx-state-selected.dx-state-focused > .dx-treeview-item * {
-    color: inherit;
+    :host-context(.dx-theme-generic) ::ng-deep.dx-treeview {
+      .dx-treeview-node-container .dx-treeview-node.dx-state-selected.dx-state-focused > .dx-treeview-item * {
+        color: inherit;
+      }
+    }
+    // ##
   }
 }
-// ##
