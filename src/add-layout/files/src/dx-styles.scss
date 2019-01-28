@@ -38,7 +38,7 @@
 .with-footer > div > div >.dx-scrollable-content {
   height: 100%;
 
-  .dx-scrollview-content {
+  & > .dx-scrollview-content {
     display: flex;
     flex-direction: column;
     min-height: 100%;
