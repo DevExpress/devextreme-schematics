@@ -12,7 +12,7 @@
         showEvent="dxclick"
         width="170px"
         [position]="{ my: 'top center', at: 'bottom center' }"
-        (onItemRendered)="$event.itemElement.classList.add('user-menu-item')">
+        cssClass="user-menu">
     </dx-context-menu>
     <dx-list
         *ngIf="menuMode === 'list'"
