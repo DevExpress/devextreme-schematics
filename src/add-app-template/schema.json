@@ -52,5 +52,9 @@
     "updateBudgets": {
       "type": "boolean"
     }
-  }
+  },
+  "required": [
+    "layout",
+    "resolveConflicts"
+  ]
 }

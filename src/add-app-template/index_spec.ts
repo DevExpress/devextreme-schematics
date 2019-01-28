@@ -15,6 +15,11 @@ const appOptions: any = {
   skipPackageJson: false
 };
 
+const templateOptions: any = {
+  layout: 'side-nav-outer-toolbar',
+  resolveConflicts: 'override'
+};
+
 const workspaceOptions: WorkspaceOptions = {
   name: 'workspace',
   version: '6.0.0'
@@ -32,7 +37,7 @@ beforeEach(() => {
 describe('add-app-template', () => {
   it('should add DevExtreme', () => {
     const runner = new SchematicTestRunner('schematics', collectionPath);
-    const tree = runner.runSchematic('add-app-template', { }, appTree);
+    const tree = runner.runSchematic('add-app-template', templateOptions, appTree);
     const packageConfig = JSON.parse(tree.readContent('package.json'));
 
     expect('devextreme' in packageConfig.dependencies).toBe(true);
@@ -49,7 +54,7 @@ describe('add-app-template', () => {
     }, appTree);
 
     const runner = new SchematicTestRunner('schematics', collectionPath);
-    const tree = runner.runSchematic('add-app-template', {
+    const tree = runner.runSchematic('add-app-template', { ...templateOptions,
       project: 'testApp2'
     }, appTree);
 
@@ -63,7 +68,7 @@ describe('add-app-template', () => {
 
   it('should consider the `updateBudgets` option', () => {
     const runner = new SchematicTestRunner('schematics', collectionPath);
-    const tree = runner.runSchematic('add-app-template', { updateBudgets: true }, appTree);
+    const tree = runner.runSchematic('add-app-template', { ...templateOptions, updateBudgets: true }, appTree);
 
     const angularContent = JSON.parse(tree.readContent('/angular.json'));
     const budgets = angularContent.projects.testApp.architect.build.configurations.production.budgets;
