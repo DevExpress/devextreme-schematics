@@ -13,7 +13,7 @@ Please look through our Roadmap for future releases (https://js.devexpress.com/R
 
 # Feature request
 
-**Package versions you currently use:**
+**Package version you currently use:**
 
     devextreme-schematics version:
 
