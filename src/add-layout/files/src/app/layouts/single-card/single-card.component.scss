@@ -1,7 +1,6 @@
 :host {
   width: 100%;
   height: 100%;
-  display: flex;
 }
 
 .dx-card {
@@ -19,5 +18,15 @@
   
   .content {
     padding: 40px;
+    flex-grow: 1;
   }  
+}
+
+::ng-deep .card-container > div > div >.dx-scrollable-content {
+  height: 100%;
+
+  & > .dx-scrollview-content {
+    display: flex;
+    min-height: 100%;
+  }
 }
