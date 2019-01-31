@@ -15,7 +15,8 @@ To reduce the time it takes to process issues, search opened and closed tickets 
 
 <!-- Please provide the following information -->
 
-**Package versions:**
+**Package version:**
+
     devextreme-schematics version:
 
 **Steps to reproduce:**
