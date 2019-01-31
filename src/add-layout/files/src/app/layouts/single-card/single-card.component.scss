@@ -21,12 +21,3 @@
     flex-grow: 1;
   }  
 }
-
-::ng-deep .card-container > div > div >.dx-scrollable-content {
-  height: 100%;
-
-  & > .dx-scrollview-content {
-    display: flex;
-    min-height: 100%;
-  }
-}
