@@ -14,6 +14,10 @@ import {
   template
 } from '@angular-devkit/schematics';
 
+import {
+  getPackageJsonDependency
+} from '@schematics/angular/utility/dependencies';
+
 import { of } from 'rxjs';
 
 import {
@@ -73,6 +77,7 @@ import { Change } from '@schematics/angular/utility/change';
 
 const projectFilesSource = './files/src';
 const workspaceFilesSource = './files';
+const ngMajorVersionWithOutBC = /^(\W*)([5-7])/;
 
 function addScriptSafe(scripts: any, name: string, value: string) {
   const currentValue = scripts[name];
@@ -328,7 +333,17 @@ export default function(options: any): Rule {
     const override = options.resolveConflicts === 'override';
     const componentName = override ? 'app' : getComponentName(host, appPath);
     const pathToCss = sourcePath.replace(/\/?(\w)+\/?/g, '../');
-    const templateOptions = { name: componentName, layout, title, strings, path: pathToCss, prefix };
+    const ngVersion = getPackageJsonDependency(host, '@angular/core')!.version;
+    const templateOptions = { 
+      name: componentName,
+      layout,
+      title,
+      strings,
+      path: pathToCss,
+      prefix,
+      //https://github.com/angular/angular/blob/master/CHANGELOG.md#800-2019-05-28
+      isNgWithOutBC: ngMajorVersionWithOutBC.test(ngVersion)
+    };
 
     const modifyContent = (templateContent: string, currentContent: string, filePath: string) => {
       if (basename(filePath) === 'styles.scss') {

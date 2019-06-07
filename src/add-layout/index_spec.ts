@@ -1,5 +1,10 @@
 import { SchematicTestRunner, UnitTestTree } from '@angular-devkit/schematics/testing';
 import { Schema as WorkspaceOptions } from '@schematics/angular/workspace/schema';
+import {
+  NodeDependencyType,
+  addPackageJsonDependency,
+  removePackageJsonDependency
+} from '@schematics/angular/utility/dependencies';
 import * as path from 'path';
 
 import { modifyJSONFile } from '../utility/modify-json-file';
@@ -106,6 +111,9 @@ describe('layout', () => {
     expect(appContent).toContain('styleUrls: [\'./app.component.scss\']');
     expect(appContent).toContain('selector: \'app-root\',');
     expect(appContent).toContain(`import { AuthService, ScreenService, AppInfoService } from './shared/services';`);
+
+    const navigationMenu = tree.readContent('/src/app/shared/components/side-navigation-menu/side-navigation-menu.component.ts');
+    expect(navigationMenu).toContain('@ViewChild(DxTreeViewComponent, { static: true })');
   });
 
   it('should add npm scripts', async () => {
@@ -114,6 +122,21 @@ describe('layout', () => {
     const packageConfig = JSON.parse(tree.readContent('package.json'));
     expect(packageConfig.scripts['build-themes']).toBe('devextreme build');
     expect(packageConfig.scripts['postinstall']).toBe('npm run build-themes');
+  });
+
+  it('should set static flag', async () => {
+    removePackageJsonDependency(appTree, '@angular/core');
+    addPackageJsonDependency(appTree, {
+      type: NodeDependencyType.Default,
+      name: '@angular/core',
+      version: '7.0.0'
+    });
+
+    const runner = new SchematicTestRunner('schematics', collectionPath);
+    const tree = await runner.runSchematicAsync('add-layout', options, appTree).toPromise();
+    const navigationMenu = tree.readContent('/src/app/shared/components/side-navigation-menu/side-navigation-menu.component.ts');
+
+    expect(navigationMenu).toContain('@ViewChild(DxTreeViewComponent)');
   });
 
   it('should add npm scripts safely', async () => {
