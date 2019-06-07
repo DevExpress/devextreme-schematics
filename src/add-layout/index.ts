@@ -77,7 +77,7 @@ import { Change } from '@schematics/angular/utility/change';
 
 const projectFilesSource = './files/src';
 const workspaceFilesSource = './files';
-const ngMajorVersionWithOutBC = /^(\W*)([5-7])/;
+const ngRequireStaticFlag = /^(\W*[8-9][0-9]*)/;
 
 function addScriptSafe(scripts: any, name: string, value: string) {
   const currentValue = scripts[name];
@@ -342,7 +342,7 @@ export default function(options: any): Rule {
       path: pathToCss,
       prefix,
       // https://github.com/angular/angular/blob/master/CHANGELOG.md#800-2019-05-28
-      isNgWithOutBC: ngMajorVersionWithOutBC.test(ngVersion)
+      requireStaticFlag: ngRequireStaticFlag.test(ngVersion)
     };
 
     const modifyContent = (templateContent: string, currentContent: string, filePath: string) => {
