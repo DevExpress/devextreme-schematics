@@ -29,15 +29,15 @@ describe('sample views', () => {
   const schematicRunner = new SchematicTestRunner('@schematics/angular', angularSchematicsCollection);
   let appTree: UnitTestTree;
 
-  beforeEach(() => {
-    appTree = schematicRunner.runSchematic('workspace', workspaceOptions);
-    appTree = schematicRunner.runSchematic('application', appOptions, appTree);
+  beforeEach(async () => {
+    appTree =  await schematicRunner.runSchematicAsync('workspace', workspaceOptions).toPromise();
+    appTree = await schematicRunner.runSchematicAsync('application', appOptions, appTree).toPromise();
   });
 
-  it('should add sample views', () => {
+  it('should add sample views', async () => {
     const runner = new SchematicTestRunner('schematics', collectionPath);
-    let tree = runner.runSchematic('add-layout', { layout: 'side-nav-outer-toolbar' }, appTree);
-    tree = runner.runSchematic('add-sample-views', sampleViewsOptions, tree);
+    let tree = await runner.runSchematicAsync('add-layout', { layout: 'side-nav-outer-toolbar' }, appTree).toPromise();
+    tree = await runner.runSchematicAsync('add-sample-views', sampleViewsOptions, tree).toPromise();
 
     const moduleContent = tree.readContent('/src/app/app-routing.module.ts');
 

@@ -32,14 +32,14 @@ describe('layout', () => {
   const schematicRunner = new SchematicTestRunner('@schematics/angular', angularSchematicsCollection);
   let appTree: UnitTestTree;
 
-  beforeEach(() => {
-    appTree = schematicRunner.runSchematic('workspace', workspaceOptions);
-    appTree = schematicRunner.runSchematic('application', appOptions, appTree);
+  beforeEach(async () => {
+    appTree = await schematicRunner.runSchematicAsync('workspace', workspaceOptions).toPromise();
+    appTree = await schematicRunner.runSchematicAsync('application', appOptions, appTree).toPromise();
   });
 
-  it('should add layout with override', () => {
+  it('should add layout with override', async () => {
     const runner = new SchematicTestRunner('schematics', collectionPath);
-    const tree = runner.runSchematic('add-layout', options, appTree);
+    const tree = await runner.runSchematicAsync('add-layout', options, appTree).toPromise();
 
     expect(tree.files)
       .toContain('/devextreme.json');
@@ -108,15 +108,15 @@ describe('layout', () => {
     expect(appContent).toContain(`import { AuthService, ScreenService, AppInfoService } from './shared/services';`);
   });
 
-  it('should add npm scripts', () => {
+  it('should add npm scripts', async () => {
     const runner = new SchematicTestRunner('schematics', collectionPath);
-    const tree = runner.runSchematic('add-layout', options, appTree);
+    const tree = await runner.runSchematicAsync('add-layout', options, appTree).toPromise();
     const packageConfig = JSON.parse(tree.readContent('package.json'));
     expect(packageConfig.scripts['build-themes']).toBe('devextreme build');
     expect(packageConfig.scripts['postinstall']).toBe('npm run build-themes');
   });
 
-  it('should add npm scripts safely', () => {
+  it('should add npm scripts safely', async () => {
     modifyJSONFile(appTree, './package.json', config => {
       const scripts = config['scripts'];
 
@@ -127,7 +127,7 @@ describe('layout', () => {
     });
 
     const runner = new SchematicTestRunner('schematics', collectionPath);
-    const tree = runner.runSchematic('add-layout', options, appTree);
+    const tree = await runner.runSchematicAsync('add-layout', options, appTree).toPromise();
     const packageConfig = JSON.parse(tree.readContent('package.json'));
     expect(packageConfig.scripts['origin-build-themes']).toBe('prev value 1');
     expect(packageConfig.scripts['origin-postinstall']).toBe('prev value 2');
@@ -135,20 +135,20 @@ describe('layout', () => {
     expect(packageConfig.scripts['postinstall']).toBe('npm run origin-postinstall && npm run build-themes');
   });
 
-  it('should add angular/cdk dependency', () => {
+  it('should add angular/cdk dependency', async () => {
     const runner = new SchematicTestRunner('schematics', collectionPath);
-    const tree = runner.runSchematic('add-layout', options, appTree);
+    const tree = await runner.runSchematicAsync('add-layout', options, appTree).toPromise();
     const packageConfig = JSON.parse(tree.readContent('package.json'));
 
     expect(packageConfig.dependencies['@angular/cdk']).toBeDefined();
   });
 
-  it('should update budgets if updateBudgets option is true', () => {
+  it('should update budgets if updateBudgets option is true', async () => {
     const runner = new SchematicTestRunner('schematics', collectionPath);
-    const tree = runner.runSchematic('add-layout', {
+    const tree = await runner.runSchematicAsync('add-layout', {
       ...options,
       updateBudgets: true
-    }, appTree);
+    }, appTree).toPromise();
 
     const angularContent = JSON.parse(tree.readContent('/angular.json'));
     const budgets = angularContent.projects.testApp.architect.build.configurations.production.budgets;
@@ -161,9 +161,9 @@ describe('layout', () => {
     });
   });
 
-  it('should not update budgets if updateBudgets option is not defined or false', () => {
+  it('should not update budgets if updateBudgets option is not defined or false', async () => {
     const runner = new SchematicTestRunner('schematics', collectionPath);
-    const tree = runner.runSchematic('add-layout', options, appTree);
+    const tree = await runner.runSchematicAsync('add-layout', options, appTree).toPromise();
 
     const angularContent = JSON.parse(tree.readContent('/angular.json'));
     const budgets = angularContent.projects.testApp.architect.build.configurations.production.budgets;
@@ -177,11 +177,11 @@ describe('layout', () => {
     expect(budgets[0]).toEqual(defaultBudget);
   });
 
-  it('should add layout without override', () => {
+  it('should add layout without override', async () => {
     const runner = new SchematicTestRunner('schematics', collectionPath);
 
     options.resolveConflicts = 'createNew';
-    const tree = runner.runSchematic('add-layout', options, appTree);
+    const tree = await runner.runSchematicAsync('add-layout', options, appTree).toPromise();
 
     expect(tree.files).toContain('/src/app/app1.component.ts');
 
@@ -201,14 +201,15 @@ describe('layout', () => {
     expect(appInfo).toContain(`return 'TestApp';`);
   });
 
-  it('should add routing to layout', () => {
-    let newAppTree = schematicRunner.runSchematic('workspace', workspaceOptions);
+  it('should add routing to layout', async () => {
+    let newAppTree = await schematicRunner.runSchematicAsync('workspace', workspaceOptions).toPromise();
 
     appOptions.routing = false;
-    newAppTree = schematicRunner.runSchematic('application', appOptions, newAppTree);
+    newAppTree = await schematicRunner.runSchematicAsync(
+      'application', appOptions, newAppTree).toPromise();
 
     const runner = new SchematicTestRunner('schematics', collectionPath);
-    const tree = runner.runSchematic('add-layout', options, appTree);
+    const tree = await runner.runSchematicAsync('add-layout', options, appTree).toPromise();
 
     expect(tree.files).toContain('/src/app/app-routing.module.ts');
     const moduleContent = tree.readContent('/src/app/app-routing.module.ts');
@@ -223,28 +224,28 @@ describe('layout', () => {
   }`);
   });
 
-  it('should use selected layout', () => {
+  it('should use selected layout', async () => {
     const runner = new SchematicTestRunner('schematics', collectionPath);
     options.layout = 'side-nav-inner-toolbar';
     options.resolveConflicts = 'override';
-    const tree = runner.runSchematic('add-layout', options, appTree);
+    const tree = await runner.runSchematicAsync('add-layout', options, appTree).toPromise();
     const content = tree.readContent('/src/app/app.component.html');
 
     expect(content).toContain('app-side-nav-inner-toolbar title="{{appInfo.title}}"');
   });
 
-  it('should consider the `project` option', () => {
-    appTree = schematicRunner.runSchematic('application', {
+  it('should consider the `project` option', async () => {
+    appTree = await schematicRunner.runSchematicAsync('application', {
       ...appOptions,
       name: 'testApp2',
       projectRoot: 'projects/testApp2'
-    }, appTree);
+    }, appTree).toPromise();
 
     const runner = new SchematicTestRunner('schematics', collectionPath);
-    const tree = runner.runSchematic('add-layout', {
+    const tree = await runner.runSchematicAsync('add-layout', {
       ...options,
       project: 'testApp2'
-    }, appTree);
+    }, appTree).toPromise();
 
     expect(tree.files)
       .toContain('/devextreme.json');
@@ -252,20 +253,20 @@ describe('layout', () => {
       .toContain('/projects/testApp2/src/themes/metadata.base.json');
   });
 
-  it('should merge build commands in devextreme.json file', () => {
-    appTree = schematicRunner.runSchematic('application', {
+  it('should merge build commands in devextreme.json file', async () => {
+    appTree = await schematicRunner.runSchematicAsync('application', {
       ...appOptions,
       name: 'testApp2',
       prefix: 'app2',
       projectRoot: 'projects/testApp2'
-    }, appTree);
+    }, appTree).toPromise();
 
     const runner = new SchematicTestRunner('schematics', collectionPath);
-    let tree = runner.runSchematic('add-layout', options, appTree);
-    tree = runner.runSchematic('add-layout', {
+    let tree = await runner.runSchematicAsync('add-layout', options, appTree).toPromise();
+    tree = await runner.runSchematicAsync('add-layout', {
       ...options,
       project: 'testApp2'
-    }, appTree);
+    }, appTree).toPromise();
 
     const appContent = tree.readContent('projects/testApp2/src/app/app.component.ts');
     expect(appContent).toContain('selector: \'app2-root\',');
@@ -275,19 +276,19 @@ describe('layout', () => {
     expect(content).toContain('"inputFile": "projects/testApp2/src/themes/metadata.base.json",');
   });
 
-  it('should add e2e tests only for default project', () => {
-    appTree = schematicRunner.runSchematic('application', {
+  it('should add e2e tests only for default project', async () => {
+    appTree = await schematicRunner.runSchematicAsync('application', {
       ...appOptions,
       name: 'testApp2',
       projectRoot: 'projects/testApp2'
-    }, appTree);
+    }, appTree).toPromise();
 
     const runner = new SchematicTestRunner('schematics', collectionPath);
-    let tree = runner.runSchematic('add-layout', options, appTree);
-    tree = runner.runSchematic('add-layout', {
+    let tree = await runner.runSchematicAsync('add-layout', options, appTree).toPromise();
+    tree = await runner.runSchematicAsync('add-layout', {
       ...options,
       project: 'testApp2'
-    }, appTree);
+    }, appTree).toPromise();
 
     const testContent = tree.readContent('/e2e/src/app.e2e-spec.ts');
     expect(testContent).toContain('Welcome to TestApp!');
