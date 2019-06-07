@@ -112,7 +112,8 @@ describe('layout', () => {
     expect(appContent).toContain('selector: \'app-root\',');
     expect(appContent).toContain(`import { AuthService, ScreenService, AppInfoService } from './shared/services';`);
 
-    const navigationMenu = tree.readContent('/src/app/shared/components/side-navigation-menu/side-navigation-menu.component.ts');
+    const navigationMenu = tree.readContent(
+      '/src/app/shared/components/side-navigation-menu/side-navigation-menu.component.ts');
     expect(navigationMenu).toContain('@ViewChild(DxTreeViewComponent, { static: true })');
   });
 
@@ -134,7 +135,8 @@ describe('layout', () => {
 
     const runner = new SchematicTestRunner('schematics', collectionPath);
     const tree = await runner.runSchematicAsync('add-layout', options, appTree).toPromise();
-    const navigationMenu = tree.readContent('/src/app/shared/components/side-navigation-menu/side-navigation-menu.component.ts');
+    const navigationMenu = tree.readContent(
+      '/src/app/shared/components/side-navigation-menu/side-navigation-menu.component.ts');
 
     expect(navigationMenu).toContain('@ViewChild(DxTreeViewComponent)');
   });

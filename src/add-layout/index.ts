@@ -334,14 +334,14 @@ export default function(options: any): Rule {
     const componentName = override ? 'app' : getComponentName(host, appPath);
     const pathToCss = sourcePath.replace(/\/?(\w)+\/?/g, '../');
     const ngVersion = getPackageJsonDependency(host, '@angular/core')!.version;
-    const templateOptions = { 
+    const templateOptions = {
       name: componentName,
       layout,
       title,
       strings,
       path: pathToCss,
       prefix,
-      //https://github.com/angular/angular/blob/master/CHANGELOG.md#800-2019-05-28
+      // https://github.com/angular/angular/blob/master/CHANGELOG.md#800-2019-05-28
       isNgWithOutBC: ngMajorVersionWithOutBC.test(ngVersion)
     };
 
