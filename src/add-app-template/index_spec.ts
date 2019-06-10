@@ -24,34 +24,34 @@ const angularSchematicsCollection = require.resolve('../../node_modules/@schemat
 const schematicRunner = new SchematicTestRunner('@schematics/angular', angularSchematicsCollection);
 let appTree: UnitTestTree;
 
-beforeEach(() => {
-  appTree = schematicRunner.runSchematic('workspace', workspaceOptions);
-  appTree = schematicRunner.runSchematic('application', appOptions, appTree);
+beforeEach(async () => {
+  appTree = await schematicRunner.runSchematicAsync('workspace', workspaceOptions).toPromise();
+  appTree = await schematicRunner.runSchematicAsync('application', appOptions, appTree).toPromise();
 });
 
 describe('add-app-template', () => {
-  it('should add DevExtreme', () => {
+  it('should add DevExtreme', async () => {
     const runner = new SchematicTestRunner('schematics', collectionPath);
-    const tree = runner.runSchematic('add-app-template', { }, appTree);
+    const tree = await runner.runSchematicAsync('add-app-template', { }, appTree).toPromise();
     const packageConfig = JSON.parse(tree.readContent('package.json'));
 
     expect('devextreme' in packageConfig.dependencies).toBe(true);
   });
 
-  it('should consider the `project` option', () => {
-    appTree = schematicRunner.runSchematic('application', {
+  it('should consider the `project` option', async () => {
+    appTree = await schematicRunner.runSchematicAsync('application', {
       name: 'testApp2',
       inlineStyle: false,
       inlineTemplate: false,
       routing: true,
       style: 'scss',
       projectRoot: 'projects/testApp2'
-    }, appTree);
+    }, appTree).toPromise();
 
     const runner = new SchematicTestRunner('schematics', collectionPath);
-    const tree = runner.runSchematic('add-app-template', {
+    const tree = await runner.runSchematicAsync('add-app-template', {
       project: 'testApp2'
-    }, appTree);
+    }, appTree).toPromise();
 
     expect(tree.files)
       .toContain('/devextreme.json');
@@ -61,9 +61,9 @@ describe('add-app-template', () => {
       .toContain('/projects/testApp2/src/app/pages/home/home.component.ts');
   });
 
-  it('should consider the `updateBudgets` option', () => {
+  it('should consider the `updateBudgets` option', async () => {
     const runner = new SchematicTestRunner('schematics', collectionPath);
-    const tree = runner.runSchematic('add-app-template', { updateBudgets: true }, appTree);
+    const tree = await runner.runSchematicAsync('add-app-template', { updateBudgets: true }, appTree).toPromise();
 
     const angularContent = JSON.parse(tree.readContent('/angular.json'));
     const budgets = angularContent.projects.testApp.architect.build.configurations.production.budgets;
