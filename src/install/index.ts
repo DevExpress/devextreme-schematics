@@ -46,6 +46,11 @@ function addDevExtremeDependency(host: Tree, options: any) {
     name: 'devextreme-cli',
     version: latestVersions['devextreme-cli']
   });
+  addPackageJsonDependency(host, {
+    type: NodeDependencyType.Dev,
+    name: 'devextreme-themebuilder',
+    version: options.dxversion || latestVersions['devextreme']
+  });
 
   return host;
 }

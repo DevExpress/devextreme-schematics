@@ -40,6 +40,7 @@ describe('install', () => {
 
     expect(packageConfig.dependencies['devextreme']).toBe(latestVersions['devextreme']);
     expect(packageConfig.dependencies['devextreme-angular']).toBe(latestVersions['devextreme-angular']);
+    expect(packageConfig.devDependencies['devextreme-themebuilder']).toBe(latestVersions['devextreme']);
   });
 
   it('should add devextreme dependency (custom)', async () => {
@@ -48,6 +49,7 @@ describe('install', () => {
     const packageConfig = JSON.parse(tree.readContent('package.json'));
 
     expect(packageConfig.dependencies.devextreme).toBe('18.2.5');
+    expect(packageConfig.devDependencies['devextreme-themebuilder']).toBe('18.2.5');
   });
 
   it('should add devextreme cli devDependency', async () => {
