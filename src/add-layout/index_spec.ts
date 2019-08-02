@@ -178,7 +178,7 @@ describe('layout', () => {
     const angularContent = JSON.parse(tree.readContent('/angular.json'));
     const budgets = angularContent.projects.testApp.architect.build.configurations.production.budgets;
 
-    expect(budgets.length).toBe(1);
+    expect(budgets.length).toBe(2);
     expect(budgets[0]).toEqual({
       type: 'initial',
       maximumWarning: '4mb',
@@ -198,7 +198,7 @@ describe('layout', () => {
       maximumError: '5mb'
     };
 
-    expect(budgets.length).toBe(1);
+    expect(budgets.length).toBe(2);
     expect(budgets[0]).toEqual(defaultBudget);
   });
 
