@@ -47,7 +47,8 @@
       "default": false
     },
     "updateBudgets": {
-      "type": "boolean"
+      "type": "boolean",
+      "visible": false
     }
   }
 }
