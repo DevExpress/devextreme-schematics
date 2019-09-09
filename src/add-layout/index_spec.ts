@@ -80,7 +80,7 @@ describe('layout', () => {
     const componentContent = tree.readContent('/src/app/app.component.html');
     expect(componentContent).toContain('app-side-nav-outer-toolbar title="{{appInfo.title}}"');
 
-    const stylesContent = tree.readContent('/src/styles.scss');
+    const stylesContent = tree.readContent('/src/dx-styles.scss');
     expect(stylesContent).toMatch(/html, body {/);
 
     const indexContent = tree.readContent('/src/index.html');
