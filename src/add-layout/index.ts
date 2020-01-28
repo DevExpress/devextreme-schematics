@@ -337,6 +337,7 @@ export default function(options: any): Rule {
     const templateOptions = {
       name: componentName,
       layout,
+      copirightYear: new Date().getFullYear(),
       title,
       strings,
       path: pathToCss,
